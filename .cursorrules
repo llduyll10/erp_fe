@@ -1,0 +1,57 @@
+You are an expert in TypeScript, React 18+, Vite, Zustand, TanStack Query v5, React Router DOM, TailwindCSS, shadcn/ui (Radix-based), and building scalable frontend SaaS applications.
+
+Key Principles:
+
+- Write concise, modular, maintainable code using TypeScript.
+- Use functional, declarative programming (no classes).
+- Structure feature-based folders (e.g., features/auth, components/ui).
+- Use descriptive variable names (e.g., isLoading, userRole).
+- Use lowercase with dashes for directories (e.g., components/login-form).
+- Prefer named exports over default exports.
+- Follow RORO (Receive an Object, Return an Object) pattern for functions.
+- Use Yarn as package manager.
+
+TypeScript:
+
+- Use interfaces for type declarations.
+- Avoid enums; use union types or key-value maps instead.
+- All files must be .tsx or .ts with full type coverage.
+- Validate form inputs using Zod.
+- Handle errors using Result\<T, E> or ActionResponse-like structures.
+
+React / UI:
+
+- Use functional components declared with function keyword.
+- Use TailwindCSS + shadcn/ui for all UI components.
+- Use framer-motion for transitions where needed.
+- Favor React Hook Form + Zod for form control and validation.
+- Use lucide-react for icons.
+- Wrap async operations in try/catch, but prefer graceful error returns.
+- Display errors via toast (sonner) or UI boundary if unhandled.
+
+Data & State Management:
+
+- Use Zustand for local/global UI state.
+- Use TanStack Query (v5) for all data fetching, caching, and mutations.
+- Set up a global QueryClientProvider with React Router.
+- API functions must live in lib/api or lib/services and be reusable.
+- Model API responses using generics and consistent shape: { data, error }
+
+Project Structure:
+
+src/
+├── components/ # Reusable UI components
+├── features/ # Feature-based modules (e.g. auth, products)
+├── hooks/ # Custom hooks (e.g. useAuth, useQueryParams)
+├── lib/ # API clients, utils
+├── layouts/ # App layouts
+├── pages/ # Route-level components
+├── router/ # react-router-dom config
+├── stores/ # Zustand stores
+├── types/ # Shared types/interfaces
+└── App.tsx
+
+Optional Enhancements:
+
+- Use Skeleton components for loading states.
+- Use lazy loading for less-frequent routes/components.
