@@ -1,4 +1,14 @@
-### 📦 Tech Stack
+Here is the fully updated and consolidated AuthModule.md in English based on your current architecture, tech stack, and practices:
+
+---
+
+# 📘 Auth Module Guide
+
+This document outlines the complete authentication flow and technical implementation based on the latest architecture.
+
+---
+
+## 📦 Tech Stack
 
 - React + Vite + TypeScript
 - TailwindCSS
@@ -6,19 +16,19 @@
 - TanStack Query v5 (Query & Mutation services)
 - Zustand (global auth state)
 - React Router DOM
-- Axios (interceptor, instance)
+- Axios (with interceptors)
 - Sonner (toast notifications)
 - framer-motion (optional animation)
-- zod (form validation – use snake_case fields)
-- clsx, date-fns (utilities)
+- zod (form validation – uses snake_case fields)
+- clsx, date-fns (utility libraries)
 
 ---
 
-### ✅ Functional Scope
+## ✅ Functional Scope
 
-Implement a complete authentication flow that integrates with the backend AuthModule.
+Implement a full authentication module integrated with backend APIs.
 
-#### 🔐 Auth API (Backend)
+### 🔐 Backend Auth API
 
 - POST /auth/register
 
@@ -42,7 +52,7 @@ Implement a complete authentication flow that integrates with the backend AuthMo
   }
   ```
 
-- JWT payload (from backend):
+- JWT payload:
 
   ```ts
   {
@@ -54,7 +64,7 @@ Implement a complete authentication flow that integrates with the backend AuthMo
 
 ---
 
-### 🧱 Folder Structure (Auth Related)
+## 🧱 Folder Structure (Authentication Related)
 
 ```
 src/
@@ -68,7 +78,7 @@ src/
 │           └── useRefreshTokenQuery.ts
 │
 ├── states/
-│   └── auth.ts          # Zustand store for auth
+│   └── auth.ts
 │
 ├── pages/
 │   ├── login/
@@ -94,9 +104,9 @@ src/
 
 ---
 
-### ⚙ Auth State (Zustand)
+## ⚙ Auth State (Zustand)
 
-Path: `src/states/auth.ts`
+Path: src/states/auth.ts
 
 ```ts
 type AuthState = {
@@ -121,112 +131,102 @@ type AuthState = {
 };
 ```
 
-✅ Upon completion, update `AuthModuleCheckList.md` with:
+✅ On completion:
 
-```
 ✔ Auth store implemented
-```
 
 ---
 
-### 🛠 Service (TanStack)
+## 🛠 Services (TanStack Query)
 
-Path: `src/services/auth/`
+Path: src/services/auth/
 
 - useLoginMutation
 - useRegisterCompanyMutation
 - useRefreshTokenQuery
 
-Pattern:
+Usage pattern:
 
 ```ts
 const loginMutation = useLoginMutation();
 await loginMutation.mutateAsync({ email, password });
 ```
 
-✅ Upon completion:
+✅ On completion:
 
-```
 ✔ Auth service implemented
-```
 
 ---
 
-### 🧾 Pages & Forms
+## 🧾 Pages & Forms
 
-- /login → `pages/login/index.tsx` + `organisms/LoginForm.tsx`
-- /register → `pages/register/index.tsx` + `organisms/RegisterForm.tsx`
-- /dashboard → Protected page
+Routes and layout:
 
-Use:
+- /login → pages/login/index.tsx + organisms/LoginForm.tsx
+- /register → pages/register/index.tsx + organisms/RegisterForm.tsx
+- /dashboard → Protected page (accessible only after login)
 
-- zod for form validation (snake_case fields)
-- shadcn/ui for UI components
-- sonner for toast
-- framer-motion for transitions (optional)
+Requirements:
 
-✅ Upon completion of each:
+- Validate forms using zod (snake_case fields)
+- UI built with shadcn/ui
+- Use Sonner for toast messages
+- Optional animations with framer-motion
 
-```
+✅ On completion:
+
 ✔ Login/Register/Dashboard page implemented
-```
 
 ---
 
-### 🔐 ProtectedRoute
+## 🔐 ProtectedRoute
 
-Path: `routes/ProtectedRoute.tsx`
+Path: routes/ProtectedRoute.tsx
 
-- Redirect to `/login` if unauthenticated
-- Redirect to `/dashboard` if authenticated and accessing `/login`
+Logic:
 
-✅ Upon completion:
+- If not authenticated → redirect to /login
+- If authenticated and accessing /login → redirect to /dashboard
 
-```
+✅ On completion:
+
 ✔ Protected route logic implemented
-```
 
 ---
 
-### 🔑 JWT Handling
+## 🔑 JWT Handling
 
-- Store access_token in Zustand (optionally persist)
-- Axios interceptor to attach `Authorization: Bearer ...`
-- On 401 response → clear state + redirect
+- Store access_token and refresh_token in Zustand (optional persistence)
+- Axios interceptor attaches Authorization: Bearer token
+- On 401 response → clear session and redirect to login
 
-✅ Upon completion:
+✅ On completion:
 
-```
 ✔ JWT token handling implemented
-```
 
 ---
 
-### 🎨 UI Consistency
+## 🎨 UI Consistency
 
-- Follow design system docs
-- Use atoms/molecules/organisms appropriately
-- Use `<Button />` from `@components/atoms/Button`
-- Handle `disabled`, `isLoading`, `variant` props consistently
+- Follow component patterns: atoms → molecules → organisms
+- Use shadcn/ui’s <Button /> and others consistently
+- Handle loading, disabled, and variant props properly
+- Stick to design system (padding, radius, colors, etc.)
 
-✅ Upon completion:
+✅ On completion:
 
-```
 ✔ Form UI + validation implemented
-```
 
 ---
 
-### 🧪 Bonus Features
+## 🧪 Bonus Features
 
 - Dark mode support
-- Logout button
-- Page transitions
+- Logout button in dashboard layout
+- Page transitions using framer-motion
 
-✅ If added, append:
+✅ If implemented:
 
-```
-✔ Bonus: [item name] implemented
-```
+✔ Bonus: Dark mode / Logout / Transitions implemented
 
 ---
