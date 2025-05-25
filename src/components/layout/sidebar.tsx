@@ -1,105 +1,175 @@
-import { cn } from "@/lib/utils";
+"use client";
+
+import * as React from "react";
 import {
-	BarChart2,
-	Box,
-	Home,
-	LayoutDashboard,
-	LogOut,
-	Settings,
-	Users,
+	AudioWaveform,
+	BookOpen,
+	Bot,
+	Command,
+	Frame,
+	GalleryVerticalEnd,
+	Map,
+	PieChart,
+	Settings2,
+	SquareTerminal,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
-interface SidebarProps {
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-}
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
+import { TeamSwitcher } from "@/components/team-switcher";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarRail,
+} from "@/components/ui/sidebar";
 
-const menuItems = [
-	{
-		title: "Dashboard",
-		icon: LayoutDashboard,
-		path: "/dashboard",
+// This is sample data.
+const data = {
+	user: {
+		name: "shadcn",
+		email: "m@example.com",
+		avatar: "/avatars/shadcn.jpg",
 	},
-	{
-		title: "Products",
-		icon: Box,
-		path: "/products",
-	},
-	{
-		title: "Analytics",
-		icon: BarChart2,
-		path: "/analytics",
-	},
-	{
-		title: "Users",
-		icon: Users,
-		path: "/users",
-	},
-	{
-		title: "Settings",
-		icon: Settings,
-		path: "/settings",
-	},
-];
+	teams: [
+		{
+			name: "Acme Inc",
+			logo: GalleryVerticalEnd,
+			plan: "Enterprise",
+		},
+		{
+			name: "Acme Corp.",
+			logo: AudioWaveform,
+			plan: "Startup",
+		},
+		{
+			name: "Evil Corp.",
+			logo: Command,
+			plan: "Free",
+		},
+	],
+	navMain: [
+		{
+			title: "Playground",
+			url: "#",
+			icon: SquareTerminal,
+			isActive: true,
+			items: [
+				{
+					title: "History",
+					url: "#",
+				},
+				{
+					title: "Starred",
+					url: "#",
+				},
+				{
+					title: "Settings",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Models",
+			url: "#",
+			icon: Bot,
+			items: [
+				{
+					title: "Genesis",
+					url: "#",
+				},
+				{
+					title: "Explorer",
+					url: "#",
+				},
+				{
+					title: "Quantum",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Documentation",
+			url: "#",
+			icon: BookOpen,
+			items: [
+				{
+					title: "Introduction",
+					url: "#",
+				},
+				{
+					title: "Get Started",
+					url: "#",
+				},
+				{
+					title: "Tutorials",
+					url: "#",
+				},
+				{
+					title: "Changelog",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Settings",
+			url: "#",
+			icon: Settings2,
+			items: [
+				{
+					title: "General",
+					url: "#",
+				},
+				{
+					title: "Team",
+					url: "#",
+				},
+				{
+					title: "Billing",
+					url: "#",
+				},
+				{
+					title: "Limits",
+					url: "#",
+				},
+			],
+		},
+	],
+	projects: [
+		{
+			name: "Design Engineering",
+			url: "#",
+			icon: Frame,
+		},
+		{
+			name: "Sales & Marketing",
+			url: "#",
+			icon: PieChart,
+		},
+		{
+			name: "Travel",
+			url: "#",
+			icon: Map,
+		},
+	],
+};
 
-export function Sidebar({ open }: SidebarProps) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<>
-			{/* Backdrop for mobile */}
-			<div
-				className={cn(
-					"fixed inset-0 z-20 bg-black/50 lg:hidden",
-					open ? "block" : "hidden"
-				)}
-			/>
-
-			{/* Sidebar */}
-			<aside
-				className={cn(
-					"fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r bg-white transition-transform dark:border-gray-700 dark:bg-gray-800 lg:static lg:translate-x-0",
-					!open && "-translate-x-full"
-				)}
-			>
-				{/* Logo */}
-				<div className="flex h-16 items-center gap-2 border-b px-6 dark:border-gray-700">
-					<Home className="h-6 w-6" />
-					<span className="font-semibold">TailAdmin</span>
-				</div>
-
-				{/* Menu Items */}
-				<nav className="flex-1 space-y-1 px-3 py-4">
-					{menuItems.map((item) => (
-						<NavLink
-							key={item.path}
-							to={item.path}
-							className={({ isActive }) =>
-								cn(
-									"flex items-center gap-2 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700",
-									isActive &&
-										"bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white"
-								)
-							}
-						>
-							<item.icon className="h-5 w-5" />
-							<span>{item.title}</span>
-						</NavLink>
-					))}
-				</nav>
-
-				{/* Logout Button */}
-				<div className="border-t p-3 dark:border-gray-700">
-					<Button
-						variant="ghost"
-						className="w-full justify-start"
-						onClick={() => {/* handle logout */}}
-					>
-						<LogOut className="mr-2 h-5 w-5" />
-						<span>Logout</span>
-					</Button>
-				</div>
-			</aside>
-		</>
+		<Sidebar collapsible="icon" {...props}>
+			<SidebarHeader>
+				<TeamSwitcher teams={data.teams} />
+			</SidebarHeader>
+			<SidebarContent>
+				<NavMain items={data.navMain} />
+				<NavProjects projects={data.projects} />
+			</SidebarContent>
+			<SidebarFooter>
+				<NavUser user={data.user} />
+			</SidebarFooter>
+			<SidebarRail />
+		</Sidebar>
 	);
-} 
+}

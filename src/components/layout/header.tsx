@@ -1,80 +1,45 @@
-import { Bell, Menu, Search, Sun, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useLocation } from "react-router-dom";
+import { UserDropdown } from "./user-dropdown";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
-interface HeaderProps {
-	onMenuClick: () => void;
-}
-
-export function Header({ onMenuClick }: HeaderProps) {
-	const { pathname } = useLocation();
-	const isLoginPage = pathname === "/login";
+export function Header() {
+	const { open, setOpen } = useSidebar();
 
 	return (
-		<header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-4 dark:border-gray-700 dark:bg-gray-800 md:px-6">
-			<div className="flex items-center gap-2">
-				{!isLoginPage && (
+		<header className="w-full shrink-0 border-b border-border bg-background">
+			<div className="flex h-14 items-center justify-between px-6">
+				<div className="flex items-center gap-4">
 					<Button
 						variant="ghost"
 						size="icon"
-						className="md:hidden"
-						onClick={onMenuClick}
-					>
-						<Menu className="h-6 w-6" />
+						onClick={() => setOpen(!open)}
+						className="shrink-0">
+						<Menu className="h-5 w-5 text-text-secondary" />
 					</Button>
-				)}
-				
-				{!isLoginPage && (
-					<div className="hidden items-center gap-2 md:flex">
-						<Search className="h-4 w-4 text-gray-500" />
+
+					<div className="bg-background text-foreground">
+						<Button className="bg-primary text-primary-foreground">Test</Button>
+					</div>
+
+					<div className="flex items-center gap-2">
+						<Search className="h-4 w-4 text-text-secondary" />
 						<Input
 							type="search"
-							placeholder="Search..."
-							className="w-[200px] bg-transparent"
+							placeholder="Search or type command..."
+							className="w-[300px] bg-transparent"
 						/>
+						<kbd className="pointer-events-none ml-3 hidden h-5 select-none items-center gap-1 rounded border bg-background-secondary px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+							<span className="text-xs">⌘</span>K
+						</kbd>
 					</div>
-				)}
-			</div>
+				</div>
 
-			<div className="flex items-center gap-2">
-				<Button variant="ghost" size="icon">
-					<Sun className="h-5 w-5" />
-				</Button>
-				
-				{!isLoginPage && (
-					<>
-						<Button variant="ghost" size="icon">
-							<Bell className="h-5 w-5" />
-						</Button>
-
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" size="icon">
-									<User className="h-5 w-5" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuLabel>My Account</DropdownMenuLabel>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem>Profile</DropdownMenuItem>
-								<DropdownMenuItem>Settings</DropdownMenuItem>
-								<DropdownMenuItem className="text-red-600">
-									Logout
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</>
-				)}
+				<div className="flex items-center gap-4">
+					<UserDropdown name="John Doe" email="john@example.com" />
+				</div>
 			</div>
 		</header>
 	);
-} 
+}

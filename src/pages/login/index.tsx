@@ -3,7 +3,7 @@ import { Header } from "@/components/layout/header";
 export function LoginPage() {
 	return (
 		<div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
-			<Header onMenuClick={() => {}} />
+			<Header />
 			
 			<main className="flex flex-1 items-center justify-center px-4 py-8">
 				<div className="w-full max-w-md space-y-8">

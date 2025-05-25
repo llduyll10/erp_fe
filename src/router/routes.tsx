@@ -1,47 +1,43 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
-
-import { ProtectedRoute } from '@/components/ProtectedRoute'
-import { UserRoleEnum } from '@/enums/user.enums'
-import { MainLayout } from '@/layouts/main-layout'
-import { LoginPage } from '@/pages/login'
+import { createBrowserRouter } from "react-router-dom";
+import { AuthLayout } from "@/layouts/auth-layout";
+import { DashboardLayout } from "@/layouts/dashboard-layout";
+import { ProtectedRoute } from "@/components/layout/protected-routed";
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
+    path: "/",
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "login",
+        element: <div>Login</div>,
+      },
+      {
+        path: "register",
+        element: <div>Register</div>,
+      },
+    ],
   },
   {
-    path: '/',
+    path: "/",
     element: (
-      <ProtectedRoute allowedTypes={[UserRoleEnum.ADMIN, UserRoleEnum.SALES]}>
-        <MainLayout />
-      </ProtectedRoute>
+      // <ProtectedRoute allowedTypes={["admin", "user"]}>
+        <DashboardLayout />
+      // </ProtectedRoute>
     ),
     children: [
       {
-        index: true,
-        element: <Navigate to="/dashboard" replace />,
-      },
-      {
-        path: 'dashboard',
+        path: "dashboard",
         element: <div>Dashboard</div>,
       },
       {
-        path: 'products',
-        element: <div>Products</div>,
-      },
-      {
-        path: 'analytics',
-        element: <div>Analytics</div>,
-      },
-      {
-        path: 'users',
+        path: "users",
         element: <div>Users</div>,
       },
       {
-        path: 'settings',
+        path: "settings",
         element: <div>Settings</div>,
       },
     ],
   },
-]) 
+]); 
