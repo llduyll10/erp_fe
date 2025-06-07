@@ -1,20 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-export const LoginFormSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }),
-	password: z.string().min(1, {
-		message: "Password is required",
-	}),
-});
+export type LoginFormData = {
+	email: string;
+	password: string;
+};
 
 export const useLoginForm = () => {
-	const form = useForm<z.infer<typeof LoginFormSchema>>({
+	const { t } = useTranslation();
+
+	const LoginFormSchema = z.object({
+		email: z.string().email({ message: t("validation.email") }),
+		password: z.string().min(1, {
+			message: t("validation.required", { field: t("login.password") }),
+		}),
+	});
+
+	const form = useForm<LoginFormData>({
 		resolver: zodResolver(LoginFormSchema),
 	});
 
 	return form;
 };
-
-export type LoginFormData = z.infer<typeof LoginFormSchema>;

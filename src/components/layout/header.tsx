@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { UserDropdown } from "./user-dropdown";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { LanguageSwitcher } from "../language-switcher";
 
 export function Header() {
 	const { open, setOpen } = useSidebar();
@@ -37,6 +38,7 @@ export function Header() {
 				</div>
 
 				<div className="flex items-center gap-4">
+					<LanguageSwitcher />
 					<UserDropdown name="John Doe" email="john@example.com" />
 				</div>
 			</div>
