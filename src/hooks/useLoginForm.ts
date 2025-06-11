@@ -1,26 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { createRequiredEmailSchema } from "@/utils/schema.util";
+import { createRequiredInputSchema } from "@/utils/schema.util";
+import { useLogin } from "@/services/auth";
 
-export type LoginFormData = {
-	email: string;
-	password: string;
+export const LoginFormSchema = z.object({
+	email: createRequiredEmailSchema(),
+	password: createRequiredInputSchema("Password"),
+});
+
+const defaultValues = {
+	email: "",
+	password: "",
 };
 
 export const useLoginForm = () => {
-	const { t } = useTranslation();
-
-	const LoginFormSchema = z.object({
-		email: z.string().email({ message: t("validation.email") }),
-		password: z.string().min(1, {
-			message: t("validation.required", { field: t("login.password") }),
-		}),
-	});
-
-	const form = useForm<LoginFormData>({
+	const { mutate: login } = useLogin();
+	const form = useForm<z.infer<typeof LoginFormSchema>>({
 		resolver: zodResolver(LoginFormSchema),
+		defaultValues,
 	});
 
-	return form;
+	const onSubmit = (data: z.infer<typeof LoginFormSchema>) => {
+		console.log(data);
+		login(data);
+	};
+
+	return { form, onSubmit };
 };

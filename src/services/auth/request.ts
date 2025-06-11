@@ -5,7 +5,7 @@ import type {
 import { request } from "../../utils/request.util";
 
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-	return request({
+	return await request({
 		url: "/auth/login",
 		method: "POST",
 		data,

@@ -1,0 +1,6 @@
+{
+  "validation_errors": {
+    "email": "Invalid email address",
+    "password": "Password is required"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "validation_errors": {
+    "email": "Email không hợp lệ",
+    "password": "Mật khẩu không được để trống"
+  }
+}

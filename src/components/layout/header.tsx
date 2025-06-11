@@ -20,10 +20,6 @@ export function Header() {
 						<Menu className="h-5 w-5 text-text-secondary" />
 					</Button>
 
-					<div className="bg-background text-foreground">
-						<Button className="bg-primary text-primary-foreground">Test</Button>
-					</div>
-
 					<div className="flex items-center gap-2">
 						<Search className="h-4 w-4 text-text-secondary" />
 						<Input
