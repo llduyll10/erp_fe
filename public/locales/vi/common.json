@@ -40,5 +40,29 @@
 		"unauthorized": "Không có quyền truy cập",
 		"notFound": "Không tìm thấy",
 		"serverError": "Lỗi máy chủ"
+	},
+	"products": {
+		"title": "Sản phẩm",
+		"list": "Danh sách sản phẩm",
+		"grid": "Grid sản phẩm",
+		"detail": "Chi tiết sản phẩm",
+		"create": "Tạo sản phẩm"
+	},
+	"users": {
+		"title": "Người dùng",
+		"list": "Danh sách người dùng",
+		"grid": "Grid người dùng",
+		"detail": "Chi tiết người dùng",
+		"create": "Tạo người dùng",
+		"customers": "Khách hàng",
+		"sellers": "Người bán hàng",
+		"users": "Người dùng"
+	},
+	"orders": {
+		"title": "Đơn hàng",
+		"list": "Danh sách đơn hàng",
+		"detail": "Chi tiết đơn hàng",
+		"cart": "Giỏ hàng",
+		"checkout": "Thanh toán"
 	}
 }

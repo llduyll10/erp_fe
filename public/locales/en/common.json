@@ -40,5 +40,29 @@
 		"unauthorized": "Unauthorized access",
 		"notFound": "Not found",
 		"serverError": "Server error"
+	},
+	"products": {
+		"title": "Products",
+		"list": "Products List",
+		"grid": "Products Grid",
+		"detail": "Product Detail",
+		"create": "Create Product"
+	},
+	"users": {
+		"title": "Users",
+		"list": "Users List",
+		"grid": "Users Grid",
+		"detail": "User Detail",
+		"create": "Create User",
+		"customers": "Customers",
+		"sellers": "Sellers",
+		"users": "Users"
+	},
+	"orders": {
+		"title": "Orders",
+		"list": "Orders List",
+		"detail": "Order Detail",
+		"cart": "Shopping Cart",
+		"checkout": "Checkout"
 	}
 }
