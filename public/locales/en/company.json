@@ -1,0 +1,15 @@
+{
+	"register": {
+		"title": "Register Company",
+		"description": "Register company to start using the system",
+		"name": "Company Name",
+		"email": "Email",
+		"phone": "Phone",
+		"address": "Address",
+		"tax_code": "Tax Code",
+		"admin_name": "Admin Name",
+		"admin_email": "Admin Email",
+		"admin_password": "Admin Password",
+		"submit": "Register"
+	}
+}

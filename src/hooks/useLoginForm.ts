@@ -4,6 +4,8 @@ import { z } from "zod";
 import { createRequiredEmailSchema } from "@/utils/schema.util";
 import { createRequiredInputSchema } from "@/utils/schema.util";
 import { useLogin } from "@/services/auth";
+import { handleAuthResponse } from "@/utils/auth.util";
+import { useNavigate } from "react-router-dom";
 
 export const LoginFormSchema = z.object({
 	email: createRequiredEmailSchema(),
@@ -16,6 +18,7 @@ const defaultValues = {
 };
 
 export const useLoginForm = () => {
+	const navigate = useNavigate();
 	const { mutate: login } = useLogin();
 	const form = useForm<z.infer<typeof LoginFormSchema>>({
 		resolver: zodResolver(LoginFormSchema),
@@ -23,8 +26,12 @@ export const useLoginForm = () => {
 	});
 
 	const onSubmit = (data: z.infer<typeof LoginFormSchema>) => {
-		console.log(data);
-		login(data);
+		login(data, {
+			onSuccess: (response) => {
+				handleAuthResponse(response);
+				navigate("/dashboard"); // Redirect to dashboard after successful login
+			},
+		});
 	};
 
 	return { form, onSubmit };

@@ -1,5 +1,6 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import { toast } from "sonner";
+import { getAuthTokens, clearAuth } from "./auth.util";
 
 export const backendDomain = import.meta.env.VITE_API_URL;
 export const baseApiURL = backendDomain + "/api/v1";
@@ -13,6 +14,14 @@ axiosInstance.defaults.withCredentials = true;
 axiosInstance.interceptors.request.use(async function (config) {
 	config.baseURL = baseApiURL;
 	config.headers["Accept"] = "application/json";
+
+	// Add auth token to header if exists
+	const tokens = getAuthTokens();
+	if (tokens?.access_token) {
+		config.headers["Authorization"] =
+			`${tokens.token_type} ${tokens.access_token}`;
+	}
+
 	return config;
 });
 
@@ -30,6 +39,7 @@ axiosInstance.interceptors.response.use(
 
 		switch (statusCode) {
 			case "401":
+				clearAuth(); // Clear auth data on unauthorized
 				toast.error("Unauthorized. Please login again.");
 				break;
 			default:

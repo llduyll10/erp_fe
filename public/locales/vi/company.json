@@ -1,0 +1,15 @@
+{
+	"register": {
+		"title": "Đăng ký công ty",
+		"description": "Đăng ký công ty để bắt đầu sử dụng hệ thống",
+		"name": "Tên công ty",
+		"email": "Email",
+		"phone": "Số điện thoại",
+		"address": "Địa chỉ",
+		"tax_code": "Mã số thuế",
+		"admin_name": "Tên admin",
+		"admin_email": "Email admin",
+		"admin_password": "Mật khẩu admin",
+		"submit": "Đăng ký"
+	}
+}

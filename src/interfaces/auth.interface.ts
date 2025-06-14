@@ -7,4 +7,26 @@ type LoginResponse = {
 	refresh_token: string;
 };
 
-export type { LoginRequest, LoginResponse };
+type AuthTokens = {
+	access_token: string;
+	refresh_token: string;
+	token_type: string;
+	expires_in: string;
+};
+
+type AuthUser = {
+	id: string;
+	email: string;
+	name: string;
+	role: string;
+	company_id: string;
+};
+type AuthResponse = {
+	access_token: string;
+	refresh_token: string;
+	token_type: string;
+	expires_in: string;
+	user: AuthUser;
+};
+
+export type { LoginRequest, LoginResponse, AuthTokens, AuthUser, AuthResponse };

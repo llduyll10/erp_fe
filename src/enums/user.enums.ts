@@ -1,8 +1,4 @@
-enum UserRoleEnum {
+export enum UserRoleEnum {
 	ADMIN = "admin",
-	SALES = "sales",
-	WAREHOUSE = "warehouse",
-	FINANCE = "finance",
+	USER = "user",
 }
-
-export { UserRoleEnum };
