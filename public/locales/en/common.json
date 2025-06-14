@@ -1,43 +1,44 @@
 {
-  "common": {
-    "welcome": "Welcome to ERP",
-    "login": "Login",
-    "logout": "Logout",
-    "register": "Register",
-    "email": "Email",
-    "password": "Password",
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "edit": "Edit",
-    "create": "Create",
-    "search": "Search",
-    "filter": "Filter",
-    "loading": "Loading...",
-    "error": "Error occurred",
-    "success": "Success",
-    "required": "Required"
-  },
-  "login": {
-    "title": "Sign In",
-    "description": "Sign in to your account",
-    "email": "Email",
-    "password": "Password",
-    "forgotPassword": "Forgot password?",
-    "button": "Sign in",
-    "noAccount": "Don't have an account?",
-    "signUp": "Sign up"
-  },
-  "validation": {
-    "required": "{{field}} is required",
-    "email": "Invalid email address",
-    "minLength": "{{field}} must be at least {{min}} characters",
-    "maxLength": "{{field}} must not exceed {{max}} characters"
-  },
-  "errors": {
-    "unauthorized": "Unauthorized access",
-    "notFound": "Not found",
-    "serverError": "Server error"
-  }
-} 
+	"common": {
+		"welcome": "Welcome to ERP",
+		"login": "Login",
+		"logout": "Logout",
+		"register": "Register",
+		"email": "Email",
+		"password": "Password",
+		"submit": "Submit",
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
+		"edit": "Edit",
+		"create": "Create",
+		"search": "Search",
+		"filter": "Filter",
+		"loading": "Loading...",
+		"error": "Error occurred",
+		"success": "Success",
+		"required": "Required"
+	},
+	"login": {
+		"title": "Sign In",
+		"description": "Sign in to your account",
+		"email": "Email",
+		"password": "Password",
+		"forgotPassword": "Forgot password?",
+		"button": "Sign in",
+		"noAccount": "Don't have an account?",
+		"signUp": "Sign up",
+		"success": "Login successful"
+	},
+	"validation": {
+		"required": "{{field}} is required",
+		"email": "Invalid email address",
+		"minLength": "{{field}} must be at least {{min}} characters",
+		"maxLength": "{{field}} must not exceed {{max}} characters"
+	},
+	"errors": {
+		"unauthorized": "Unauthorized access",
+		"notFound": "Not found",
+		"serverError": "Server error"
+	}
+}

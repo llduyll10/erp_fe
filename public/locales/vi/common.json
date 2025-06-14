@@ -1,43 +1,44 @@
 {
-  "common": {
-    "welcome": "Chào mừng bạn đến với ERP",
-    "login": "Đăng nhập",
-    "logout": "Đăng xuất",
-    "register": "Đăng ký",
-    "email": "Email",
-    "password": "Mật khẩu",
-    "submit": "Xác nhận",
-    "cancel": "Hủy bỏ",
-    "save": "Lưu",
-    "delete": "Xóa",
-    "edit": "Chỉnh sửa",
-    "create": "Tạo mới",
-    "search": "Tìm kiếm",
-    "filter": "Lọc",
-    "loading": "Đang tải...",
-    "error": "Đã xảy ra lỗi",
-    "success": "Thành công",
-    "required": "Bắt buộc"
-  },
-  "login": {
-    "title": "Đăng nhập",
-    "description": "Đăng nhập vào tài khoản của bạn",
-    "email": "Email",
-    "password": "Mật khẩu",
-    "forgotPassword": "Quên mật khẩu?",
-    "button": "Đăng nhập",
-    "noAccount": "Chưa có tài khoản?",
-    "signUp": "Đăng ký ngay"
-  },
-  "validation": {
-    "required": "{{field}} là bắt buộc",
-    "email": "Email không hợp lệ",
-    "minLength": "{{field}} phải có ít nhất {{min}} ký tự",
-    "maxLength": "{{field}} không được vượt quá {{max}} ký tự"
-  },
-  "errors": {
-    "unauthorized": "Không có quyền truy cập",
-    "notFound": "Không tìm thấy",
-    "serverError": "Lỗi máy chủ"
-  }
-} 
+	"common": {
+		"welcome": "Chào mừng bạn đến với ERP",
+		"login": "Đăng nhập",
+		"logout": "Đăng xuất",
+		"register": "Đăng ký",
+		"email": "Email",
+		"password": "Mật khẩu",
+		"submit": "Xác nhận",
+		"cancel": "Hủy bỏ",
+		"save": "Lưu",
+		"delete": "Xóa",
+		"edit": "Chỉnh sửa",
+		"create": "Tạo mới",
+		"search": "Tìm kiếm",
+		"filter": "Lọc",
+		"loading": "Đang tải...",
+		"error": "Đã xảy ra lỗi",
+		"success": "Thành công",
+		"required": "Bắt buộc"
+	},
+	"login": {
+		"title": "Đăng nhập",
+		"description": "Đăng nhập vào tài khoản của bạn",
+		"email": "Email",
+		"password": "Mật khẩu",
+		"forgotPassword": "Quên mật khẩu?",
+		"button": "Đăng nhập",
+		"noAccount": "Chưa có tài khoản?",
+		"signUp": "Đăng ký ngay",
+		"success": "Đăng nhập thành công"
+	},
+	"validation": {
+		"required": "{{field}} là bắt buộc",
+		"email": "Email không hợp lệ",
+		"minLength": "{{field}} phải có ít nhất {{min}} ký tự",
+		"maxLength": "{{field}} không được vượt quá {{max}} ký tự"
+	},
+	"errors": {
+		"unauthorized": "Không có quyền truy cập",
+		"notFound": "Không tìm thấy",
+		"serverError": "Lỗi máy chủ"
+	}
+}
