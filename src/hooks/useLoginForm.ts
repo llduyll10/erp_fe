@@ -21,7 +21,7 @@ const defaultValues = {
 
 export const useLoginForm = () => {
 	const navigate = useNavigate();
-	const { mutate: login } = useLogin();
+	const { mutate: login, isPending } = useLogin();
 	const { t } = useTranslation();
 	const form = useForm<z.infer<typeof LoginFormSchema>>({
 		resolver: zodResolver(LoginFormSchema),
@@ -38,5 +38,5 @@ export const useLoginForm = () => {
 		});
 	};
 
-	return { form, onSubmit };
+	return { form, onSubmit, isPending };
 };

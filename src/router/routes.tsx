@@ -21,15 +21,15 @@ export const router = createBrowserRouter([
 		],
 	},
 	{
-		path: "/",
+		path: "/dashboard",
 		element: (
-			// <ProtectedRoute allowedTypes={["admin", "user"]}>
-			<DashboardLayout />
-			// </ProtectedRoute>
+			<ProtectedRoute allowedTypes={["admin", "user"]}>
+				<DashboardLayout />
+			</ProtectedRoute>
 		),
 		children: [
 			{
-				path: "dashboard",
+				path: "",
 				element: <div>Dashboard</div>,
 			},
 			{

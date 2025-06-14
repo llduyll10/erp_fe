@@ -24,7 +24,7 @@ export function LoginForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const { t } = useTranslation();
-	const { form, onSubmit } = useLoginForm();
+	const { form, onSubmit, isPending } = useLoginForm();
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 			<Card>
@@ -85,7 +85,7 @@ export function LoginForm({
 									</div>
 								</div>
 								<div className="flex flex-col gap-3">
-									<Button type="submit" className="w-full">
+									<Button type="submit" className="w-full" disabled={isPending}>
 										{t("login.button")}
 									</Button>
 								</div>
