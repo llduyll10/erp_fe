@@ -1,8 +1,5 @@
-import {
-	AuthTokens,
-	AuthUser,
-	AuthResponse,
-} from "@/interfaces/auth.interface";
+import { AuthTokens, AuthResponse } from "@/interfaces/auth.interface";
+import { User } from "@/models/user.model";
 
 const TOKEN_KEY = "auth_tokens";
 const USER_KEY = "auth_user";
@@ -20,11 +17,11 @@ export const removeAuthTokens = () => {
 	localStorage.removeItem(TOKEN_KEY);
 };
 
-export const setAuthUser = (user: AuthUser) => {
+export const setAuthUser = (user: User) => {
 	localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
-export const getAuthUser = (): AuthUser | null => {
+export const getAuthUser = (): User | null => {
 	const user = localStorage.getItem(USER_KEY);
 	return user ? JSON.parse(user) : null;
 };

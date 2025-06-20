@@ -1,13 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-interface User {
-	user_id: string;
-	company_id: string;
-	full_name: string;
-	email: string;
-	role: string;
-}
+import type { User } from "@/models/user.model";
 
 export interface AuthState {
 	isAuthenticated: boolean;

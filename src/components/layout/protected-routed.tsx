@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/stores/auth.store";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ERROR_CODES } from "@/constants/error.constant";
 import { getAuthTokens, getAuthUser } from "@/utils/auth.util";
+import { UserRoleEnum } from "@/enums/user.enums";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
-	allowedTypes: string[];
-	allowedRoles?: string[];
+	allowedTypes: UserRoleEnum[];
+	allowedRoles?: UserRoleEnum[];
 	redirectTo?: string;
 }
 
@@ -18,6 +18,7 @@ export function ProtectedRoute({
 	redirectTo = "/login",
 }: ProtectedRouteProps) {
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	useEffect(() => {
 		// Check authentication from localStorage
@@ -29,8 +30,21 @@ export function ProtectedRoute({
 			return;
 		}
 
+		// Check if user must change password
+		if (
+			storedUser.must_change_password &&
+			location.pathname !== "/change-password"
+		) {
+			navigate("/change-password", {
+				state: {
+					returnTo: location.pathname,
+				},
+			});
+			return;
+		}
+
 		// Check user type
-		const userType = storedUser.role;
+		const userType = storedUser.role as UserRoleEnum;
 		if (!allowedTypes.includes(userType)) {
 			throw new Error(ERROR_CODES.FORBIDDEN);
 		}
@@ -39,7 +53,7 @@ export function ProtectedRoute({
 		if (allowedRoles && !allowedRoles.includes(userType)) {
 			throw new Error(ERROR_CODES.FORBIDDEN);
 		}
-	}, [navigate, redirectTo, allowedTypes, allowedRoles]);
+	}, [navigate, redirectTo, allowedTypes, allowedRoles, location.pathname]);
 
 	return <>{children}</>;
 }
