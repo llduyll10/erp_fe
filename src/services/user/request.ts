@@ -24,3 +24,10 @@ export const inviteUserChangePassword = async (
 		data,
 	});
 };
+
+export const getUserList = async (): Promise<{ data: User[] }> => {
+	return await request({
+		url: "/users",
+		method: "GET",
+	});
+};

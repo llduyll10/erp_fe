@@ -1,28 +1,16 @@
 import Table from "@/components/molecules/table";
 import { cn } from "@/lib/utils";
 import { AddUserModal } from "./AddUserModal";
-
-interface User {
-	id: number;
-	name: string;
-	email: string;
-	role: string;
-}
-
-const users: User[] = [
-	{ id: 1, name: "Alice", email: "alice@example.com", role: "admin" },
-	{ id: 2, name: "Bob", email: "bob@example.com", role: "user" },
-	{ id: 3, name: "Charlie", email: "charlie@example.com", role: "user" },
-];
-
-const columns = [
-	{ headerName: "ID", field: "id", width: 80 },
-	{ headerName: "Name", field: "name", flex: 1 },
-	{ headerName: "Email", field: "email", flex: 1 },
-	{ headerName: "Role", field: "role", width: 120 },
-];
+import useUserManagement from "@/hooks/user/useUserManagement";
+import Loading from "@/components/layout/loading";
 
 export function UserManagementPage() {
+	const { userList, isGetUserListPending, colDefs } = useUserManagement();
+
+	if (isGetUserListPending) {
+		return <Loading />;
+	}
+
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-2xl font-bold">Users Management</h1>
@@ -32,10 +20,10 @@ export function UserManagementPage() {
 					<Table
 						className={cn(
 							"mt-[12px] gray-highlight-table",
-							!users?.length && "h-[150px]"
+							!userList?.data?.length && "h-[150px]"
 						)}
-						rowData={users}
-						columnDefs={columns}
+						rowData={userList?.data}
+						columnDefs={colDefs}
 						pagination={false}
 						onSortChanged={() => {}}
 						onFirstDataRendered={() => {}}
@@ -61,7 +49,11 @@ export function UserManagementPage() {
 								],
 							},
 						}}
-						domLayout={users && users.length > 0 ? "autoHeight" : "normal"}
+						domLayout={
+							userList?.data && userList?.data?.length > 0 ?
+								"autoHeight"
+							:	"normal"
+						}
 					/>
 				</div>
 			</div>

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { inviteUser, inviteUserChangePassword } from "./request";
+import { getUserList, inviteUser, inviteUserChangePassword } from "./request";
 import {
 	InviteUserChangePasswordRequest,
 	InviteUserRequest,
@@ -18,6 +18,15 @@ export const useInviteUserChangePassword = () => {
 	return useMutation({
 		mutationFn: async (data: InviteUserChangePasswordRequest) => {
 			const response = await inviteUserChangePassword(data);
+			return response;
+		},
+	});
+};
+
+export const useGetUserList = () => {
+	return useMutation({
+		mutationFn: async () => {
+			const response = await getUserList();
 			return response;
 		},
 	});
