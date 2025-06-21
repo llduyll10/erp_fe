@@ -1,5 +1,6 @@
 import Table from "@/components/molecules/table";
 import { cn } from "@/lib/utils";
+import { AddUserModal } from "./AddUserModal";
 
 interface User {
 	id: number;
@@ -25,6 +26,7 @@ export function UserManagementPage() {
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-2xl font-bold">Users Management</h1>
+			<AddUserModal />
 			<div className="w-full">
 				<div className="flex flex-col border border-none rounded-md">
 					<Table

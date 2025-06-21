@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
-import { useLoginForm } from "@/hooks/useLoginForm";
+import { useLoginForm } from "@/hooks/user/useLoginForm";
 import {
 	Form,
 	FormControl,

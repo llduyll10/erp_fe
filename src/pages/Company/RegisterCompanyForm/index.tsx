@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
-import { useRegisterCompanyForm } from "@/hooks/useRegisterCompanyForm";
+import { useRegisterCompanyForm } from "@/hooks/company/useRegisterCompanyForm";
 import {
 	Form,
 	FormControl,

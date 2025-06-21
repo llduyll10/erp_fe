@@ -10,8 +10,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/stores/auth.store";
-import { useInviteUserChangePasswordForm } from "@/hooks/useInviteUserChangePassword";
+import { useInviteUserChangePasswordForm } from "@/hooks/user/useInviteUserChangePassword";
 
 export function ChangePassword() {
 	const { form, onSubmit, isPending } = useInviteUserChangePasswordForm();

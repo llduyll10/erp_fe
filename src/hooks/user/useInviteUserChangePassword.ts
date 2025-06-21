@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createRequiredInputSchema } from "@/utils/schema.util";
-import { useInviteUserChangePassword } from "@/services/auth";
+import { useInviteUserChangePassword } from "@/services/user";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
