@@ -24,6 +24,12 @@ type AuthResponse = {
 	user: User;
 };
 
+type InviteUserRequest = {
+	email: string;
+	role: string;
+	name: string;
+};
+
 type InviteUserChangePasswordRequest = {
 	new_password: string;
 };
@@ -34,4 +40,5 @@ export type {
 	AuthTokens,
 	AuthResponse,
 	InviteUserChangePasswordRequest,
+	InviteUserRequest,
 };

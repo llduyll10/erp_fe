@@ -1,10 +1,19 @@
 import type {
 	InviteUserChangePasswordRequest,
-	LoginRequest,
+	InviteUserRequest,
 } from "../../interfaces/auth.interface";
-import type { AuthResponse } from "@/interfaces/auth.interface";
 import { request } from "@/utils/request.util";
 import type { User } from "@/models/user.model";
+
+export const inviteUser = async (
+	data: InviteUserRequest
+): Promise<{ data: User }> => {
+	return await request({
+		url: "/users/invite",
+		method: "POST",
+		data,
+	});
+};
 
 export const inviteUserChangePassword = async (
 	data: InviteUserChangePasswordRequest

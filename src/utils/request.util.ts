@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 import { getAuthTokens, clearAuth } from "./auth.util";
+import i18next from "i18next";
 
 export const backendDomain = import.meta.env.VITE_API_URL;
 export const baseApiURL = backendDomain + "/api/v1";
@@ -37,13 +38,18 @@ axiosInstance.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
+		const errorMessage =
+			error.response?.data?.message ?
+				i18next.t(`errors:server_errors.${error.response?.data?.message}`)
+			:	i18next.t(`errors:server_errors.common.internal_server_error`);
+
 		switch (statusCode) {
 			case "401":
 				clearAuth(); // Clear auth data on unauthorized
 				toast.error("Unauthorized. Please login again.");
 				break;
 			default:
-				toast.error("Something went wrong. Please try again later.");
+				toast.error(errorMessage);
 				break;
 		}
 		return Promise.reject(error);

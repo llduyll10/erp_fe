@@ -1,6 +1,14 @@
 {
-  "validation_errors": {
-    "email": "Invalid email address",
-    "password": "Password is required"
-  }
+	"validation_errors": {
+		"email": "Invalid email address",
+		"password": "Password is required"
+	},
+	"server_errors": {
+		"common": {
+			"internal_server_error": "Internal server error"
+		},
+		"users": {
+			"already_invited": "User already invited"
+		}
+	}
 }
