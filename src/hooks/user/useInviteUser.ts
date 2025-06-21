@@ -1,9 +1,11 @@
+import { QUERY_KEYS } from "@/constants/query.constant";
 import { useInviteUser } from "@/services/user";
 import {
 	createRequiredEmailSchema,
 	createRequiredInputSchema,
 } from "@/utils/schema.util";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -23,6 +25,7 @@ const defaultValues = {
 };
 
 export const useInviteUserForm = () => {
+	const queryClient = useQueryClient();
 	const [open, setOpen] = useState(false);
 	const { mutate: inviteUser, isPending } = useInviteUser();
 	const { t } = useTranslation();
@@ -37,6 +40,9 @@ export const useInviteUserForm = () => {
 				toast.success(t("common.success"));
 				form.reset();
 				setOpen(false);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEYS.USER.LIST],
+				});
 			},
 		});
 	};

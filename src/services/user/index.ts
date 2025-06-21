@@ -1,9 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUserList, inviteUser, inviteUserChangePassword } from "./request";
 import {
 	InviteUserChangePasswordRequest,
 	InviteUserRequest,
+	GetUserListRequest,
 } from "@/interfaces/auth.interface";
+import { QUERY_KEYS } from "@/constants/query.constant";
 
 export const useInviteUser = () => {
 	return useMutation({
@@ -23,11 +25,12 @@ export const useInviteUserChangePassword = () => {
 	});
 };
 
-export const useGetUserList = () => {
-	return useMutation({
-		mutationFn: async () => {
-			const response = await getUserList();
-			return response;
-		},
+export const useGetUserList = (params?: GetUserListRequest, enabled = true) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.USER.LIST, params],
+		queryFn: () => getUserList(params),
+		enabled,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
 	});
 };

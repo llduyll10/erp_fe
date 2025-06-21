@@ -28,7 +28,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { USER_ROLE_OPTIONS } from "@/constants/user.constant";
-import { useState } from "react";
 
 export function AddUserModal() {
 	const { form, onSubmit, isPending, open, setOpen } = useInviteUserForm();
@@ -90,8 +89,10 @@ export function AddUserModal() {
 										<FormItem>
 											<FormLabel>Role</FormLabel>
 											<FormControl>
-												<Select onValueChange={field.onChange}>
-													<SelectTrigger className="w-[180px]">
+												<Select
+													value={field.value}
+													onValueChange={field.onChange}>
+													<SelectTrigger>
 														<SelectValue placeholder="Select a role" />
 													</SelectTrigger>
 													<SelectContent>

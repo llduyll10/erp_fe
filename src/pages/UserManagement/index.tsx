@@ -3,31 +3,103 @@ import { cn } from "@/lib/utils";
 import { AddUserModal } from "./AddUserModal";
 import useUserManagement from "@/hooks/user/useUserManagement";
 import Loading from "@/components/layout/loading";
+import { Pagination } from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, RefreshCw } from "lucide-react";
+import { useState } from "react";
 
 export function UserManagementPage() {
-	const { userList, isGetUserListPending, colDefs } = useUserManagement();
+	const {
+		userList,
+		total,
+		isGetUserListPending,
+		colDefs,
+		pagination,
+		setPage,
+		setLimit,
+		setSearch,
+		clearFilters,
+		refetch,
+	} = useUserManagement();
 
-	if (isGetUserListPending) {
+	const [localSearch, setLocalSearch] = useState("");
+
+	const handleSearch = () => {
+		setSearch(localSearch);
+	};
+
+	const handleRefresh = () => {
+		refetch();
+	};
+
+	if (isGetUserListPending && pagination.current_page === 1) {
 		return <Loading />;
 	}
 
 	return (
-		<div className="flex flex-col gap-4">
-			<h1 className="text-2xl font-bold">Users Management</h1>
-			<AddUserModal />
+		<div className="flex flex-col gap-6 p-8">
+			<div className="flex items-center justify-between">
+				<h1 className="text-2xl font-bold">User Management</h1>
+				<div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={handleRefresh}
+						disabled={isGetUserListPending}>
+						<RefreshCw
+							className={cn(
+								"h-4 w-4 mr-2",
+								isGetUserListPending && "animate-spin"
+							)}
+						/>
+						Refresh
+					</Button>
+					<AddUserModal />
+				</div>
+			</div>
+
+			{/* Search and Filters */}
+			<div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+				<div className="flex items-center gap-2 flex-1">
+					<div className="relative flex-1 max-w-sm">
+						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+						<Input
+							placeholder="Search by name or email"
+							value={localSearch}
+							onChange={(e) => setLocalSearch(e.target.value)}
+							className="pl-10"
+						/>
+					</div>
+					<Button onClick={handleSearch} size="sm">
+						Search
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => {
+							clearFilters();
+							setLocalSearch("");
+						}}>
+						Clear
+					</Button>
+				</div>
+			</div>
+
+			{/* Table */}
 			<div className="w-full">
 				<div className="flex flex-col border border-none rounded-md">
 					<Table
 						className={cn(
 							"mt-[12px] gray-highlight-table",
-							!userList?.data?.length && "h-[150px]"
+							!userList?.length && "h-[150px]"
 						)}
-						rowData={userList?.data}
+						rowData={userList}
 						columnDefs={colDefs}
-						pagination={false}
+						pagination={false} // Disable AG Grid pagination, use custom
 						onSortChanged={() => {}}
 						onFirstDataRendered={() => {}}
-						isLoading={false}
+						isLoading={isGetUserListPending}
 						popupParent={null}
 						suppressRowHoverHighlight={false}
 						noRowsOverlayClassName="top-[50px]"
@@ -49,14 +121,23 @@ export function UserManagementPage() {
 								],
 							},
 						}}
-						domLayout={
-							userList?.data && userList?.data?.length > 0 ?
-								"autoHeight"
-							:	"normal"
-						}
+						domLayout="autoHeight"
 					/>
 				</div>
 			</div>
+
+			{/* Custom Pagination */}
+			{total > 0 && (
+				<Pagination
+					currentPage={pagination.current_page}
+					totalPages={pagination.total_pages}
+					totalItems={total}
+					pageSize={pagination.records_per_page}
+					onPageChange={setPage}
+					onPageSizeChange={setLimit}
+					className="mt-4"
+				/>
+			)}
 		</div>
 	);
 }

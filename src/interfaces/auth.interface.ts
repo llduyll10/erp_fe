@@ -1,4 +1,5 @@
 import { User } from "@/models/user.model";
+import type { ApiListResponse, PaginationParams } from "./common.interface";
 
 type LoginRequest = {
 	email: string;
@@ -32,7 +33,16 @@ type InviteUserRequest = {
 
 type InviteUserChangePasswordRequest = {
 	new_password: string;
+	confirm_password: string;
 };
+
+type GetUserListRequest = {
+	q?: string;
+	role?: string;
+	status?: string;
+} & PaginationParams;
+
+type GetUserListResponse = ApiListResponse<User>;
 
 export type {
 	LoginRequest,
@@ -41,4 +51,6 @@ export type {
 	AuthResponse,
 	InviteUserChangePasswordRequest,
 	InviteUserRequest,
+	GetUserListRequest,
+	GetUserListResponse,
 };
