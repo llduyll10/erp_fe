@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import type { User } from "@/models/user.model";
 import type { GetUserListRequest } from "@/interfaces/auth.interface";
-import { usePagination } from "./usePagination";
+import { usePagination } from "../common/usePagination";
 
 const useUserManagement = () => {
 	const [searchParams, setSearchParams] = useState<

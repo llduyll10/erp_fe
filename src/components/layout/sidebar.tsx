@@ -46,14 +46,18 @@ const adminMenu = (t: any) =>
 				title: t("products.title"),
 				icon: Box,
 				items: [
-					{ title: t("products.list"), url: "/products/list", icon: List },
-					{ title: t("products.grid"), url: "/products/grid", icon: Grid },
+					{ title: t("products.list"), url: "/dashboard/products", icon: List },
+					{ title: t("products.grid"), url: "/dashboard/products", icon: Grid },
 					{
 						title: t("products.detail"),
-						url: "/products/detail",
+						url: "/dashboard/products",
 						icon: FileText,
 					},
-					{ title: t("products.create"), url: "/products/create", icon: Plus },
+					{
+						title: t("products.create"),
+						url: "/dashboard/products",
+						icon: Plus,
+					},
 				],
 			},
 			{
@@ -90,14 +94,18 @@ const userMenu = (t: any) =>
 				title: t("products.title"),
 				icon: Box,
 				items: [
-					{ title: t("products.list"), url: "/products/list", icon: List },
-					{ title: t("products.grid"), url: "/products/grid", icon: Grid },
+					{ title: t("products.list"), url: "/dashboard/products", icon: List },
+					{ title: t("products.grid"), url: "/dashboard/products", icon: Grid },
 					{
 						title: t("products.detail"),
-						url: "/products/detail",
+						url: "/dashboard/products",
 						icon: FileText,
 					},
-					{ title: t("products.create"), url: "/products/create", icon: Plus },
+					{
+						title: t("products.create"),
+						url: "/dashboard/products",
+						icon: Plus,
+					},
 				],
 			},
 			{

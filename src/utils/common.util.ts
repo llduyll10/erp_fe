@@ -48,3 +48,15 @@ export function checkObjectHasValue(
 		return true;
 	});
 }
+
+/**
+ * Format a number as currency in VND
+ * @param value - The number to format
+ * @returns Formatted currency string
+ */
+export const formatCurrency = (value: number): string => {
+	return new Intl.NumberFormat("vi-VN", {
+		style: "currency",
+		currency: "VND",
+	}).format(value);
+};

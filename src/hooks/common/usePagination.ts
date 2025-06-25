@@ -1,7 +1,4 @@
-import {
-	PaginationParams,
-	PaginationState,
-} from "@/interfaces/common.interface";
+import { PaginationState } from "@/interfaces/common.interface";
 import { useState, useCallback } from "react";
 
 interface UsePaginationProps {
