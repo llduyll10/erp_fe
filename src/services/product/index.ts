@@ -1,7 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { getProductList } from "./request";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createProduct, getProductList } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
-import { GetProductListRequest } from "@/interfaces/product.interface";
+import {
+	CreateProductRequest,
+	GetProductListRequest,
+} from "@/interfaces/product.interface";
 
 export const useGetProductList = (
 	params?: GetProductListRequest,
@@ -13,5 +16,11 @@ export const useGetProductList = (
 		enabled,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
+};
+
+export const useCreateProduct = () => {
+	return useMutation({
+		mutationFn: (data: CreateProductRequest) => createProduct(data),
 	});
 };

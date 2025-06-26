@@ -1,4 +1,3 @@
-import React from "react";
 import { type ICellRendererParams } from "ag-grid-community";
 import dayjs from "dayjs";
 import { ChevronRight, ChevronDown, Package, Shirt } from "lucide-react";

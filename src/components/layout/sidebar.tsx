@@ -47,15 +47,9 @@ const adminMenu = (t: any) =>
 				icon: Box,
 				items: [
 					{ title: t("products.list"), url: "/dashboard/products", icon: List },
-					{ title: t("products.grid"), url: "/dashboard/products", icon: Grid },
-					{
-						title: t("products.detail"),
-						url: "/dashboard/products",
-						icon: FileText,
-					},
 					{
 						title: t("products.create"),
-						url: "/dashboard/products",
+						url: "/dashboard/products/create",
 						icon: Plus,
 					},
 				],
@@ -95,15 +89,9 @@ const userMenu = (t: any) =>
 				icon: Box,
 				items: [
 					{ title: t("products.list"), url: "/dashboard/products", icon: List },
-					{ title: t("products.grid"), url: "/dashboard/products", icon: Grid },
-					{
-						title: t("products.detail"),
-						url: "/dashboard/products",
-						icon: FileText,
-					},
 					{
 						title: t("products.create"),
-						url: "/dashboard/products",
+						url: "/dashboard/products/create",
 						icon: Plus,
 					},
 				],

@@ -8,6 +8,8 @@ import { UserManagementPage } from "@/pages/UserManagement";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword";
 import { ProductManagementPage } from "@/pages/ProductManagement";
+import { CreateProductPage } from "@/pages/ProductManagement/CreateProduct";
+import { UpdateProductPage } from "@/pages/ProductManagement/UpdateProduct";
 
 export const router = createBrowserRouter([
 	{
@@ -43,6 +45,14 @@ export const router = createBrowserRouter([
 			{
 				path: "products",
 				element: <ProductManagementPage />,
+			},
+			{
+				path: "products/create",
+				element: <CreateProductPage />,
+			},
+			{
+				path: "products/edit/:id",
+				element: <UpdateProductPage />,
 			},
 		],
 	},

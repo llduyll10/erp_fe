@@ -6,17 +6,17 @@ import { Category } from "./category.model";
 type Product = {
 	id: string;
 	company_id: string;
-	category_id: string;
+	category_id?: string | null;
 	name: string;
-	description: string;
-	image_url: string;
+	description?: string | null;
+	image_url?: string | null;
 	item_type: ProductItemType;
 	status: ProductStatus;
 	created_at: Date;
 	updated_at: Date;
 	company: Company;
-	category: Category;
-	variants: ProductVariant[];
+	category?: Category | null;
+	variants?: ProductVariant[] | null;
 };
 
 export type { Product };
