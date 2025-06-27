@@ -1,0 +1,18 @@
+{
+	"variant": {
+		"create": "Tạo biến thể",
+		"name": "Tên biến thể",
+		"size": "Kích thước",
+		"color": "Màu sắc",
+		"gender": "Giới tính",
+		"price": "Giá vốn",
+		"cost": "Giá bán",
+		"quantity": "Số lượng",
+		"imageUrl": "URL ảnh",
+		"selectSize": "Chọn kích thước",
+		"selectColor": "Chọn màu sắc",
+		"selectGender": "Chọn giới tính",
+		"submit": "Xác nhận",
+		"loading": "Đang tải..."
+	}
+}

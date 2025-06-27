@@ -6,6 +6,10 @@ export const QUERY_KEYS = {
 		LIST: "productList",
 		DETAIL: "productDetail",
 	},
+	VARIANT: {
+		LIST: "variantList",
+		DETAIL: "variantDetail",
+	},
 	CATEGORY: {
 		LIST: "categoryList",
 	},

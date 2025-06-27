@@ -9,6 +9,11 @@
 		},
 		"users": {
 			"already_invited": "User already invited"
+		},
+		"product": {
+			"variant": {
+				"already_exists": "Variant already exists"
+			}
 		}
 	}
 }

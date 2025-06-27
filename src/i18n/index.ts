@@ -15,7 +15,7 @@ i18n
 		supportedLngs,
 		fallbackLng,
 		defaultNS,
-		ns: ["common", "errors", "company"],
+		ns: ["common", "errors", "company", "product"],
 		backend: {
 			loadPath: "/locales/{{lng}}/{{ns}}.json",
 		},

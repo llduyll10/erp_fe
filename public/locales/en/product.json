@@ -1,0 +1,18 @@
+{
+	"variant": {
+		"create": "Create Variant",
+		"name": "Variant Name",
+		"size": "Size",
+		"color": "Color",
+		"gender": "Gender",
+		"price": "Price",
+		"cost": "Cost",
+		"quantity": "Quantity",
+		"imageUrl": "Image URL",
+		"selectSize": "Select Size",
+		"selectColor": "Select Color",
+		"selectGender": "Select Gender",
+		"submit": "Submit",
+		"loading": "Loading..."
+	}
+}

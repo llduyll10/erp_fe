@@ -4,6 +4,10 @@ import {
 	GetProductListResponse,
 	CreateProductRequest,
 	ProductResponse,
+	CreateVariantRequest,
+	VariantResponse,
+	GetVariantListRequest,
+	GetVariantListResponse,
 } from "@/interfaces/product.interface";
 
 export const getProductList = async (
@@ -31,6 +35,35 @@ export const getProductDetail = async (
 ): Promise<ProductResponse> => {
 	return await request({
 		url: `/products/${productId}`,
+		method: "GET",
+	});
+};
+
+export const createVariant = async (
+	data: CreateVariantRequest
+): Promise<VariantResponse> => {
+	return await request({
+		url: "/products/variants",
+		method: "POST",
+		data,
+	});
+};
+
+export const getVariantList = async (
+	params?: GetVariantListRequest
+): Promise<GetVariantListResponse> => {
+	return await request({
+		url: "/products/variants",
+		method: "GET",
+		params,
+	});
+};
+
+export const getVariantDetail = async (
+	variantId: string
+): Promise<VariantResponse> => {
+	return await request({
+		url: `/products/variants/${variantId}`,
 		method: "GET",
 	});
 };

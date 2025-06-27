@@ -2,7 +2,14 @@ import { User } from "@/models/user.model";
 import type { ApiListResponse, PaginationParams } from "./common.interface";
 import { Product } from "@/models/product.model";
 import { ProductVariant } from "@/models/product-variant.model";
-import { ProductItemType, ProductStatus } from "@/enums/product.enum";
+import {
+	ProductColor,
+	ProductGender,
+	ProductItemType,
+	ProductSize,
+	ProductStatus,
+	ProductUnit,
+} from "@/enums/product.enum";
 
 // For tree-like table structure
 type ProductTableRowType = "product" | "variant";
@@ -54,6 +61,25 @@ type CreateProductRequest = {
 
 type ProductResponse = Product;
 
+type CreateVariantRequest = {
+	product_id: string;
+	size: ProductSize;
+	color: ProductColor;
+	gender: ProductGender;
+	price: number;
+	cost: number;
+	unit: ProductUnit;
+	quantity?: number;
+	file_key?: string;
+};
+
+type VariantResponse = ProductVariant;
+
+type GetVariantListRequest = {
+	q?: string;
+} & PaginationParams;
+type GetVariantListResponse = ApiListResponse<ProductVariant>;
+
 export type {
 	GetProductListResponse,
 	GetProductListRequest,
@@ -61,4 +87,8 @@ export type {
 	ProductTableRowType,
 	CreateProductRequest,
 	ProductResponse,
+	CreateVariantRequest,
+	VariantResponse,
+	GetVariantListRequest,
+	GetVariantListResponse,
 };

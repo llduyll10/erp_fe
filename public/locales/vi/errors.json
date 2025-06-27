@@ -9,6 +9,11 @@
 		},
 		"users": {
 			"already_invited": "Người dùng đã được mời"
+		},
+		"product": {
+			"variant": {
+				"already_exists": "Biến thể đã tồn tại"
+			}
 		}
 	}
 }
