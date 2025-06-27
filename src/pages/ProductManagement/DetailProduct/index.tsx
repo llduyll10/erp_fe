@@ -2,6 +2,7 @@ import { FormMode } from "@/constants/common.constant";
 import { ProductForm } from "../ProductForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VariantForm } from "../Variant/VariantForm";
+import { VariantTable } from "../Variant/VariantTable";
 
 export function ProductDetailPage() {
 	return (
@@ -15,7 +16,8 @@ export function ProductDetailPage() {
 					<ProductForm mode={FormMode.DETAILS} />
 				</TabsContent>
 				<TabsContent value="variant">
-					<VariantForm mode={FormMode.DETAILS} />
+					{/* <VariantForm mode={FormMode.DETAILS} /> */}
+					<VariantTable />
 				</TabsContent>
 			</Tabs>
 		</div>

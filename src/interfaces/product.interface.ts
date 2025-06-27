@@ -77,6 +77,7 @@ type VariantResponse = ProductVariant;
 
 type GetVariantListRequest = {
 	q?: string;
+	product_id?: string;
 } & PaginationParams;
 type GetVariantListResponse = ApiListResponse<ProductVariant>;
 

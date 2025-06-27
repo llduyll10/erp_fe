@@ -7,8 +7,7 @@ import {
 	createRequiredEnumSchema,
 	createRequiredNumberSchema,
 } from "@/utils/schema.util";
-import { createRequiredInputSchema } from "@/utils/schema.util";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
 	ProductColor,
@@ -16,14 +15,8 @@ import {
 	ProductSize,
 	ProductUnit,
 } from "@/enums/product.enum";
-import {
-	useCreateProduct,
-	useCreateVariant,
-	useGetProductDetail,
-	useGetVariantDetail,
-} from "@/services/product";
+import { useCreateVariant, useGetProductDetail } from "@/services/product";
 import { toast } from "sonner";
-import { useEffect } from "react";
 import { VariantResponse } from "@/interfaces/product.interface";
 
 export const VariantFormSchema = z.object({
@@ -50,7 +43,7 @@ export const getVariantFormDefault = (variant?: VariantResponse) => {
 	};
 };
 
-export const useVariantForm = () => {
+export const useVariantForm = (onSuccessCallback?: () => void) => {
 	const { mutate: createVariant, isPending } = useCreateVariant();
 	const { id } = useParams();
 	const { t } = useTranslation();
@@ -71,12 +64,14 @@ export const useVariantForm = () => {
 			price: Number(data.price),
 			cost: Number(data.cost),
 			unit: data.unit || ProductUnit.PIECE,
+			file_key: data.file_key || "",
 		};
 
 		createVariant(payload, {
 			onSuccess: (response) => {
 				toast.success(t("products.createSuccess"));
 				form.reset();
+				onSuccessCallback?.();
 			},
 			onError: (error) => {
 				toast.error(t("products.createError"));

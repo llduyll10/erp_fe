@@ -37,11 +37,12 @@ import {
 
 interface VariantFormProps extends React.ComponentProps<"div"> {
 	mode: FormMode;
+	onSuccess?: () => void;
 }
 
-export function VariantForm({ mode, ...props }: VariantFormProps) {
+export function VariantForm({ mode, onSuccess, ...props }: VariantFormProps) {
 	const { t } = useTranslation("product");
-	const { form, onSubmit, isPending } = useVariantForm();
+	const { form, onSubmit, isPending } = useVariantForm(onSuccess);
 
 	return (
 		<div className={cn("flex flex-col gap-6")} {...props}>
@@ -249,6 +250,7 @@ export function VariantForm({ mode, ...props }: VariantFormProps) {
 															purpose={FileUploadPurpose.PRODUCT_IMAGE}
 															value={field.value}
 															onUploadComplete={(result) => {
+																console.log(result);
 																field.onChange(result.fileKey);
 															}}
 															placeholder="Click to upload product image"
