@@ -29,14 +29,20 @@ import {
 } from "@/components/ui/form";
 import { ProductItemType } from "@/enums/product.enum";
 import { FileUploadPurpose } from "@/enums/file.enum";
+import { AutocompleteSearch } from "@/components/molecules/autocomplete-search";
+import { useGetListCategory } from "@/services/category";
+import { Category } from "@/models/category.model";
+import {
+	useAutocompleteSearch,
+	useCategoryAutocomplete,
+} from "@/hooks/common/useAutocompleteSearch";
 
 export function ProductForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
 	const { t } = useTranslation();
-	const { form, onSubmit, isPending, categories } = useProductForm();
-	console.log("categories", categories);
+	const { form, onSubmit, isPending } = useProductForm();
 
 	const itemTypeOptions = [
 		{ value: ProductItemType.CLOTHING, label: "Clothing" },
@@ -100,6 +106,39 @@ export function ProductForm({
 												<FormMessage />
 											</FormItem>
 										)}
+									/>
+								</div>
+
+								{/* Category */}
+								<div className="grid gap-3">
+									<FormField
+										control={form.control}
+										name="category_id"
+										render={({ field }) => {
+											const { fieldConfig } = useCategoryAutocomplete();
+											const { useQuery } = useAutocompleteSearch(
+												useGetListCategory,
+												fieldConfig
+											);
+
+											return (
+												<FormItem>
+													<FormLabel>{t("products.category")} *</FormLabel>
+													<FormControl>
+														<AutocompleteSearch<Category>
+															useQuery={useQuery}
+															fieldConfig={fieldConfig}
+															value={field.value}
+															onValueChange={field.onChange}
+															placeholder={t("products.selectCategory")}
+															searchPlaceholder="Search categories..."
+															emptyMessage={t("products.noCategoryFound")}
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											);
+										}}
 									/>
 								</div>
 

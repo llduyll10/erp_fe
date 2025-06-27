@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { ProductItemType, ProductStatus } from "@/enums/product.enum";
 import { useCreateProduct } from "@/services/product";
 import { toast } from "sonner";
-import { useGetListCategory } from "@/services/category";
 
 export const ProductFormSchema = z.object({
 	name: createRequiredInputSchema("Name"),
@@ -36,7 +35,6 @@ export const useProductForm = () => {
 	const { mutate: createProduct, isPending } = useCreateProduct();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { data: categories } = useGetListCategory();
 
 	const form = useForm<z.infer<typeof ProductFormSchema>>({
 		resolver: zodResolver(ProductFormSchema),
@@ -58,5 +56,5 @@ export const useProductForm = () => {
 		});
 	};
 
-	return { form, onSubmit, isPending, categories: categories?.data };
+	return { form, onSubmit, isPending };
 };
