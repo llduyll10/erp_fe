@@ -1,3 +1,6 @@
+import { FormMode } from "@/constants/common.constant";
+import { ProductForm } from "../ProductForm";
+
 export function ProductDetailPage() {
-	return <div>ProductDetailPage</div>;
+	return <ProductForm mode={FormMode.DETAILS} />;
 }

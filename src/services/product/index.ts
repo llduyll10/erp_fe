@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProduct, getProductList } from "./request";
+import { createProduct, getProductDetail, getProductList } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import {
 	CreateProductRequest,
@@ -22,5 +22,13 @@ export const useGetProductList = (
 export const useCreateProduct = () => {
 	return useMutation({
 		mutationFn: (data: CreateProductRequest) => createProduct(data),
+	});
+};
+
+export const useGetProductDetail = (productId: string) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.PRODUCT.DETAIL, productId],
+		queryFn: () => getProductDetail(productId),
+		enabled: !!productId,
 	});
 };

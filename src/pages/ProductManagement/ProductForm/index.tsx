@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Image } from "@/components/ui/image";
 import {
 	Select,
 	SelectContent,
@@ -36,13 +37,15 @@ import {
 	useAutocompleteSearch,
 	useCategoryAutocomplete,
 } from "@/hooks/common/useAutocompleteSearch";
+import { FormMode } from "@/constants/common.constant";
 
-export function ProductForm({
-	className,
-	...props
-}: React.ComponentProps<"div">) {
+interface ProductFormProps extends React.ComponentProps<"div"> {
+	mode: FormMode;
+}
+
+export function ProductForm({ mode, ...props }: ProductFormProps) {
 	const { t } = useTranslation();
-	const { form, onSubmit, isPending } = useProductForm();
+	const { form, onSubmit, isPending, productDetail } = useProductForm();
 
 	const itemTypeOptions = [
 		{ value: ProductItemType.CLOTHING, label: "Clothing" },
@@ -55,7 +58,7 @@ export function ProductForm({
 	];
 
 	return (
-		<div className={cn("flex flex-col gap-6", className)} {...props}>
+		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
 				<CardHeader>
 					<CardTitle>{t("products.create")}</CardTitle>
@@ -176,28 +179,41 @@ export function ProductForm({
 									/>
 								</div>
 
-								{/* Image Upload */}
-								<div className="grid gap-3">
-									<FormField
-										control={form.control}
-										name="file_key"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>{t("products.imageUrl")}</FormLabel>
-												<FormControl>
-													<ImageUpload
-														purpose={FileUploadPurpose.PRODUCT_IMAGE}
-														value={field.value}
-														onUploadComplete={(result) => {
-															field.onChange(result.fileKey);
-														}}
-														placeholder="Click to upload product image"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
+								<div className="flex gap-3">
+									{/* Show image in Detail mode */}
+									{mode === FormMode.DETAILS && (
+										<div className="grid gap-3">
+											<Image
+												fileKey={productDetail?.file_key}
+												alt="Product Image"
+												className="w-[300px] h-[300px] rounded-md"
+											/>
+										</div>
+									)}
+
+									{/* Image Upload */}
+									<div className="grid gap-3 w-full">
+										<FormField
+											control={form.control}
+											name="file_key"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>{t("products.imageUrl")}</FormLabel>
+													<FormControl>
+														<ImageUpload
+															purpose={FileUploadPurpose.PRODUCT_IMAGE}
+															value={field.value}
+															onUploadComplete={(result) => {
+																field.onChange(result.fileKey);
+															}}
+															placeholder="Click to upload product image"
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
 								</div>
 
 								{/* Submit Button */}

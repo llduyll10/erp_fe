@@ -25,3 +25,12 @@ export const createProduct = async (
 		data,
 	});
 };
+
+export const getProductDetail = async (
+	productId: string
+): Promise<ProductResponse> => {
+	return await request({
+		url: `/products/${productId}`,
+		method: "GET",
+	});
+};

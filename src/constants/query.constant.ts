@@ -4,6 +4,7 @@ export const QUERY_KEYS = {
 	},
 	PRODUCT: {
 		LIST: "productList",
+		DETAIL: "productDetail",
 	},
 	CATEGORY: {
 		LIST: "categoryList",

@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createOptionalInputSchema } from "@/utils/schema.util";
 import { createRequiredInputSchema } from "@/utils/schema.util";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ProductItemType, ProductStatus } from "@/enums/product.enum";
-import { useCreateProduct } from "@/services/product";
+import { useCreateProduct, useGetProductDetail } from "@/services/product";
 import { toast } from "sonner";
+import { ProductResponse } from "@/interfaces/product.interface";
+import { useEffect } from "react";
 
 export const ProductFormSchema = z.object({
 	name: createRequiredInputSchema("Name"),
@@ -22,23 +24,26 @@ export const ProductFormSchema = z.object({
 	category_id: createRequiredInputSchema(),
 });
 
-const defaultValues = {
-	name: "",
-	description: "",
-	category_id: "",
-	file_key: "",
-	item_type: ProductItemType.CLOTHING,
-	status: ProductStatus.ACTIVE,
+export const getProductFormDefault = (product?: ProductResponse) => {
+	return {
+		name: product?.name || "",
+		description: product?.description || "",
+		category_id: product?.category_id || "",
+		file_key: product?.file_key || "",
+		item_type: product?.item_type || ProductItemType.CLOTHING,
+		status: product?.status || ProductStatus.ACTIVE,
+	};
 };
 
 export const useProductForm = () => {
 	const { mutate: createProduct, isPending } = useCreateProduct();
+	const { id } = useParams();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { data: productDetail } = useGetProductDetail(id!);
 
 	const form = useForm<z.infer<typeof ProductFormSchema>>({
 		resolver: zodResolver(ProductFormSchema),
-		defaultValues,
 	});
 
 	const onSubmit = (data: z.infer<typeof ProductFormSchema>) => {
@@ -56,5 +61,13 @@ export const useProductForm = () => {
 		});
 	};
 
-	return { form, onSubmit, isPending };
+	useEffect(() => {
+		if (!productDetail) {
+			form.reset(getProductFormDefault());
+			return;
+		}
+		form.reset(getProductFormDefault(productDetail));
+	}, [productDetail]);
+
+	return { form, onSubmit, isPending, productDetail };
 };

@@ -179,7 +179,7 @@ export const confirmUpload = async (
 
 /**
  * Get viewable URL for file
- * Public endpoint - no auth required
+ * Requires authentication
  */
 export const getViewUrl = async (
 	fileKey: string
@@ -201,22 +201,16 @@ export const getViewUrl = async (
 	const url = `${API_BASE}/view/${folder}/${subfolder}/${filename}`;
 	console.log("🚀 Requesting view URL:", url);
 
-	const response = await fetch(url, {
-		method: "GET",
-	});
-
-	console.log("✅ getViewUrl response status:", response.status);
-
-	if (!response.ok) {
-		const errorText = await response.text();
-		console.error("❌ getViewUrl failed:", {
-			status: response.status,
-			error: errorText,
+	try {
+		const response = await request({
+			url,
+			method: "GET",
 		});
-		throw new Error(`Get view URL failed: ${response.status} - ${errorText}`);
-	}
 
-	const result = await response.json();
-	console.log("✅ getViewUrl result:", result);
-	return result;
+		console.log("✅ getViewUrl response:", response);
+		return response.data || response;
+	} catch (error) {
+		console.error("❌ getViewUrl error:", error);
+		throw error;
+	}
 };
