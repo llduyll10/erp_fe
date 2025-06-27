@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Image } from "@/components/ui/image";
 import {
 	Select,
 	SelectContent,
@@ -38,6 +37,8 @@ import {
 	useCategoryAutocomplete,
 } from "@/hooks/common/useAutocompleteSearch";
 import { FormMode } from "@/constants/common.constant";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
+import { ImageIcon } from "lucide-react";
 
 interface ProductFormProps extends React.ComponentProps<"div"> {
 	mode: FormMode;
@@ -183,10 +184,16 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 									{/* Show image in Detail mode */}
 									{mode === FormMode.DETAILS && (
 										<div className="grid gap-3">
-											<Image
+											<OptimizedImage
 												fileKey={productDetail?.file_key}
 												alt="Product Image"
 												className="w-[300px] h-[300px] rounded-md"
+												showLoading={false} // Don't show skeleton in table for better performance
+												fallbackComponent={
+													<div className="w-[300px] h-[300px] rounded-md bg-gray-100 flex items-center justify-center">
+														<ImageIcon className="w-6 h-6 text-gray-400" />
+													</div>
+												}
 											/>
 										</div>
 									)}

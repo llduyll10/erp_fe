@@ -17,6 +17,36 @@ import {
 	QuantityStatusCellRenderer,
 	DateCellRenderer,
 } from "@/components/product-table-cell-renderers";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
+import { ImageIcon } from "lucide-react";
+
+// Image Cell Renderer for Products and Variants
+const ImageCellRenderer = (params: ICellRendererParams) => {
+	const { data } = params;
+
+	// For product rows, use product's file_key
+	// For variant rows, use variant's file_key
+	const fileKey =
+		data.rowType === "product" ?
+			data.rawProduct?.file_key
+		:	data.rawVariant?.file_key;
+
+	return (
+		<div className="flex items-center justify-center h-full">
+			<OptimizedImage
+				fileKey={fileKey}
+				alt={data.rowType === "product" ? "Product Image" : "Variant Image"}
+				className="w-10 h-10 rounded-md object-cover"
+				showLoading={false} // Don't show skeleton in table for better performance
+				fallbackComponent={
+					<div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
+						<ImageIcon className="w-6 h-6 text-gray-400" />
+					</div>
+				}
+			/>
+		</div>
+	);
+};
 
 const useProductManagement = () => {
 	const [searchParams, setSearchParams] = useState<
@@ -84,6 +114,7 @@ const useProductManagement = () => {
 				name: product.name,
 				description: product.description || "",
 				item_type: product.item_type,
+				file_key: product.file_key || undefined,
 				created_at: product.created_at,
 				updated_at: product.updated_at,
 				rawProduct: product,
@@ -107,6 +138,8 @@ const useProductManagement = () => {
 						unit: variant.unit || "",
 						quantity: variant.quantity || 0,
 						status: variant.status || "",
+						product_id: variant.product_id,
+						file_key: variant.file_key || undefined,
 						created_at: variant.created_at,
 						updated_at: variant.updated_at,
 						rawVariant: variant,
@@ -121,6 +154,14 @@ const useProductManagement = () => {
 	);
 
 	const colDefs: ColDef<ProductTableRow>[] = [
+		{
+			headerName: "Image",
+			field: "file_key",
+			width: 80,
+			cellRenderer: ImageCellRenderer,
+			sortable: false,
+			resizable: false,
+		},
 		{
 			headerName: "Name / SKU",
 			field: "name",

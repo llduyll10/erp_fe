@@ -25,6 +25,7 @@ interface ProductTableRow {
 	name?: string;
 	description?: string;
 	item_type?: string;
+	file_key?: string;
 	created_at?: Date;
 	updated_at?: Date;
 
@@ -38,6 +39,7 @@ interface ProductTableRow {
 	unit?: string;
 	quantity?: number;
 	status?: string;
+	product_id?: string; // For variant rows
 
 	// Raw data for reference
 	rawProduct?: Product;

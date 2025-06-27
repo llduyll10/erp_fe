@@ -11,8 +11,9 @@ import {
 	ProductSize,
 	ProductUnit,
 } from "@/enums/product.enum";
-import { Image } from "@/components/ui/image";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
 import { ImageIcon } from "lucide-react";
+import React from "react";
 
 const useVariantTable = (productId?: string) => {
 	const [searchParams, setSearchParams] = useState<
@@ -60,16 +61,17 @@ const useVariantTable = (productId?: string) => {
 			cellRenderer: (params: ICellRendererParams) => {
 				return (
 					<div className="flex items-center justify-center h-full">
-						{params.data.file_key ?
-							<Image
-								fileKey={params.data.file_key}
-								alt="Variant Image"
-								className="w-10 h-10 rounded-md object-cover"
-							/>
-						:	<div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
-								<ImageIcon className="w-6 h-6 text-gray-400" />
-							</div>
-						}
+						<OptimizedImage
+							fileKey={params.data.file_key}
+							alt="Variant Image"
+							className="w-10 h-10 rounded-md object-cover"
+							showLoading={false}
+							fallbackComponent={
+								<div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
+									<ImageIcon className="w-6 h-6 text-gray-400" />
+								</div>
+							}
+						/>
 					</div>
 				);
 			},

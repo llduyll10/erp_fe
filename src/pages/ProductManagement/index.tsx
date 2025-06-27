@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import useProductManagement from "@/hooks/product/useProductManagement";
+import { useNavigate } from "react-router-dom";
 
 export function ProductManagementPage() {
+	const navigate = useNavigate();
+
 	const {
 		productList,
 		tableRows,
@@ -34,6 +37,26 @@ export function ProductManagementPage() {
 
 	const handleRefresh = () => {
 		refetch();
+	};
+
+	const handleRowClick = (event: any) => {
+		const rowData = event.data;
+		if (!rowData) return;
+
+		// Don't navigate if it's a product row with variants (expand/collapse functionality)
+		if (rowData.rowType === "product" && rowData.rawProduct?.variants?.length) {
+			return;
+		}
+
+		// Navigate to product detail page
+		const productId =
+			rowData.rowType === "product" ?
+				rowData.rawProduct?.id
+			:	rowData.product_id;
+
+		if (productId) {
+			navigate(`/dashboard/products/detail/${productId}`);
+		}
 	};
 
 	if (isGetProductListPending && pagination.current_page === 1) {
@@ -133,6 +156,7 @@ export function ProductManagementPage() {
 							rowHeight: 72,
 							suppressRowHoverHighlight: true,
 							getRowId: (params) => params.data.id,
+							onRowClicked: handleRowClick,
 							defaultColDef: {
 								sortable: false, // Disable sorting for tree structure
 								editable: false,

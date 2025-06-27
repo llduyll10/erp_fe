@@ -9,6 +9,8 @@ import {
 	confirmUpload,
 	getViewUrl,
 } from "./request";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * Complete file upload workflow
@@ -149,3 +151,41 @@ export type {
 	GetViewUrlResponse,
 	UploadResult,
 } from "@/interfaces/file.interface";
+
+/**
+ * Hook to get and cache image view URLs
+ */
+export const useImageUrl = (fileKey: string | null | undefined) => {
+	return useQuery({
+		queryKey: ["imageUrl", fileKey],
+		queryFn: () => getViewUrl(fileKey!),
+		enabled: !!fileKey,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+		retry: 2,
+		retryDelay: 1000,
+	});
+};
+
+/**
+ * Prefetch image URLs for a list of fileKeys
+ */
+export const usePrefetchImageUrls = () => {
+	const queryClient = useQueryClient();
+
+	const prefetchImageUrls = async (fileKeys: (string | null | undefined)[]) => {
+		const validFileKeys = fileKeys.filter((key): key is string => !!key);
+
+		await Promise.all(
+			validFileKeys.map((fileKey) =>
+				queryClient.prefetchQuery({
+					queryKey: ["imageUrl", fileKey],
+					queryFn: () => getViewUrl(fileKey),
+					staleTime: 5 * 60 * 1000,
+				})
+			)
+		);
+	};
+
+	return { prefetchImageUrls };
+};
