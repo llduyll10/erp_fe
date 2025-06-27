@@ -5,6 +5,7 @@ type Category = {
 	company_id: string;
 	name: string;
 	description?: string | null;
+	code?: string | null;
 	parent_id?: string | null;
 	sort_order: number;
 	created_at: Date;

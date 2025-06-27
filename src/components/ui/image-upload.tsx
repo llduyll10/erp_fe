@@ -115,7 +115,6 @@ export function ImageUpload({
 			}
 
 			// Generate presigned URL
-			console.log("🚀 Step 1: Generating presigned URL...");
 			const presignedData = await generatePresignedUrl({
 				fileName: file.name,
 				fileType: file.type,
@@ -136,9 +135,7 @@ export function ImageUpload({
 			toast.success(
 				"File ready for upload. Click 'Confirm Upload' to proceed."
 			);
-			console.log("✅ Step 1 completed: Presigned URL generated");
 		} catch (error) {
-			console.error("❌ Step 1 failed:", error);
 			const errorMessage =
 				error instanceof Error ?
 					error.message
@@ -162,23 +159,18 @@ export function ImageUpload({
 
 			const { file, presignedData } = pendingUpload;
 
-			console.log("🚀 Step 2: Uploading to S3...");
 			setUploadProgress(30);
 
 			// Try XMLHttpRequest first, fallback to fetch if it fails
 			try {
 				await uploadFileToS3(presignedData.uploadUrl, file);
-				console.log("✅ Step 2 completed: File uploaded to S3 with XHR");
 			} catch (xhrError) {
-				console.warn("⚠️ XHR upload failed, trying fetch method:", xhrError);
 				setUploadProgress(35);
 				await uploadFileToS3WithFetch(presignedData.uploadUrl, file);
-				console.log("✅ Step 2 completed: File uploaded to S3 with fetch");
 			}
 
 			setUploadProgress(70);
 
-			console.log("🚀 Step 3: Confirming upload...");
 			// Confirm upload
 			const confirmData = await confirmUpload({
 				fileKey: presignedData.fileKey,
@@ -197,29 +189,18 @@ export function ImageUpload({
 				viewUrl: undefined, // No longer needed as per simplification
 			};
 
-			console.log(
-				"✅ Step 3 completed: Upload confirmed, emitting result:",
-				result
-			);
-
 			// Keep local preview for immediate display instead of cleaning up
 			const localPreviewUrl = pendingUpload.previewUrl;
-			console.log(
-				"🖼️ [DEBUG] Keeping local preview after upload:",
-				localPreviewUrl
-			);
 
 			setPendingUpload(null);
 
 			// Set local preview for immediate display (don't cleanup)
 			setFinalImageUrl(localPreviewUrl);
 
-			console.log("📋 [DEBUG] Upload result:", result);
 			onUploadComplete?.(result);
 
 			toast.success("Image uploaded successfully!");
 		} catch (error) {
-			console.error("❌ Upload failed:", error);
 			const errorMessage =
 				error instanceof Error ? error.message : "Upload failed";
 
@@ -302,16 +283,6 @@ export function ImageUpload({
 		}
 	};
 
-	// Debug logging
-	console.log("🔍 [DEBUG] ImageUpload render state:", {
-		value,
-		isValueValidUrl: value ? isValidUrl(value) : false,
-		finalImageUrl,
-		hasPendingUpload: !!pendingUpload,
-		isUploading,
-		isGeneratingUrl,
-	});
-
 	// Show final uploaded image with smart priority logic
 	const shouldShowFinalImage =
 		!pendingUpload && (finalImageUrl || (value && isValidUrl(value)));
@@ -319,14 +290,6 @@ export function ImageUpload({
 	// Priority: 1) Local preview URL, 2) Valid external URL, 3) Nothing
 	const displayUrl =
 		finalImageUrl || (value && isValidUrl(value) ? value : null);
-
-	console.log("🎯 [DEBUG] Display logic:", {
-		shouldShowFinalImage,
-		displayUrl,
-		finalImageUrl,
-		valueIsValid: value ? isValidUrl(value) : false,
-		hasPendingUpload: !!pendingUpload,
-	});
 
 	if (shouldShowFinalImage && displayUrl) {
 		return (

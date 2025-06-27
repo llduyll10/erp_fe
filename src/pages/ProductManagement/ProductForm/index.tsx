@@ -35,7 +35,8 @@ export function ProductForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const { t } = useTranslation();
-	const { form, onSubmit, isPending } = useProductForm();
+	const { form, onSubmit, isPending, categories } = useProductForm();
+	console.log("categories", categories);
 
 	const itemTypeOptions = [
 		{ value: ProductItemType.CLOTHING, label: "Clothing" },

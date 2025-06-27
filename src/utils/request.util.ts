@@ -47,6 +47,7 @@ axiosInstance.interceptors.response.use(
 			case "401":
 				clearAuth(); // Clear auth data on unauthorized
 				toast.error("Unauthorized. Please login again.");
+				window.location.href = "/login";
 				break;
 			default:
 				toast.error(errorMessage);
