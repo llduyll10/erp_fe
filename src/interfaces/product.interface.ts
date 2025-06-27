@@ -46,7 +46,7 @@ type GetProductListResponse = ApiListResponse<Product>;
 type CreateProductRequest = {
 	name: string;
 	description?: string;
-	image_url?: string;
+	file_key?: string;
 	item_type: ProductItemType;
 	status: ProductStatus;
 };

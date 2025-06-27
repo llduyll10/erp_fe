@@ -130,6 +130,7 @@ export const getFileViewUrl = async (fileKey: string): Promise<string> => {
 export {
 	generatePresignedUrl,
 	uploadFileToS3,
+	uploadFileToS3WithFetch,
 	confirmUpload,
 	getViewUrl,
 } from "./request";

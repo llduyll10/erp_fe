@@ -9,7 +9,7 @@ type Product = {
 	category_id?: string | null;
 	name: string;
 	description?: string | null;
-	image_url?: string | null;
+	file_key?: string | null;
 	item_type: ProductItemType;
 	status: ProductStatus;
 	created_at: Date;

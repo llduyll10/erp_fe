@@ -46,7 +46,14 @@
 		"list": "Danh sách sản phẩm",
 		"grid": "Grid sản phẩm",
 		"detail": "Chi tiết sản phẩm",
-		"create": "Tạo sản phẩm"
+		"create": "Tạo sản phẩm",
+		"name": "Tên sản phẩm",
+		"description": "Mô tả",
+		"itemType": "Loại sản phẩm",
+		"imageUrl": "URL hình ảnh",
+		"selectItemType": "Chọn loại sản phẩm",
+		"createSuccess": "Tạo sản phẩm thành công!",
+		"createError": "Tạo sản phẩm thất bại"
 	},
 	"users": {
 		"title": "Người dùng",

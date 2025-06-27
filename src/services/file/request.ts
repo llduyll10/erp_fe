@@ -33,8 +33,7 @@ export const generatePresignedUrl = async (
 };
 
 /**
- * Upload file to S3 using presigned URL
- * IMPORTANT: Must upload as raw binary data, NOT FormData
+ * Upload file to S3 using presigned URL with minimal headers to avoid CORS issues
  */
 export const uploadFileToS3 = async (
 	uploadUrl: string,
@@ -44,25 +43,114 @@ export const uploadFileToS3 = async (
 		uploadUrl,
 		fileName: file.name,
 		fileSize: file.size,
+		fileType: file.type,
 	});
 
-	const response = await fetch(uploadUrl, {
-		method: "PUT",
-		headers: {
-			"Content-Type": file.type,
-		},
-		body: file, // Raw file object, NOT FormData
-	});
+	return new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
 
-	console.log("✅ S3 upload response status:", response.status);
+		// Handle completion
+		xhr.addEventListener("load", () => {
+			console.log("✅ S3 upload response:", {
+				status: xhr.status,
+				statusText: xhr.statusText,
+			});
 
-	if (!response.ok) {
-		const errorText = await response.text();
-		console.error("❌ S3 upload failed:", {
-			status: response.status,
-			error: errorText,
+			if (xhr.status >= 200 && xhr.status < 300) {
+				console.log("✅ S3 upload completed successfully");
+				resolve();
+			} else {
+				const errorText = xhr.responseText || "Unknown error";
+				console.error("❌ S3 upload failed:", {
+					status: xhr.status,
+					statusText: xhr.statusText,
+					error: errorText,
+				});
+				reject(
+					new Error(
+						`S3 upload failed: ${xhr.status} ${xhr.statusText} - ${errorText}`
+					)
+				);
+			}
 		});
-		throw new Error(`S3 upload failed: ${response.status} - ${errorText}`);
+
+		// Handle errors
+		xhr.addEventListener("error", () => {
+			console.error("❌ S3 upload network error");
+			const error = new Error(
+				"Network error: Failed to upload to S3. Please check CORS configuration."
+			);
+			reject(error);
+		});
+
+		// Handle timeout
+		xhr.addEventListener("timeout", () => {
+			console.error("❌ S3 upload timeout");
+			reject(
+				new Error("Upload timeout: The upload took too long to complete.")
+			);
+		});
+
+		// Configure request
+		xhr.open("PUT", uploadUrl, true);
+
+		// Try without any custom headers first to avoid CORS preflight
+		// S3 can often auto-detect content type from file extension
+		xhr.timeout = 60000; // 60 second timeout
+
+		// Start upload with raw file (no headers)
+		xhr.send(file);
+	});
+};
+
+/**
+ * Alternative upload method using fetch with minimal headers
+ */
+export const uploadFileToS3WithFetch = async (
+	uploadUrl: string,
+	file: File
+): Promise<void> => {
+	console.log("🚀 Uploading to S3 with fetch (no headers):", {
+		uploadUrl: uploadUrl.substring(0, 100) + "...",
+		fileName: file.name,
+		fileSize: file.size,
+	});
+
+	try {
+		const response = await fetch(uploadUrl, {
+			method: "PUT",
+			body: file,
+			// No headers at all to avoid CORS preflight
+		});
+
+		console.log("✅ S3 upload response:", {
+			status: response.status,
+			statusText: response.statusText,
+		});
+
+		if (!response.ok) {
+			let errorText = "Unknown error";
+			try {
+				errorText = await response.text();
+			} catch (e) {
+				console.warn("Could not read error response:", e);
+			}
+
+			console.error("❌ S3 upload failed:", {
+				status: response.status,
+				statusText: response.statusText,
+				error: errorText,
+			});
+
+			throw new Error(
+				`S3 upload failed: ${response.status} ${response.statusText} - ${errorText}`
+			);
+		}
+
+		console.log("✅ S3 upload completed successfully with fetch");
+	} catch (error) {
+		console.error("❌ S3 upload error with fetch:", error);
+		throw error;
 	}
 };
 

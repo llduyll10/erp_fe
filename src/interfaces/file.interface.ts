@@ -47,6 +47,7 @@ export interface UploadResult {
 	url: string;
 	fileKey: string;
 	viewUrl?: string;
+	localPreviewUrl?: string; // Local preview URL for immediate display
 }
 
 // File validation config

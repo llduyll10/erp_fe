@@ -46,7 +46,14 @@
 		"list": "Products List",
 		"grid": "Products Grid",
 		"detail": "Product Detail",
-		"create": "Create Product"
+		"create": "Create Product",
+		"name": "Product Name",
+		"description": "Description",
+		"itemType": "Item Type",
+		"imageUrl": "Image URL",
+		"selectItemType": "Select item type",
+		"createSuccess": "Product created successfully!",
+		"createError": "Failed to create product"
 	},
 	"users": {
 		"title": "Users",
