@@ -14,6 +14,9 @@
 			"variant": {
 				"already_exists": "Biến thể đã tồn tại"
 			}
+		},
+		"customers": {
+			"phone_number_already_exists": "Số điện thoại đã tồn tại"
 		}
 	}
 }

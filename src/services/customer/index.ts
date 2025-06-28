@@ -1,8 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createCustomer, getCustomerDetail, getCustomerList } from "./request";
+import {
+	createCustomer,
+	getCustomerDetail,
+	getCustomerList,
+	updateCustomer,
+} from "./request";
 import {
 	CreateCustomerRequest,
 	GetCustomerListRequest,
+	UpdateCustomerRequest,
 } from "@/interfaces/customer.interface";
 import { QUERY_KEYS } from "@/constants/query.constant";
 
@@ -35,5 +41,20 @@ export const useGetCustomerDetail = (id: string) => {
 		enabled: !!id,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
+};
+
+export const useUpdateCustomer = () => {
+	return useMutation({
+		mutationFn: async ({
+			id,
+			data,
+		}: {
+			id: string;
+			data: UpdateCustomerRequest;
+		}) => {
+			const response = await updateCustomer(id, data);
+			return response;
+		},
 	});
 };

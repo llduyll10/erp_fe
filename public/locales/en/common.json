@@ -77,6 +77,8 @@
 	},
 	"customers": {
 		"createSuccess": "Customer created successfully!",
-		"createError": "Failed to create customer"
+		"createError": "Failed to create customer",
+		"updateSuccess": "Customer updated successfully!",
+		"updateError": "Failed to update customer"
 	}
 }

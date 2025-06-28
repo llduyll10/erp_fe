@@ -84,7 +84,9 @@ export function CustomerForm({ mode, ...props }: CustomerFormProps) {
 		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{t("create")}</CardTitle>
+					<CardTitle>
+						{mode === FormMode.CREATE ? t("create") : t("update")}
+					</CardTitle>
 					<CardDescription className="text-red-500">
 						{t("importantPhoneNumber")}
 					</CardDescription>
@@ -314,9 +316,9 @@ export function CustomerForm({ mode, ...props }: CustomerFormProps) {
 							</div>
 
 							{/* Submit Button */}
-							<div className="flex justify-end">
+							<div className="flex justify-center items-center">
 								<Button type="submit">
-									{mode === FormMode.CREATE ? "Create" : "Update"}
+									{mode === FormMode.CREATE ? t("create") : t("update")}
 								</Button>
 							</div>
 						</form>

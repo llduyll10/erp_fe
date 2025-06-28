@@ -12,7 +12,11 @@ import {
 	CustomerResponse,
 	CreateCustomerRequest,
 } from "@/interfaces/customer.interface";
-import { useCreateCustomer, useGetCustomerDetail } from "@/services/customer";
+import {
+	useCreateCustomer,
+	useGetCustomerDetail,
+	useUpdateCustomer,
+} from "@/services/customer";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
@@ -78,6 +82,7 @@ export const getCustomerFormDefault = (
 
 export const useCustomerForm = () => {
 	const { mutate: createCustomer } = useCreateCustomer();
+	const { mutate: updateCustomer } = useUpdateCustomer();
 	const { id } = useParams();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -96,13 +101,27 @@ export const useCustomerForm = () => {
 			shipping_city: data.shipping_state_province, // Map shipping_state_province to shipping_city for BE
 		};
 
-		createCustomer(payload, {
-			onSuccess: (response) => {
-				toast.success(t("customers.createSuccess"));
-				form.reset();
-				navigate(`/dashboard/customers/detail/${response.id}`);
-			},
-		});
+		if (id) {
+			updateCustomer(
+				{
+					id,
+					data: payload,
+				},
+				{
+					onSuccess: () => {
+						toast.success(t("customers.updateSuccess"));
+					},
+				}
+			);
+		} else {
+			createCustomer(payload, {
+				onSuccess: (response) => {
+					toast.success(t("customers.createSuccess"));
+					form.reset();
+					navigate(`/dashboard/customers/detail/${response.id}`);
+				},
+			});
+		}
 	};
 
 	useEffect(() => {

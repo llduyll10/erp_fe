@@ -1,6 +1,7 @@
 {
 	"importantPhoneNumber": "Important: Phone number is unique and cannot be changed after creation",
 	"create": "Create Customer",
+	"update": "Update Customer",
 	"createDescription": "Create a new customer with basic information",
 	"name": "Name",
 	"namePlaceholder": "Enter customer name",

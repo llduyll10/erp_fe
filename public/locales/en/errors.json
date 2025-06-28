@@ -14,6 +14,9 @@
 			"variant": {
 				"already_exists": "Variant already exists"
 			}
+		},
+		"customers": {
+			"phone_number_exists": "Phone number already exists"
 		}
 	}
 }

@@ -1,6 +1,7 @@
 {
 	"importantPhoneNumber": "Quan trọng: Số điện thoại là duy nhất và không thể thay đổi sau khi tạo",
 	"create": "Tạo Khách Hàng",
+	"update": "Cập Nhật Khách Hàng",
 	"createDescription": "Tạo khách hàng mới với thông tin cơ bản",
 	"name": "Tên",
 	"namePlaceholder": "Nhập tên khách hàng",
