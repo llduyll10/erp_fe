@@ -4,19 +4,31 @@ import Loading from "@/components/layout/loading";
 import { Pagination } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Search, RefreshCw, Plus, Filter } from "lucide-react";
 import { useState } from "react";
-import useProductManagement from "@/hooks/product/useProductManagement";
+import useCustomerManagement from "@/hooks/customer/useCustomerManagement";
 import { useNavigate } from "react-router-dom";
+import {
+	CustomerGroup,
+	CustomerStatus,
+	CustomerType,
+	CustomerSource,
+} from "@/enums/customer.enum";
 
 export function CustomerManagementPage() {
 	const navigate = useNavigate();
 
 	const {
-		productList,
-		tableRows,
+		customerList,
 		total,
-		isGetProductListPending,
+		isGetCustomerListPending,
 		colDefs,
 		pagination,
 		setPage,
@@ -24,10 +36,7 @@ export function CustomerManagementPage() {
 		setSearch,
 		clearFilters,
 		refetch,
-		expandAll,
-		collapseAll,
-		expandedProducts,
-	} = useProductManagement();
+	} = useCustomerManagement();
 
 	const [localSearch, setLocalSearch] = useState("");
 
@@ -43,58 +52,39 @@ export function CustomerManagementPage() {
 		const rowData = event.data;
 		if (!rowData) return;
 
-		// Don't navigate if it's a product row with variants (expand/collapse functionality)
-		if (rowData.rowType === "product" && rowData.rawProduct?.variants?.length) {
-			return;
-		}
-
-		// Navigate to product detail page
-		const productId =
-			rowData.rowType === "product" ?
-				rowData.rawProduct?.id
-			:	rowData.product_id;
-
-		if (productId) {
-			navigate(`/dashboard/products/detail/${productId}`);
+		// Navigate to customer detail page
+		if (rowData.id) {
+			navigate(`/dashboard/customers/detail/${rowData.id}`);
 		}
 	};
 
-	if (isGetProductListPending && pagination.current_page === 1) {
+	const handleCreateCustomer = () => {
+		navigate("/dashboard/customers/create");
+	};
+
+	if (isGetCustomerListPending && pagination.current_page === 1) {
 		return <Loading />;
 	}
 
 	return (
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">Product Management</h1>
+				<h1 className="text-2xl font-bold">Customer Management</h1>
 				<div className="flex items-center gap-2">
-					{/* Tree Controls */}
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={expandAll}
-						disabled={isGetProductListPending}>
-						<ChevronDown className="h-4 w-4 mr-2" />
-						Expand All
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={collapseAll}
-						disabled={isGetProductListPending}>
-						<ChevronRight className="h-4 w-4 mr-2" />
-						Collapse All
+					<Button onClick={handleCreateCustomer}>
+						<Plus className="h-4 w-4 mr-2" />
+						Add Customer
 					</Button>
 
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={handleRefresh}
-						disabled={isGetProductListPending}>
+						disabled={isGetCustomerListPending}>
 						<RefreshCw
 							className={cn(
 								"h-4 w-4 mr-2",
-								isGetProductListPending && "animate-spin"
+								isGetCustomerListPending && "animate-spin"
 							)}
 						/>
 						Refresh
@@ -103,15 +93,21 @@ export function CustomerManagementPage() {
 			</div>
 
 			{/* Search and Filters */}
-			<div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-				<div className="flex items-center gap-2 flex-1">
+			<div className="flex flex-col gap-4 p-4 bg-muted/50 rounded-lg">
+				{/* Search Bar */}
+				<div className="flex items-center gap-2">
 					<div className="relative flex-1 max-w-sm">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 						<Input
-							placeholder="Search by product name"
+							placeholder="Search by name, email, phone..."
 							value={localSearch}
 							onChange={(e) => setLocalSearch(e.target.value)}
 							className="pl-10"
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleSearch();
+								}
+							}}
 						/>
 					</div>
 					<Button onClick={handleSearch} size="sm">
@@ -128,9 +124,9 @@ export function CustomerManagementPage() {
 					</Button>
 				</div>
 
-				{/* Tree Status */}
+				{/* Results Count */}
 				<div className="text-sm text-muted-foreground">
-					{productList.length} products • {expandedProducts.size} expanded
+					{total} customer{total !== 1 ? "s" : ""} found
 				</div>
 			</div>
 
@@ -140,14 +136,14 @@ export function CustomerManagementPage() {
 					<Table
 						className={cn(
 							"mt-[12px] gray-highlight-table",
-							!tableRows?.length && "h-[150px]"
+							!customerList?.length && "h-[150px]"
 						)}
-						rowData={tableRows}
+						rowData={customerList}
 						columnDefs={colDefs}
 						pagination={false} // Disable AG Grid pagination, use custom
 						onSortChanged={() => {}}
 						onFirstDataRendered={() => {}}
-						isLoading={isGetProductListPending}
+						isLoading={isGetCustomerListPending}
 						popupParent={null}
 						suppressRowHoverHighlight={false}
 						noRowsOverlayClassName="top-[50px]"
@@ -158,7 +154,7 @@ export function CustomerManagementPage() {
 							getRowId: (params) => params.data.id,
 							onRowClicked: handleRowClick,
 							defaultColDef: {
-								sortable: false, // Disable sorting for tree structure
+								sortable: true,
 								editable: false,
 								resizable: true,
 								headerClass: [
@@ -170,12 +166,9 @@ export function CustomerManagementPage() {
 									"[&_.ag-header-cell-label]:pl-[16px]",
 								],
 							},
-							// Add row styling based on type
-							getRowClass: (params) => {
-								if (params.data.rowType === "variant") {
-									return "bg-gray-50";
-								}
-								return "";
+							// Add row hover effect
+							getRowClass: () => {
+								return "cursor-pointer hover:bg-gray-50";
 							},
 						}}
 						domLayout="autoHeight"

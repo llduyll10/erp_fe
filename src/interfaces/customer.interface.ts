@@ -38,6 +38,12 @@ type UpdateCustomerRequest = CreateCustomerRequest;
 type CustomerListResponse = ApiListResponse<Customer>;
 type GetCustomerListRequest = {
 	q?: string;
+	customer_group?: CustomerGroup;
+	customer_type?: CustomerType;
+	customer_source?: CustomerSource;
+	status?: CustomerStatus;
+	sortBy?: string;
+	sortOrder?: "asc" | "desc";
 } & PaginationParams;
 
 export type {
