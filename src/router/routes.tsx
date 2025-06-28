@@ -10,6 +10,9 @@ import { ChangePassword } from "@/pages/ChangePassword";
 import { ProductManagementPage } from "@/pages/ProductManagement";
 import { CreateProductPage } from "@/pages/ProductManagement/CreateProduct";
 import { ProductDetailPage } from "@/pages/ProductManagement/DetailProduct";
+import { CreateCustomerPage } from "@/pages/CustomerManagement/CreateCustomer";
+import { DetailCustomerPage } from "@/pages/CustomerManagement/DetailCustomer";
+import { CustomerManagementPage } from "@/pages/CustomerManagement";
 
 export const router = createBrowserRouter([
 	{
@@ -53,6 +56,18 @@ export const router = createBrowserRouter([
 			{
 				path: "products/detail/:id",
 				element: <ProductDetailPage />,
+			},
+			{
+				path: "customers",
+				element: <CustomerManagementPage />,
+			},
+			{
+				path: "customers/create",
+				element: <CreateCustomerPage />,
+			},
+			{
+				path: "customers/detail/:id",
+				element: <DetailCustomerPage />,
 			},
 		],
 	},

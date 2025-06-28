@@ -13,4 +13,8 @@ export const QUERY_KEYS = {
 	CATEGORY: {
 		LIST: "categoryList",
 	},
+	CUSTOMER: {
+		LIST: "customerList",
+		DETAIL: "customerDetail",
+	},
 };

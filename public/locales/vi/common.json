@@ -74,5 +74,9 @@
 		"detail": "Chi tiết đơn hàng",
 		"cart": "Giỏ hàng",
 		"checkout": "Thanh toán"
+	},
+	"customers": {
+		"createSuccess": "Tạo khách hàng thành công",
+		"createError": "Tạo khách hàng thất bại"
 	}
 }

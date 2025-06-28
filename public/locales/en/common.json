@@ -74,5 +74,9 @@
 		"detail": "Order Detail",
 		"cart": "Shopping Cart",
 		"checkout": "Checkout"
+	},
+	"customers": {
+		"createSuccess": "Customer created successfully!",
+		"createError": "Failed to create customer"
 	}
 }

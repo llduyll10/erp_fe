@@ -58,7 +58,11 @@ const adminMenu = (t: any) =>
 				title: t("users.title"),
 				icon: Users,
 				items: [
-					{ title: t("users.customers"), url: "/dashboard/users", icon: User },
+					{
+						title: t("users.customers"),
+						url: "/dashboard/customers",
+						icon: User,
+					},
 					{
 						title: t("users.sellers"),
 						url: "/dashboard/users",
