@@ -53,6 +53,7 @@ type GetProductListRequest = {
 type GetProductListResponse = ApiListResponse<Product>;
 
 type CreateProductRequest = {
+	id?: string;
 	name: string;
 	description?: string;
 	category_id?: string;
@@ -60,6 +61,7 @@ type CreateProductRequest = {
 	item_type: ProductItemType;
 	status: ProductStatus;
 };
+type UpdateProductRequest = CreateProductRequest;
 
 type ProductResponse = Product;
 
@@ -89,6 +91,7 @@ export type {
 	ProductTableRow,
 	ProductTableRowType,
 	CreateProductRequest,
+	UpdateProductRequest,
 	ProductResponse,
 	CreateVariantRequest,
 	VariantResponse,

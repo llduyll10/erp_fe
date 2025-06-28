@@ -6,6 +6,7 @@ import {
 	getProductList,
 	getVariantDetail,
 	getVariantList,
+	updateProduct,
 } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import {
@@ -13,6 +14,7 @@ import {
 	CreateVariantRequest,
 	GetProductListRequest,
 	GetVariantListRequest,
+	UpdateProductRequest,
 } from "@/interfaces/product.interface";
 
 export const useGetProductList = (
@@ -41,6 +43,23 @@ export const useGetProductDetail = (productId: string) => {
 		enabled: !!productId,
 	});
 };
+
+export const useUpdateProduct = () => {
+	return useMutation({
+		mutationFn: async ({
+			id,
+			data,
+		}: {
+			id: string;
+			data: UpdateProductRequest;
+		}) => {
+			const response = await updateProduct(id, data);
+			return response;
+		},
+	});
+};
+
+//============== Variant ================================================
 
 export const useCreateVariant = () => {
 	return useMutation({

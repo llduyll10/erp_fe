@@ -47,6 +47,7 @@
 		"grid": "Products Grid",
 		"detail": "Product Detail",
 		"create": "Create Product",
+		"update": "Update Product",
 		"name": "Product Name",
 		"description": "Description",
 		"category": "Category",
@@ -56,7 +57,9 @@
 		"imageUrl": "Image URL",
 		"selectItemType": "Select item type",
 		"createSuccess": "Product created successfully!",
-		"createError": "Failed to create product"
+		"createError": "Failed to create product",
+		"updateSuccess": "Product updated successfully!",
+		"updateError": "Failed to update product"
 	},
 	"users": {
 		"title": "Users",

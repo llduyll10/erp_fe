@@ -49,8 +49,8 @@ export function VariantForm({ mode, onSuccess, ...props }: VariantFormProps) {
 			<Card>
 				<CardHeader>
 					<CardTitle>{t("variant.create")}</CardTitle>
-					<CardDescription>
-						Create a new variant with basic information
+					<CardDescription className="text-red-500">
+						{t("variant.importantNote")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>

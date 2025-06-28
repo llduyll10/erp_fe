@@ -8,6 +8,7 @@ import {
 	VariantResponse,
 	GetVariantListRequest,
 	GetVariantListResponse,
+	UpdateProductRequest,
 } from "@/interfaces/product.interface";
 
 export const getProductList = async (
@@ -38,6 +39,19 @@ export const getProductDetail = async (
 		method: "GET",
 	});
 };
+
+export const updateProduct = async (
+	id: string,
+	data: UpdateProductRequest
+): Promise<ProductResponse> => {
+	return await request({
+		url: `/products/${id}`,
+		method: "PUT",
+		data,
+	});
+};
+
+//============== Variant ================================================
 
 export const createVariant = async (
 	data: CreateVariantRequest

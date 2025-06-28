@@ -1,5 +1,6 @@
 {
 	"variant": {
+		"importantNote": "Quan trọng: Biến thể là duy nhất và không thể thay đổi sau khi tạo",
 		"create": "Tạo biến thể",
 		"name": "Tên biến thể",
 		"size": "Kích thước",

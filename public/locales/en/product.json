@@ -1,5 +1,6 @@
 {
 	"variant": {
+		"importantNote": "Important: Variant is unique and cannot be changed after creation",
 		"create": "Create Variant",
 		"name": "Variant Name",
 		"size": "Size",

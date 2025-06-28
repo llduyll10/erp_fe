@@ -6,7 +6,11 @@ import { createRequiredInputSchema } from "@/utils/schema.util";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ProductItemType, ProductStatus } from "@/enums/product.enum";
-import { useCreateProduct, useGetProductDetail } from "@/services/product";
+import {
+	useCreateProduct,
+	useGetProductDetail,
+	useUpdateProduct,
+} from "@/services/product";
 import { toast } from "sonner";
 import { ProductResponse } from "@/interfaces/product.interface";
 import { useEffect } from "react";
@@ -37,6 +41,7 @@ export const getProductFormDefault = (product?: ProductResponse) => {
 
 export const useProductForm = () => {
 	const { mutate: createProduct, isPending } = useCreateProduct();
+	const { mutate: updateProduct } = useUpdateProduct();
 	const { id } = useParams();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -48,17 +53,34 @@ export const useProductForm = () => {
 
 	const onSubmit = (data: z.infer<typeof ProductFormSchema>) => {
 		console.log(data);
-		createProduct(data, {
-			onSuccess: (response) => {
-				toast.success(t("products.createSuccess"));
-				form.reset();
-				navigate(`/dashboard/products/detail/${response.id}`);
-			},
-			onError: (error) => {
-				toast.error(t("products.createError"));
-				console.error("Create product error:", error);
-			},
-		});
+		if (id) {
+			updateProduct(
+				{
+					id: id!,
+					data: {
+						...data,
+						id: id!,
+					},
+				},
+				{
+					onSuccess: () => {
+						toast.success(t("products.updateSuccess"));
+					},
+				}
+			);
+		} else {
+			createProduct(data, {
+				onSuccess: (response) => {
+					toast.success(t("products.createSuccess"));
+					form.reset();
+					navigate(`/dashboard/products/detail/${response.id}`);
+				},
+				onError: (error) => {
+					toast.error(t("products.createError"));
+					console.error("Create product error:", error);
+				},
+			});
+		}
 	};
 
 	useEffect(() => {

@@ -62,10 +62,11 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{t("products.create")}</CardTitle>
-					<CardDescription>
-						Create a new product with basic information
-					</CardDescription>
+					<CardTitle>
+						{mode === FormMode.CREATE ?
+							t("products.create")
+						:	t("products.update")}
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>
@@ -137,6 +138,7 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 															placeholder={t("products.selectCategory")}
 															searchPlaceholder="Search categories..."
 															emptyMessage={t("products.noCategoryFound")}
+															disabled={mode === FormMode.DETAILS}
 														/>
 													</FormControl>
 													<FormMessage />
@@ -224,9 +226,11 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 								</div>
 
 								{/* Submit Button */}
-								<div className="flex flex-col gap-3">
-									<Button type="submit" className="w-full" disabled={isPending}>
-										{isPending ? t("common.loading") : t("common.create")}
+								<div className="flex flex-col justify-center items-center gap-3">
+									<Button type="submit" className="w-fit" disabled={isPending}>
+										{mode === FormMode.CREATE ?
+											t("products.create")
+										:	t("products.update")}
 									</Button>
 								</div>
 							</div>
