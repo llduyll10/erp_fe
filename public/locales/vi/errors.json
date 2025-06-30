@@ -16,7 +16,7 @@
 			}
 		},
 		"customers": {
-			"phone_number_already_exists": "Số điện thoại đã tồn tại"
+			"phone_number_exists": "Số điện thoại đã tồn tại"
 		}
 	}
 }
