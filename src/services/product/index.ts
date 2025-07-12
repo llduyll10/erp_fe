@@ -7,6 +7,7 @@ import {
 	getVariantDetail,
 	getVariantList,
 	updateProduct,
+	getAllVariants,
 } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import {
@@ -15,6 +16,7 @@ import {
 	GetProductListRequest,
 	GetVariantListRequest,
 	UpdateProductRequest,
+	GetAllVariantsRequest,
 } from "@/interfaces/product.interface";
 
 export const useGetProductList = (
@@ -81,5 +83,19 @@ export const useGetVariantDetail = (variantId: string) => {
 		queryKey: [QUERY_KEYS.VARIANT.DETAIL, variantId],
 		queryFn: () => getVariantDetail(variantId),
 		enabled: !!variantId,
+	});
+};
+
+// Get all variants for order creation with enhanced data
+export const useGetAllVariants = (
+	params?: GetAllVariantsRequest,
+	enabled = true
+) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.VARIANT.ALL, params],
+		queryFn: () => getAllVariants(params),
+		enabled,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
 	});
 };

@@ -85,6 +85,42 @@ type GetVariantListRequest = {
 } & PaginationParams;
 type GetVariantListResponse = ApiListResponse<ProductVariant>;
 
+// Enhanced variants for order creation
+type GetAllVariantsRequest = {
+	page?: number;
+	limit?: number;
+	q?: string;
+	size?: string;
+	color?: string;
+	gender?: string;
+	category_id?: string;
+};
+
+type GetAllVariantsResponse = {
+	data: Array<{
+		id: string;
+		product_id: string;
+		sku: string;
+		variant_name: string;
+		size: string;
+		color: string;
+		gender: string;
+		price: number;
+		cost: number;
+		unit: string;
+		quantity: number;
+		status: string;
+		file_key?: string;
+		product_name: string;
+		product_description?: string;
+		product_file_key?: string;
+		category_name?: string;
+		category_id?: string;
+		display_name: string;
+		is_in_stock: boolean;
+	}>;
+} & PaginationParams;
+
 export type {
 	GetProductListResponse,
 	GetProductListRequest,
@@ -97,4 +133,6 @@ export type {
 	VariantResponse,
 	GetVariantListRequest,
 	GetVariantListResponse,
+	GetAllVariantsRequest,
+	GetAllVariantsResponse,
 };

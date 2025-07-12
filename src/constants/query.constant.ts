@@ -5,10 +5,13 @@ export const QUERY_KEYS = {
 	PRODUCT: {
 		LIST: "productList",
 		DETAIL: "productDetail",
+		SEARCH: "productSearch",
 	},
 	VARIANT: {
 		LIST: "variantList",
 		DETAIL: "variantDetail",
+		SEARCH: "variantSearch",
+		ALL: "variantAll",
 	},
 	CATEGORY: {
 		LIST: "categoryList",
@@ -16,5 +19,11 @@ export const QUERY_KEYS = {
 	CUSTOMER: {
 		LIST: "customerList",
 		DETAIL: "customerDetail",
+		SEARCH: "customerSearch",
+	},
+	ORDER: {
+		LIST: "orderList",
+		DETAIL: "orderDetail",
+		BY_NUMBER: "orderByNumber",
 	},
 };

@@ -1,0 +1,85 @@
+{
+	"create": "Tạo Đơn Hàng",
+	"update": "Cập Nhật Đơn Hàng",
+	"createDescription": "Tạo đơn hàng mới với thông tin khách hàng và sản phẩm",
+	"orderNumber": "Số Đơn Hàng",
+	"customer": "Khách Hàng",
+	"customerPlaceholder": "Tìm kiếm khách hàng theo tên hoặc số điện thoại...",
+	"selectCustomer": "Chọn khách hàng",
+	"searchCustomer": "Tìm kiếm khách hàng",
+	"customerNotFound": "Không tìm thấy khách hàng",
+	"createNewCustomer": "Tạo Khách Hàng Mới",
+	"salesRepresentative": "Nhân Viên Bán Hàng",
+	"selectSalesRep": "Chọn nhân viên bán hàng",
+	"status": "Trạng Thái Đơn Hàng",
+	"selectStatus": "Chọn trạng thái đơn hàng",
+	"fulfillmentStatus": "Trạng Thái Thực Hiện",
+	"selectFulfillmentStatus": "Chọn trạng thái thực hiện",
+	"paymentStatus": "Trạng Thái Thanh Toán",
+	"selectPaymentStatus": "Chọn trạng thái thanh toán",
+
+	"shippingAddress": "Địa Chỉ Giao Hàng",
+	"deliveryNotes": "Ghi Chú Giao Hàng",
+	"deliveryNotesPlaceholder": "Nhập ghi chú giao hàng",
+
+	"orderItems": "Sản Phẩm Đặt Hàng",
+	"addItem": "Thêm Sản Phẩm",
+	"removeItem": "Xóa Sản Phẩm",
+	"product": "Sản Phẩm",
+	"productPlaceholder": "Tìm kiếm sản phẩm biến thể...",
+	"variant": "Biến Thể",
+	"quantity": "Số Lượng",
+	"unitPrice": "Đơn Giá",
+	"totalPrice": "Thành Tiền",
+	"productionStatus": "Trạng Thái Sản Xuất",
+
+	"statuses": {
+		"new": "Mới",
+		"warehouse_confirmed": "Kho Xác Nhận",
+		"need_production": "Cần Sản Xuất",
+		"in_production": "Đang Sản Xuất",
+		"ready": "Sẵn Sàng",
+		"delivering": "Đang Giao Hàng",
+		"delivered": "Đã Giao",
+		"completed": "Hoàn Thành",
+		"cancelled": "Đã Hủy"
+	},
+
+	"fulfillmentStatuses": {
+		"pending": "Đang Chờ",
+		"in_production": "Đang Sản Xuất",
+		"stock_ready": "Hàng Sẵn Sàng",
+		"shipped": "Đã Giao"
+	},
+
+	"paymentStatuses": {
+		"unpaid": "Chưa Thanh Toán",
+		"partial": "Thanh Toán Một Phần",
+		"paid": "Đã Thanh Toán",
+		"refunded": "Đã Hoàn Tiền"
+	},
+
+	"productionStatuses": {
+		"pending": "Đang Chờ",
+		"in_progress": "Đang Thực Hiện",
+		"done": "Hoàn Thành"
+	},
+
+	"createSuccess": "Tạo đơn hàng thành công",
+	"createError": "Tạo đơn hàng thất bại",
+	"updateSuccess": "Cập nhật đơn hàng thành công",
+	"updateError": "Cập nhật đơn hàng thất bại",
+	"deleteSuccess": "Xóa đơn hàng thành công",
+	"deleteError": "Xóa đơn hàng thất bại",
+	"detail": "Chi Tiết Đơn Hàng",
+	"edit": "Chỉnh Sửa Đơn Hàng",
+	"delete": "Xóa Đơn Hàng",
+	"deleteConfirm": "Bạn có chắc chắn muốn xóa đơn hàng này?",
+	"list": "Danh Sách Đơn Hàng",
+	"search": "Tìm kiếm đơn hàng",
+	"noOrdersFound": "Không tìm thấy đơn hàng nào",
+	"searchByOrderNumber": "Tìm kiếm theo số đơn hàng hoặc tên khách hàng...",
+	"orderTotal": "Tổng Đơn Hàng",
+	"itemCount": "{{count}} sản phẩm",
+	"itemCount_other": "{{count}} sản phẩm"
+}

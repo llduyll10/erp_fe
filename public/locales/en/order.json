@@ -1,0 +1,85 @@
+{
+	"create": "Create Order",
+	"update": "Update Order",
+	"createDescription": "Create a new order with customer and product information",
+	"orderNumber": "Order Number",
+	"customer": "Customer",
+	"customerPlaceholder": "Search customer by name or phone...",
+	"selectCustomer": "Select customer",
+	"searchCustomer": "Search customer",
+	"customerNotFound": "Customer not found",
+	"createNewCustomer": "Create New Customer",
+	"salesRepresentative": "Sales Representative",
+	"selectSalesRep": "Select sales representative",
+	"status": "Order Status",
+	"selectStatus": "Select order status",
+	"fulfillmentStatus": "Fulfillment Status",
+	"selectFulfillmentStatus": "Select fulfillment status",
+	"paymentStatus": "Payment Status",
+	"selectPaymentStatus": "Select payment status",
+
+	"shippingAddress": "Shipping Address",
+	"deliveryNotes": "Delivery Notes",
+	"deliveryNotesPlaceholder": "Enter delivery notes",
+
+	"orderItems": "Order Items",
+	"addItem": "Add Item",
+	"removeItem": "Remove Item",
+	"product": "Product",
+	"productPlaceholder": "Search product variants...",
+	"variant": "Variant",
+	"quantity": "Quantity",
+	"unitPrice": "Unit Price",
+	"totalPrice": "Total Price",
+	"productionStatus": "Production Status",
+
+	"statuses": {
+		"new": "New",
+		"warehouse_confirmed": "Warehouse Confirmed",
+		"need_production": "Need Production",
+		"in_production": "In Production",
+		"ready": "Ready",
+		"delivering": "Delivering",
+		"delivered": "Delivered",
+		"completed": "Completed",
+		"cancelled": "Cancelled"
+	},
+
+	"fulfillmentStatuses": {
+		"pending": "Pending",
+		"in_production": "In Production",
+		"stock_ready": "Stock Ready",
+		"shipped": "Shipped"
+	},
+
+	"paymentStatuses": {
+		"unpaid": "Unpaid",
+		"partial": "Partial",
+		"paid": "Paid",
+		"refunded": "Refunded"
+	},
+
+	"productionStatuses": {
+		"pending": "Pending",
+		"in_progress": "In Progress",
+		"done": "Done"
+	},
+
+	"createSuccess": "Order created successfully",
+	"createError": "Failed to create order",
+	"updateSuccess": "Order updated successfully",
+	"updateError": "Failed to update order",
+	"deleteSuccess": "Order deleted successfully",
+	"deleteError": "Failed to delete order",
+	"detail": "Order Detail",
+	"edit": "Edit Order",
+	"delete": "Delete Order",
+	"deleteConfirm": "Are you sure you want to delete this order?",
+	"list": "Order List",
+	"search": "Search order",
+	"noOrdersFound": "No orders found",
+	"searchByOrderNumber": "Search by order number or customer name...",
+	"orderTotal": "Order Total",
+	"itemCount": "{{count}} item",
+	"itemCount_other": "{{count}} items"
+}

@@ -75,10 +75,26 @@ const adminMenu = (t: any) =>
 				title: t("orders.title"),
 				icon: CreditCard,
 				items: [
-					{ title: t("orders.list"), url: "/orders", icon: CheckSquare },
-					{ title: t("orders.detail"), url: "/orders/detail", icon: FileText },
-					{ title: t("orders.cart"), url: "/cart", icon: ShoppingCart },
-					{ title: t("orders.checkout"), url: "/checkout", icon: CreditCard },
+					{
+						title: t("orders.list"),
+						url: "/dashboard/orders",
+						icon: CheckSquare,
+					},
+					{
+						title: t("orders.detail"),
+						url: "/dashboard/orders/create",
+						icon: FileText,
+					},
+					{
+						title: t("orders.cart"),
+						url: "/dashboard/cart",
+						icon: ShoppingCart,
+					},
+					{
+						title: t("orders.checkout"),
+						url: "/dashboard/checkout",
+						icon: CreditCard,
+					},
 				],
 			},
 		],

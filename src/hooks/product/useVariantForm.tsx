@@ -65,6 +65,7 @@ export const useVariantForm = (onSuccessCallback?: () => void) => {
 			cost: Number(data.cost),
 			unit: data.unit || ProductUnit.PIECE,
 			file_key: data.file_key || "",
+			quantity: data.quantity || 0,
 		};
 
 		createVariant(payload, {

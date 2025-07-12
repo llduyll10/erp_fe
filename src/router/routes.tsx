@@ -13,6 +13,9 @@ import { ProductDetailPage } from "@/pages/ProductManagement/DetailProduct";
 import { CreateCustomerPage } from "@/pages/CustomerManagement/CreateCustomer";
 import { DetailCustomerPage } from "@/pages/CustomerManagement/DetailCustomer";
 import { CustomerManagementPage } from "@/pages/CustomerManagement";
+import { CreateOrderPage } from "@/pages/OrderManagement/CreateOrder";
+import { DetailOrderPage } from "@/pages/OrderManagement/DetailOrder";
+import { OrderManagementPage } from "@/pages/OrderManagement";
 
 export const router = createBrowserRouter([
 	{
@@ -68,6 +71,18 @@ export const router = createBrowserRouter([
 			{
 				path: "customers/detail/:id",
 				element: <DetailCustomerPage />,
+			},
+			{
+				path: "orders",
+				element: <OrderManagementPage />,
+			},
+			{
+				path: "orders/create",
+				element: <CreateOrderPage />,
+			},
+			{
+				path: "orders/detail/:id",
+				element: <DetailOrderPage />,
 			},
 		],
 	},

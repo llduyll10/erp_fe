@@ -9,6 +9,8 @@ import {
 	GetVariantListRequest,
 	GetVariantListResponse,
 	UpdateProductRequest,
+	GetAllVariantsRequest,
+	GetAllVariantsResponse,
 } from "@/interfaces/product.interface";
 
 export const getProductList = async (
@@ -79,5 +81,16 @@ export const getVariantDetail = async (
 	return await request({
 		url: `/product-variants/${variantId}`,
 		method: "GET",
+	});
+};
+
+// Get all variants for order creation with enhanced data
+export const getAllVariants = async (
+	params?: GetAllVariantsRequest
+): Promise<GetAllVariantsResponse> => {
+	return await request({
+		url: "/product-variants/all",
+		method: "GET",
+		params,
 	});
 };
