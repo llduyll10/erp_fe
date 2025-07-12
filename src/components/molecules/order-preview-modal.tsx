@@ -20,6 +20,7 @@ import {
 	PaymentStatus,
 	ProductionStatus 
 } from "@/enums/order.enum";
+import { ProductUnit } from "@/enums/product.enum";
 import { Package, User, MapPin, CreditCard, Truck } from "lucide-react";
 import { useGetUserList } from "@/services/user";
 import { UserRoleEnum } from "@/enums/user.enums";
@@ -280,7 +281,13 @@ export function OrderPreviewModal({
 												{t("product")} #{index + 1}
 											</div>
 											<div className="text-sm text-muted-foreground">
-												{t("quantity")}: {item.quantity} | {t("unitPrice")}: $
+												{t("quantity")}: {item.quantity} 
+												{item.unit && (
+													<span> ({item.unit === ProductUnit.PIECE ? "Cái" : 
+															item.unit === ProductUnit.SET ? "Bộ" : 
+															item.unit === ProductUnit.PAIR ? "Đôi" : item.unit})</span>
+												)} 
+												| {t("unitPrice")}: $
 												{(Number(item.unit_price) || 0).toFixed(2)}
 											</div>
 										</div>

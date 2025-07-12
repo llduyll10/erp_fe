@@ -33,6 +33,7 @@ import {
 	PaymentStatus,
 	ProductionStatus,
 } from "@/enums/order.enum";
+import { ProductUnit } from "@/enums/product.enum";
 import { AddressForm } from "@/components/molecules/address-form";
 import { CustomerSearchCombobox } from "@/components/molecules/customer-search-combobox";
 import { ProductSearchCombobox } from "@/components/molecules/product-search-combobox";
@@ -85,6 +86,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 			quantity: 1,
 			unit_price: 0,
 			total_price: 0,
+			unit: ProductUnit.PIECE,
 			production_status: ProductionStatus.PENDING,
 		});
 	};
@@ -656,8 +658,8 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 													</div>
 												)}
 
-												{/* Quantity, Price, Total */}
-												<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+												{/* Quantity, Unit, Price, Total */}
+												<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 													{/* Quantity */}
 													<FormField
 														control={form.control}
@@ -677,6 +679,39 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 																		disabled={mode === FormMode.DETAILS}
 																	/>
 																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+
+													{/* Unit */}
+													<FormField
+														control={form.control}
+														name={`order_items.${index}.unit`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Đơn vị</FormLabel>
+																<Select
+																	onValueChange={field.onChange}
+																	value={field.value}
+																	disabled={mode === FormMode.DETAILS}>
+																	<FormControl>
+																		<SelectTrigger>
+																			<SelectValue placeholder="Chọn đơn vị" />
+																		</SelectTrigger>
+																	</FormControl>
+																	<SelectContent>
+																		<SelectItem value={ProductUnit.PIECE}>
+																			Cái
+																		</SelectItem>
+																		<SelectItem value={ProductUnit.SET}>
+																			Bộ
+																		</SelectItem>
+																		<SelectItem value={ProductUnit.PAIR}>
+																			Đôi
+																		</SelectItem>
+																	</SelectContent>
+																</Select>
 																<FormMessage />
 															</FormItem>
 														)}

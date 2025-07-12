@@ -11,6 +11,7 @@ import {
 	PaymentStatus,
 	ProductionStatus,
 } from "@/enums/order.enum";
+import { ProductUnit } from "@/enums/product.enum";
 import {
 	OrderResponse,
 	CreateOrderRequest,
@@ -36,6 +37,7 @@ export const OrderItemSchema = z
 		quantity: z.number().min(1, "Quantity must be at least 1"),
 		unit_price: z.number().min(0, "Unit price must be positive"),
 		total_price: z.number().min(0, "Total price must be positive"),
+		unit: z.nativeEnum(ProductUnit).optional(),
 		production_status: z.nativeEnum(ProductionStatus).optional(),
 	})
 	.refine(
@@ -99,6 +101,7 @@ export const getOrderFormDefault = (
 				quantity: item.quantity || 1,
 				unit_price: item.unit_price || 0,
 				total_price: item.total_price || 0,
+				unit: item.unit || ProductUnit.PIECE,
 				production_status: item.production_status || ProductionStatus.PENDING,
 			})) || [],
 	};

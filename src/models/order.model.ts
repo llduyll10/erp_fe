@@ -8,6 +8,7 @@ import {
 	PaymentStatus,
 	ProductionStatus,
 } from "@/enums/order.enum";
+import { ProductUnit } from "@/enums/product.enum";
 
 type Order = {
 	id?: string | null;
@@ -52,6 +53,7 @@ type OrderItem = {
 	quantity?: number | null;
 	unit_price?: number | null;
 	total_price?: number | null;
+	unit?: ProductUnit | null;
 	production_status?: ProductionStatus | null;
 
 	// Relations

@@ -4,6 +4,7 @@ import {
 	PaymentStatus,
 	ProductionStatus,
 } from "@/enums/order.enum";
+import { ProductUnit } from "@/enums/product.enum";
 import { Order, OrderItem } from "@/models/order.model";
 import { ApiListResponse, PaginationParams } from "./common.interface";
 
@@ -14,6 +15,7 @@ type CreateOrderItemRequest = {
 	quantity: number;
 	unit_price: number;
 	total_price: number;
+	unit?: ProductUnit;
 	production_status?: ProductionStatus;
 };
 
