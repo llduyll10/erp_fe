@@ -16,6 +16,12 @@ import { CustomerManagementPage } from "@/pages/CustomerManagement";
 import { CreateOrderPage } from "@/pages/OrderManagement/CreateOrder";
 import { DetailOrderPage } from "@/pages/OrderManagement/DetailOrder";
 import { OrderManagementPage } from "@/pages/OrderManagement";
+import { WarehouseManagementPage } from "@/pages/WarehouseManagement";
+import { StockMovementsPage } from "@/pages/WarehouseManagement/StockMovements";
+import { StockInPage } from "@/pages/WarehouseManagement/StockIn";
+import { StockOutPage } from "@/pages/WarehouseManagement/StockOut";
+import { WarehouseDashboardPage } from "@/pages/WarehouseManagement/Dashboard";
+import { StockInventoryPage } from "@/pages/WarehouseManagement/StockInventory";
 
 export const router = createBrowserRouter([
 	{
@@ -83,6 +89,30 @@ export const router = createBrowserRouter([
 			{
 				path: "orders/detail/:id",
 				element: <DetailOrderPage />,
+			},
+			{
+				path: "warehouse",
+				element: <WarehouseManagementPage />,
+			},
+			{
+				path: "warehouse/dashboard",
+				element: <WarehouseDashboardPage />,
+			},
+			{
+				path: "warehouse/movements",
+				element: <StockMovementsPage />,
+			},
+			{
+				path: "warehouse/import",
+				element: <StockInPage />,
+			},
+			{
+				path: "warehouse/export",
+				element: <StockOutPage />,
+			},
+			{
+				path: "warehouse/inventory",
+				element: <StockInventoryPage />,
 			},
 		],
 	},

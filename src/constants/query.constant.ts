@@ -27,4 +27,12 @@ export const QUERY_KEYS = {
 		DETAIL: "orderDetail",
 		BY_NUMBER: "orderByNumber",
 	},
+	WAREHOUSE: {
+		LIST: "warehouseList",
+		DETAIL: "warehouseDetail",
+		MOVEMENTS: "stockMovements",
+		SUMMARY: "stockSummary",
+		INVENTORY: "stockInventory",
+		DASHBOARD_SUMMARY: "warehouseSummary",
+	},
 };

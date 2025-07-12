@@ -25,6 +25,7 @@ import { useGetCustomerList } from "@/services/customer";
 import { Customer } from "@/models/customer.model";
 import { useGetUserList } from "@/services/user";
 import { User } from "@/models/user.model";
+import { OrderVariant } from "@/models/order-variant.model";
 
 // Order Item Schema
 export const OrderItemSchema = z
@@ -201,15 +202,16 @@ export const useOrderForm = () => {
 	};
 
 	// Handle sales representative selection
-	const handleSalesRepSelect = (userId: string) => {
+	const handleSalesRepSelect = (userId: string, user?: User) => {
 		form.setValue("sales_representative_id", userId);
 		
-		// We need to get the user data from the sales representative query
-		// This will be handled by the AutocompleteSearch component's internal state
-		// For now, we'll clear the selected sales rep and let the modal fetch it
-		if (!userId) {
+		// If user data is provided, set it directly
+		if (user) {
+			setSelectedSalesRep(user);
+		} else if (!userId) {
 			setSelectedSalesRep(null);
 		}
+		// If userId is provided but no user data, selectedSalesRep will be set by AutocompleteSearch component
 	};
 
 	const onSubmit = (data: z.infer<typeof OrderFormSchema>) => {
@@ -242,16 +244,28 @@ export const useOrderForm = () => {
 	};
 
 	useEffect(() => {
-		if (!orderDetail) {
-			form.reset(getOrderFormDefault()); // TODO: Get from auth store
-			setSelectedCustomer(null);
-			setSelectedSalesRep(null);
+		// Only run this effect for initial load or when orderDetail actually changes
+		// Don't reset form if we're in create mode and orderDetail is null
+		if (!orderDetail && !id) {
+			// Only reset on initial load for create mode
+			const currentFormValues = form.getValues();
+			const hasFormData = currentFormValues.customer_id || 
+							   currentFormValues.sales_representative_id || 
+							   (currentFormValues.order_items && currentFormValues.order_items.length > 0);
+			
+			if (!hasFormData) {
+				form.reset(getOrderFormDefault());
+				setSelectedCustomer(null);
+				setSelectedSalesRep(null);
+			}
 			return;
 		}
 		
-		// Reset form with order detail data
+		if (!orderDetail) return;
+		
+		// Reset form with order detail data only when we have orderDetail
 		const formData = getOrderFormDefault(orderDetail);
-		form.reset(formData); // TODO: Get from auth store
+		form.reset(formData);
 		
 		// Set selected customer
 		if (orderDetail.customer) {
@@ -270,7 +284,19 @@ export const useOrderForm = () => {
 				setSelectedSalesRep(foundSalesRep);
 			}
 		}
-	}, [orderDetail, userListResponse]);
+	}, [orderDetail?.id, id]); // Only depend on orderDetail.id and id, not the whole orderDetail object
+	
+	// Separate effect for handling userListResponse when we have sales_representative_id
+	useEffect(() => {
+		if (orderDetail?.sales_representative_id && userListResponse?.data && !selectedSalesRep) {
+			const foundSalesRep = userListResponse.data.find(
+				(user: User) => user.id === orderDetail.sales_representative_id
+			);
+			if (foundSalesRep) {
+				setSelectedSalesRep(foundSalesRep);
+			}
+		}
+	}, [userListResponse?.data, orderDetail?.sales_representative_id, selectedSalesRep]);
 
 	return {
 		form,

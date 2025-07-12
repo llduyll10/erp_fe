@@ -68,11 +68,6 @@ const adminMenu = (t: any) =>
 						url: "/dashboard/users",
 						icon: List,
 					},
-					{
-						title: "Tạo người dùng",
-						url: "/dashboard/users/create",
-						icon: Plus,
-					},
 				],
 			},
 			{
@@ -111,6 +106,11 @@ const adminMenu = (t: any) =>
 				title: "Kho hàng",
 				icon: Warehouse,
 				items: [
+					{
+						title: "Kiểm tra tồn kho",
+						url: "/dashboard/warehouse/inventory",
+						icon: Box,
+					},
 					{
 						title: "Nhập kho",
 						url: "/dashboard/warehouse/import",
@@ -159,7 +159,7 @@ const userMenu = (t: any) =>
 function SidebarMenu() {
 	const role = getCurrentRole();
 	const { t } = useTranslation();
-	
+
 	// Determine menu based on role hierarchy
 	const isAdmin = hasMinimumRole(role, UserRoleEnum.ADMIN);
 	const menu = isAdmin ? adminMenu(t) : userMenu(t);

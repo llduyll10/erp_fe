@@ -5,7 +5,7 @@
 Warehouse Module quản lý toàn bộ hoạt động kho trong hệ thống ERP ngành quần áo thể thao, bao gồm:
 
 - Nhập kho (Stock In) - Tăng tồn kho sản phẩm
-- Xuất kho (Stock Out) - Giảm tồn kho sản phẩm  
+- Xuất kho (Stock Out) - Giảm tồn kho sản phẩm
 - Theo dõi lịch sử xuất nhập kho
 - Báo cáo tồn kho và tổng hợp
 
@@ -15,13 +15,14 @@ Warehouse Module quản lý toàn bộ hoạt động kho trong hệ thống ERP
 
 ### Base URL: `/v1/warehouse`
 
-| Method | Endpoint               | Description                    | Permission Required |
-| ------ | ---------------------- | ------------------------------ | ------------------- |
-| POST   | `/stock-in`            | Nhập kho sản phẩm              | `create`            |
-| POST   | `/stock-out`           | Xuất kho sản phẩm              | `create`            |
-| GET    | `/movements`           | Lấy danh sách xuất nhập kho    | `list`              |
-| GET    | `/movements/:id`       | Chi tiết 1 phiếu xuất nhập kho | `list`              |
-| GET    | `/summary`             | Báo cáo tồn kho tổng hợp       | `list`              |
+| Method | Endpoint         | Description                    | Permission Required |
+| ------ | ---------------- | ------------------------------ | ------------------- |
+| POST   | `/stock-in`      | Nhập kho sản phẩm              | `create`            |
+| POST   | `/stock-out`     | Xuất kho sản phẩm              | `create`            |
+| POST   | `/fulfill-order` | Xuất kho tự động cho đơn hàng  | `create`            |
+| GET    | `/movements`     | Lấy danh sách xuất nhập kho    | `list`              |
+| GET    | `/movements/:id` | Chi tiết 1 phiếu xuất nhập kho | `list`              |
+| GET    | `/summary`       | Báo cáo tồn kho tổng hợp       | `list`              |
 
 ---
 
@@ -31,20 +32,22 @@ Warehouse Module quản lý toàn bộ hoạt động kho trong hệ thống ERP
 
 ```typescript
 {
-  id: string;                    // UUID
-  company_id: string;            // UUID
-  variant_id: string;            // UUID (ProductVariant)
-  type: StockMovementType;       // Enum: 'IN' | 'OUT'
-  quantity: number;              // Decimal
-  reason: string;                // Lý do xuất/nhập kho
-  created_by: string;            // UUID (User)
-  created_at: Date;
-  updated_at: Date;
+	id: string; // UUID
+	company_id: string; // UUID
+	variant_id: string; // UUID (ProductVariant)
+	order_id: string; // UUID (Order) - nullable, liên kết với đơn hàng
+	type: StockMovementType; // Enum: 'IN' | 'OUT'
+	quantity: number; // Decimal
+	reason: string; // Lý do xuất/nhập kho
+	created_by: string; // UUID (User)
+	created_at: Date;
+	updated_at: Date;
 
-  // Relations
-  company: Company;
-  variant: ProductVariant;       // Includes nested product via variant.product
-  created_by_user: User;
+	// Relations
+	company: Company;
+	variant: ProductVariant; // Includes nested product via variant.product
+	order: Order; // Nullable, order liên quan đến stock movement
+	created_by_user: User;
 }
 ```
 
@@ -52,9 +55,9 @@ Warehouse Module quản lý toàn bộ hoạt động kho trong hệ thống ERP
 
 ```typescript
 {
-  // ... existing fields
-  quantity: number;              // Current stock quantity (updated by warehouse operations)
-  // ... other fields
+	// ... existing fields
+	quantity: number; // Current stock quantity (updated by warehouse operations)
+	// ... other fields
 }
 ```
 
@@ -66,8 +69,8 @@ Warehouse Module quản lý toàn bộ hoạt động kho trong hệ thống ERP
 
 ```typescript
 enum StockMovementType {
-  IN = 'IN',    // Nhập kho
-  OUT = 'OUT',  // Xuất kho
+	IN = "IN", // Nhập kho
+	OUT = "OUT", // Xuất kho
 }
 ```
 
@@ -97,20 +100,34 @@ Content-Type: application/json
 {
   "variant_id": "uuid",         // Required - Product variant to stock out
   "quantity": 50.25,            // Required - Quantity to subtract (min: 0.01)
-  "reason": "Xuất hàng bán"     // Optional - Reason for stock out
+  "reason": "Xuất hàng bán",    // Optional - Reason for stock out
+  "order_id": "uuid"            // Optional - Link to specific order
+}
+```
+
+### Fulfill Order Request
+
+```typescript
+POST /v1/warehouse/fulfill-order
+Content-Type: application/json
+
+{
+  "order_id": "uuid",           // Required - Order to fulfill
+  "reason": "Order fulfillment" // Optional - Custom reason
 }
 ```
 
 ### Query Stock Movements
 
 ```typescript
-GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
+GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid&order_id=uuid
 
 {
   page?: number;                          // Default: 1
   limit?: number;                         // Default: 10
   q?: string;                            // Search by variant name, SKU, or product name
   variant_id?: string;                    // Filter by specific variant
+  order_id?: string;                      // Filter by specific order
   type?: StockMovementType;               // Filter by movement type (IN/OUT)
 }
 ```
@@ -126,13 +143,15 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
   "id": "uuid",
   "company_id": "uuid",
   "variant_id": "uuid",
+  "order_id": "uuid",           // Nullable, present if linked to order
   "type": "IN",
   "quantity": 100.5,
   "reason": "Nhập hàng từ NCC",
   "created_by": "uuid",
+  "updated_by": "uuid",
   "created_at": "2024-01-01T00:00:00.000Z",
   "updated_at": "2024-01-01T00:00:00.000Z",
-  
+
   "variant": {
     "id": "uuid",
     "sku": "SP001-M-RED-MALE",
@@ -146,10 +165,21 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
       "name": "Áo Thun Cotton"
     }
   },
-  
+
+  "order": {                    // Nullable, present if linked to order
+    "id": "uuid",
+    "order_number": "ORD-2024-001",
+    "status": "CONFIRMED"
+  },
+
   "created_by_user": {
     "id": "uuid",
     "name": "Nguyễn Văn A"
+  },
+
+  "updated_by_user": {
+    "id": "uuid",
+    "name": "Trần Thị B"
   }
 }
 ```
@@ -165,6 +195,7 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
       "quantity": 100,
       "reason": "Nhập hàng từ NCC",
       "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z",
       "variant": {
         "sku": "SP001-M-RED",
         "variant_name": "Áo Thun Size M",
@@ -174,6 +205,9 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
       },
       "created_by_user": {
         "name": "Nhân viên kho"
+      },
+      "updated_by_user": {
+        "name": "Quản lý kho"
       }
     }
   ],
@@ -190,23 +224,23 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
 
 ```typescript
 [
-  {
-    "variant_id": "uuid",
-    "current_stock": 150.5,     // Current quantity in variant table
-    "total_stock_in": 200,      // Total IN movements
-    "total_stock_out": 49.5,    // Total OUT movements
-    "variant": {
-      "id": "uuid",
-      "sku": "SP001-M-RED",
-      "variant_name": "Áo Thun Size M",
-      "size": "M",
-      "color": "RED",
-      "product": {
-        "name": "Áo Thun Cotton"
-      }
-    }
-  }
-]
+	{
+		variant_id: "uuid",
+		current_stock: 150.5, // Current quantity in variant table
+		total_stock_in: 200, // Total IN movements
+		total_stock_out: 49.5, // Total OUT movements
+		variant: {
+			id: "uuid",
+			sku: "SP001-M-RED",
+			variant_name: "Áo Thun Size M",
+			size: "M",
+			color: "RED",
+			product: {
+				name: "Áo Thun Cotton",
+			},
+		},
+	},
+];
 ```
 
 ---
@@ -256,6 +290,42 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
   "requested": 50
 }
 
+// 400 - Cannot Stock Out Due to Pending Orders
+{
+  "message": "Cannot stock out directly. Variant has pending orders.",
+  "statusCode": 400,
+  "current_stock": 100,
+  "pending_orders_quantity": 80,
+  "available_for_direct_stock_out": 20,
+  "requested": 50,
+  "pending_orders": [
+    {
+      "order_id": "uuid",
+      "order_number": "ORD-2024-001"
+    }
+  ]
+}
+
+// 400 - Order Already Fulfilled
+{
+  "message": "Order is already fulfilled",
+  "statusCode": 400
+}
+
+// 400 - Insufficient Stock for Order Fulfillment
+{
+  "message": "Insufficient stock for order fulfillment",
+  "statusCode": 400,
+  "insufficient_items": [
+    {
+      "variant_id": "uuid",
+      "sku": "SP001-M-RED",
+      "current_stock": 5,
+      "required": 10
+    }
+  ]
+}
+
 // 400 - Invalid Quantity
 {
   "message": "Validation failed",
@@ -285,13 +355,19 @@ GET /v1/warehouse/movements?page=1&limit=10&type=IN&variant_id=uuid
 
 ```typescript
 // Can create stock movements (stock in/out)
-SUPERADMIN, ADMIN_COMPANY, ADMIN, WORKSHOP_ADMIN, WORKSHOP_MEMBER
+SUPERADMIN, ADMIN_COMPANY, ADMIN, WORKSHOP_ADMIN, WORKSHOP_MEMBER;
 
 // Can view stock movements and summary
-SUPERADMIN, ADMIN_COMPANY, ADMIN, WORKSHOP_ADMIN, WORKSHOP_MEMBER, SALE_ADMIN, SALE_MEMBER
+SUPERADMIN,
+	ADMIN_COMPANY,
+	ADMIN,
+	WORKSHOP_ADMIN,
+	WORKSHOP_MEMBER,
+	SALE_ADMIN,
+	SALE_MEMBER;
 
 // Can delete stock movements (if needed)
-SUPERADMIN, ADMIN_COMPANY, ADMIN
+SUPERADMIN, ADMIN_COMPANY, ADMIN;
 ```
 
 ---
@@ -302,37 +378,41 @@ SUPERADMIN, ADMIN_COMPANY, ADMIN
 
 ```typescript
 const stockIn = async (variantId, quantity, reason) => {
-  const response = await fetch('/v1/warehouse/stock-in', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      variant_id: variantId,
-      quantity: parseFloat(quantity),
-      reason: reason || 'Nhập kho',
-    }),
-  });
+	const response = await fetch("/v1/warehouse/stock-in", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			variant_id: variantId,
+			quantity: parseFloat(quantity),
+			reason: reason || "Nhập kho",
+		}),
+	});
 
-  if (!response.ok) {
-    const error = await response.json();
-    if (error.message === 'product_variants.not_found') {
-      throw new Error('Sản phẩm không tồn tại');
-    }
-    throw new Error('Nhập kho thất bại');
-  }
+	if (!response.ok) {
+		const error = await response.json();
+		if (error.message === "product_variants.not_found") {
+			throw new Error("Sản phẩm không tồn tại");
+		}
+		throw new Error("Nhập kho thất bại");
+	}
 
-  return response.json();
+	return response.json();
 };
 
 // Usage
 try {
-  const result = await stockIn('variant-uuid', 100, 'Nhập hàng từ nhà cung cấp');
-  console.log('Nhập kho thành công:', result);
-  // Update UI to show new stock quantity
+	const result = await stockIn(
+		"variant-uuid",
+		100,
+		"Nhập hàng từ nhà cung cấp"
+	);
+	console.log("Nhập kho thành công:", result);
+	// Update UI to show new stock quantity
 } catch (error) {
-  console.error('Lỗi nhập kho:', error.message);
+	console.error("Lỗi nhập kho:", error.message);
 }
 ```
 
@@ -340,40 +420,42 @@ try {
 
 ```typescript
 const stockOut = async (variantId, quantity, reason) => {
-  const response = await fetch('/v1/warehouse/stock-out', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      variant_id: variantId,
-      quantity: parseFloat(quantity),
-      reason: reason || 'Xuất kho',
-    }),
-  });
+	const response = await fetch("/v1/warehouse/stock-out", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			variant_id: variantId,
+			quantity: parseFloat(quantity),
+			reason: reason || "Xuất kho",
+		}),
+	});
 
-  if (!response.ok) {
-    const error = await response.json();
-    if (error.message === 'warehouse.insufficient_stock') {
-      throw new Error(`Không đủ hàng. Tồn kho: ${error.current_stock}, Yêu cầu: ${error.requested}`);
-    }
-    throw new Error('Xuất kho thất bại');
-  }
+	if (!response.ok) {
+		const error = await response.json();
+		if (error.message === "warehouse.insufficient_stock") {
+			throw new Error(
+				`Không đủ hàng. Tồn kho: ${error.current_stock}, Yêu cầu: ${error.requested}`
+			);
+		}
+		throw new Error("Xuất kho thất bại");
+	}
 
-  return response.json();
+	return response.json();
 };
 
 // Usage with stock validation
 try {
-  await stockOut('variant-uuid', 50, 'Xuất hàng bán cho khách');
-  console.log('Xuất kho thành công');
+	await stockOut("variant-uuid", 50, "Xuất hàng bán cho khách");
+	console.log("Xuất kho thành công");
 } catch (error) {
-  if (error.message.includes('Không đủ hàng')) {
-    alert(error.message);
-  } else {
-    console.error('Lỗi xuất kho:', error.message);
-  }
+	if (error.message.includes("Không đủ hàng")) {
+		alert(error.message);
+	} else {
+		console.error("Lỗi xuất kho:", error.message);
+	}
 }
 ```
 
@@ -381,23 +463,23 @@ try {
 
 ```typescript
 const getStockMovements = async (filters = {}) => {
-  const params = new URLSearchParams();
-  
-  if (filters.variant_id) params.append('variant_id', filters.variant_id);
-  if (filters.type) params.append('type', filters.type);
-  if (filters.q) params.append('q', filters.q);
-  params.append('page', filters.page || 1);
-  params.append('limit', filters.limit || 10);
+	const params = new URLSearchParams();
 
-  const response = await fetch(`/v1/warehouse/movements?${params.toString()}`);
-  return response.json();
+	if (filters.variant_id) params.append("variant_id", filters.variant_id);
+	if (filters.type) params.append("type", filters.type);
+	if (filters.q) params.append("q", filters.q);
+	params.append("page", filters.page || 1);
+	params.append("limit", filters.limit || 10);
+
+	const response = await fetch(`/v1/warehouse/movements?${params.toString()}`);
+	return response.json();
 };
 
 // Usage
 const movements = await getStockMovements({
-  type: 'IN',
-  page: 1,
-  limit: 20
+	type: "IN",
+	page: 1,
+	limit: 20,
 });
 ```
 
@@ -405,14 +487,14 @@ const movements = await getStockMovements({
 
 ```typescript
 const getStockSummary = async () => {
-  const response = await fetch('/v1/warehouse/summary');
-  return response.json();
+	const response = await fetch("/v1/warehouse/summary");
+	return response.json();
 };
 
 // Usage for dashboard
 const summary = await getStockSummary();
-summary.forEach(item => {
-  console.log(`${item.variant.product.name}: ${item.current_stock} units`);
+summary.forEach((item) => {
+	console.log(`${item.variant.product.name}: ${item.current_stock} units`);
 });
 ```
 
@@ -422,7 +504,7 @@ summary.forEach(item => {
 
 ### Stock Operations Page
 
-- **Two-Panel Layout**: 
+- **Two-Panel Layout**:
   - Left: Stock In form
   - Right: Stock Out form
 - **Product Search**: Autocomplete để chọn variant (by name, SKU)
@@ -434,7 +516,7 @@ summary.forEach(item => {
 ### Stock Movements List
 
 - **Table View**: Date, Type (IN/OUT), Product, Quantity, Reason, User
-- **Filters**: 
+- **Filters**:
   - Type dropdown (All/IN/OUT)
   - Date range picker
   - Product/variant search
@@ -456,51 +538,48 @@ summary.forEach(item => {
 ```html
 <!-- Stock In Form -->
 <form class="stock-in-form">
-  <div class="form-group">
-    <label>Sản phẩm *</label>
-    <autocomplete 
-      placeholder="Tìm theo tên hoặc SKU..."
-      v-model="selectedVariant"
-      :options="variants"
-      display-field="display_name"
-    />
-  </div>
-  
-  <div class="form-group" v-if="selectedVariant">
-    <label>Tồn kho hiện tại</label>
-    <div class="current-stock">{{ selectedVariant.quantity }} {{ selectedVariant.unit }}</div>
-  </div>
-  
-  <div class="form-group">
-    <label>Số lượng nhập *</label>
-    <input 
-      type="number" 
-      step="0.01" 
-      min="0.01"
-      v-model="quantity"
-      placeholder="Nhập số lượng..."
-    />
-  </div>
-  
-  <div class="form-group">
-    <label>Lý do</label>
-    <select v-model="selectedReason">
-      <option value="">Chọn lý do...</option>
-      <option value="Nhập hàng từ NCC">Nhập hàng từ NCC</option>
-      <option value="Trả hàng từ khách">Trả hàng từ khách</option>
-      <option value="Điều chỉnh tồn kho">Điều chỉnh tồn kho</option>
-      <option value="custom">Lý do khác...</option>
-    </select>
-    <input 
-      v-if="selectedReason === 'custom'"
-      v-model="customReason"
-      placeholder="Nhập lý do..."
-    />
-  </div>
-  
-  <button type="submit" :disabled="!canSubmit">
-    Nhập kho
-  </button>
+	<div class="form-group">
+		<label>Sản phẩm *</label>
+		<autocomplete
+			placeholder="Tìm theo tên hoặc SKU..."
+			v-model="selectedVariant"
+			:options="variants"
+			display-field="display_name" />
+	</div>
+
+	<div class="form-group" v-if="selectedVariant">
+		<label>Tồn kho hiện tại</label>
+		<div class="current-stock">
+			{{ selectedVariant.quantity }} {{ selectedVariant.unit }}
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>Số lượng nhập *</label>
+		<input
+			type="number"
+			step="0.01"
+			min="0.01"
+			v-model="quantity"
+			placeholder="Nhập số lượng..." />
+	</div>
+
+	<div class="form-group">
+		<label>Lý do</label>
+		<select v-model="selectedReason">
+			<option value="">Chọn lý do...</option>
+			<option value="Nhập hàng từ NCC">Nhập hàng từ NCC</option>
+			<option value="Trả hàng từ khách">Trả hàng từ khách</option>
+			<option value="Điều chỉnh tồn kho">Điều chỉnh tồn kho</option>
+			<option value="custom">Lý do khác...</option>
+		</select>
+		<input
+			v-if="selectedReason === 'custom'"
+			v-model="customReason"
+			placeholder="Nhập lý do..." />
+	</div>
+
+	<button type="submit" :disabled="!canSubmit">Nhập kho</button>
 </form>
 ```
 
@@ -508,40 +587,40 @@ summary.forEach(item => {
 
 ```css
 .movement-type {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-weight: 500;
 }
 
 .movement-type.in {
-  background: #e8f5e8;
-  color: #2e7d2e;
+	background: #e8f5e8;
+	color: #2e7d2e;
 }
 
 .movement-type.out {
-  background: #ffebee;
-  color: #c62828;
+	background: #ffebee;
+	color: #c62828;
 }
 
 .stock-level {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 12px;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 12px;
 }
 
 .stock-level.high {
-  background: #e8f5e8;
-  color: #2e7d2e;
+	background: #e8f5e8;
+	color: #2e7d2e;
 }
 
 .stock-level.medium {
-  background: #fff3e0;
-  color: #f57c00;
+	background: #fff3e0;
+	color: #f57c00;
 }
 
 .stock-level.low {
-  background: #ffebee;
-  color: #c62828;
+	background: #ffebee;
+	color: #c62828;
 }
 ```
 
@@ -578,19 +657,19 @@ summary.forEach(item => {
 ```typescript
 // When order is fulfilled, automatically stock out
 const fulfillOrder = async (orderId) => {
-  const order = await getOrderDetail(orderId);
-  
-  for (const item of order.order_items) {
-    if (item.variant_id) {
-      await stockOut({
-        variant_id: item.variant_id,
-        quantity: item.quantity,
-        reason: `Xuất hàng cho đơn ${order.order_number}`
-      });
-    }
-  }
-  
-  await updateOrderStatus(orderId, 'DELIVERED');
+	const order = await getOrderDetail(orderId);
+
+	for (const item of order.order_items) {
+		if (item.variant_id) {
+			await stockOut({
+				variant_id: item.variant_id,
+				quantity: item.quantity,
+				reason: `Xuất hàng cho đơn ${order.order_number}`,
+			});
+		}
+	}
+
+	await updateOrderStatus(orderId, "DELIVERED");
 };
 ```
 
@@ -599,13 +678,13 @@ const fulfillOrder = async (orderId) => {
 ```typescript
 // Get current stock when viewing product details
 const getProductStock = async (productId) => {
-  const variants = await getProductVariants(productId);
-  const stockSummary = await getStockSummary();
-  
-  return variants.map(variant => ({
-    ...variant,
-    stock_movements: stockSummary.find(s => s.variant_id === variant.id)
-  }));
+	const variants = await getProductVariants(productId);
+	const stockSummary = await getStockSummary();
+
+	return variants.map((variant) => ({
+		...variant,
+		stock_movements: stockSummary.find((s) => s.variant_id === variant.id),
+	}));
 };
 ```
 

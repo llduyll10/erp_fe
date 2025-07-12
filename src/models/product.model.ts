@@ -20,3 +20,4 @@ type Product = {
 };
 
 export type { Product };
+export type { ProductVariant } from "./product-variant.model";
