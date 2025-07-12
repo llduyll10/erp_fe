@@ -10,6 +10,7 @@ import {
 	FulfillmentStatus,
 	PaymentStatus,
 } from "@/enums/order.enum";
+import { useTranslation } from "react-i18next";
 
 // Order Status Cell Renderer
 const OrderStatusCellRenderer = (params: any) => {
@@ -95,6 +96,7 @@ const DateCellRenderer = (params: any) => {
 };
 
 const useOrderManagement = () => {
+	const { t } = useTranslation("common");
 	const [searchParams, setSearchParams] = useState<
 		Omit<GetOrderListRequest, "page" | "limit" | "offset">
 	>({});
@@ -132,13 +134,13 @@ const useOrderManagement = () => {
 
 	const colDefs: ColDef<Order>[] = [
 		{
-			headerName: "Order Number",
+			headerName: t("modules.orders.columns.orderNumber"),
 			field: "order_number",
 			width: 140,
 			pinned: "left",
 		},
 		{
-			headerName: "Customer",
+			headerName: t("modules.orders.columns.customer"),
 			field: "customer.name",
 			flex: 1,
 			minWidth: 150,
@@ -152,25 +154,25 @@ const useOrderManagement = () => {
 			cellRenderer: SalesRepCellRenderer,
 		},
 		{
-			headerName: "Status",
+			headerName: t("modules.orders.columns.status"),
 			field: "status",
 			width: 140,
 			cellRenderer: OrderStatusCellRenderer,
 		},
 		{
-			headerName: "Fulfillment",
+			headerName: t("modules.orders.columns.fulfillmentStatus"),
 			field: "fulfillment_status",
 			width: 120,
 			cellRenderer: FulfillmentStatusCellRenderer,
 		},
 		{
-			headerName: "Payment",
+			headerName: t("modules.orders.columns.paymentStatus"),
 			field: "payment_status",
 			width: 100,
 			cellRenderer: PaymentStatusCellRenderer,
 		},
 		{
-			headerName: "Created At",
+			headerName: t("modules.orders.columns.createdAt"),
 			field: "created_at",
 			width: 120,
 			cellRenderer: DateCellRenderer,

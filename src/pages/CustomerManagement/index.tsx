@@ -15,6 +15,7 @@ import { Search, RefreshCw, Plus, Filter } from "lucide-react";
 import { useState } from "react";
 import useCustomerManagement from "@/hooks/customer/useCustomerManagement";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
 	CustomerGroup,
 	CustomerStatus,
@@ -23,6 +24,7 @@ import {
 } from "@/enums/customer.enum";
 
 export function CustomerManagementPage() {
+	const { t } = useTranslation("common");
 	const navigate = useNavigate();
 
 	const {
@@ -69,11 +71,11 @@ export function CustomerManagementPage() {
 	return (
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">Customer Management</h1>
+				<h1 className="text-2xl font-bold">{t("modules.customers.title")}</h1>
 				<div className="flex items-center gap-2">
 					<Button onClick={handleCreateCustomer}>
 						<Plus className="h-4 w-4 mr-2" />
-						Add Customer
+						{t("modules.customers.addCustomer")}
 					</Button>
 
 					<Button
@@ -87,7 +89,7 @@ export function CustomerManagementPage() {
 								isGetCustomerListPending && "animate-spin"
 							)}
 						/>
-						Refresh
+						{t("actions.refresh")}
 					</Button>
 				</div>
 			</div>
@@ -99,7 +101,7 @@ export function CustomerManagementPage() {
 					<div className="relative flex-1 max-w-sm">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 						<Input
-							placeholder="Search by name, email, phone..."
+							placeholder={t("modules.customers.searchPlaceholder")}
 							value={localSearch}
 							onChange={(e) => setLocalSearch(e.target.value)}
 							className="pl-10"
@@ -111,7 +113,7 @@ export function CustomerManagementPage() {
 						/>
 					</div>
 					<Button onClick={handleSearch} size="sm">
-						Search
+						{t("actions.search")}
 					</Button>
 					<Button
 						variant="outline"
@@ -120,13 +122,13 @@ export function CustomerManagementPage() {
 							clearFilters();
 							setLocalSearch("");
 						}}>
-						Clear
+						{t("actions.clear")}
 					</Button>
 				</div>
 
 				{/* Results Count */}
 				<div className="text-sm text-muted-foreground">
-					{total} customer{total !== 1 ? "s" : ""} found
+					{total} {t("modules.customers.customersFound")}
 				</div>
 			</div>
 

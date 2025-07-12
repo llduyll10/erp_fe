@@ -136,7 +136,7 @@ export function CustomerForm({ mode, ...props }: CustomerFormProps) {
 									name="phone_number"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>{t("phoneNumber")} *</FormLabel>
+											<FormLabel required>{t("phoneNumber")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}

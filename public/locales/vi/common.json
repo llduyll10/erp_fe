@@ -19,6 +19,86 @@
 		"success": "Thành công",
 		"required": "Bắt buộc"
 	},
+	"actions": {
+		"search": "Tìm kiếm",
+		"clear": "Xóa",
+		"refresh": "Làm mới",
+		"create": "Tạo mới",
+		"edit": "Chỉnh sửa",
+		"delete": "Xóa",
+		"save": "Lưu",
+		"cancel": "Hủy",
+		"submit": "Xác nhận",
+		"filter": "Lọc",
+		"reset": "Đặt lại",
+		"export": "Xuất",
+		"import": "Nhập",
+		"view": "Xem",
+		"download": "Tải xuống",
+		"upload": "Tải lên"
+	},
+	"modules": {
+		"users": {
+			"title": "Quản lý người dùng",
+			"searchPlaceholder": "Tìm kiếm theo tên hoặc email",
+			"addUser": "Thêm người dùng",
+			"columns": {
+				"name": "Tên",
+				"email": "Email",
+				"role": "Vai trò",
+				"createdAt": "Ngày tạo",
+				"updatedAt": "Ngày cập nhật"
+			}
+		},
+		"products": {
+			"title": "Quản lý sản phẩm",
+			"searchPlaceholder": "Tìm kiếm theo tên sản phẩm",
+			"expandAll": "Mở rộng tất cả",
+			"collapseAll": "Thu gọn tất cả",
+			"productsFound": "sản phẩm",
+			"expanded": "đã mở rộng",
+			"columns": {
+				"name": "Tên sản phẩm",
+				"sku": "Mã SKU",
+				"category": "Danh mục",
+				"price": "Giá",
+				"stock": "Tồn kho",
+				"status": "Trạng thái"
+			}
+		},
+		"customers": {
+			"title": "Quản lý khách hàng",
+			"searchPlaceholder": "Tìm kiếm theo tên, email, số điện thoại...",
+			"addCustomer": "Thêm khách hàng",
+			"customersFound": "khách hàng được tìm thấy",
+			"columns": {
+				"name": "Tên khách hàng",
+				"email": "Email",
+				"phone": "Số điện thoại",
+				"group": "Nhóm",
+				"status": "Trạng thái",
+				"createdAt": "Ngày tạo"
+			}
+		},
+		"orders": {
+			"title": "Quản lý đơn hàng",
+			"searchPlaceholder": "Tìm kiếm theo số đơn hàng hoặc tên khách hàng...",
+			"addOrder": "Tạo đơn hàng",
+			"ordersFound": "đơn hàng được tìm thấy",
+			"allStatuses": "Tất cả trạng thái",
+			"allFulfillment": "Tất cả thực hiện",
+			"allPayment": "Tất cả thanh toán",
+			"columns": {
+				"orderNumber": "Số đơn hàng",
+				"customer": "Khách hàng",
+				"status": "Trạng thái",
+				"fulfillmentStatus": "Thực hiện",
+				"paymentStatus": "Thanh toán",
+				"total": "Tổng tiền",
+				"createdAt": "Ngày tạo"
+			}
+		}
+	},
 	"login": {
 		"title": "Đăng nhập",
 		"description": "Đăng nhập vào tài khoản của bạn",

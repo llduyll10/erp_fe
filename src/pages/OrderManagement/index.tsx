@@ -23,7 +23,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 export function OrderManagementPage() {
-	const { t } = useTranslation("order");
+	const { t } = useTranslation("common");
 	const navigate = useNavigate();
 
 	const {
@@ -113,11 +113,11 @@ export function OrderManagementPage() {
 	return (
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">{t("list")}</h1>
+				<h1 className="text-2xl font-bold">{t("modules.orders.title")}</h1>
 				<div className="flex items-center gap-2">
 					<Button onClick={handleCreateOrder}>
 						<Plus className="h-4 w-4 mr-2" />
-						{t("create")}
+						{t("modules.orders.addOrder")}
 					</Button>
 
 					<Button
@@ -131,7 +131,7 @@ export function OrderManagementPage() {
 								isGetOrderListPending && "animate-spin"
 							)}
 						/>
-						Refresh
+						{t("actions.refresh")}
 					</Button>
 				</div>
 			</div>
@@ -143,7 +143,7 @@ export function OrderManagementPage() {
 					<div className="relative flex-1 max-w-sm">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 						<Input
-							placeholder={t("searchByOrderNumber")}
+							placeholder={t("modules.orders.searchPlaceholder")}
 							value={localSearch}
 							onChange={(e) => setLocalSearch(e.target.value)}
 							className="pl-10"
@@ -155,10 +155,10 @@ export function OrderManagementPage() {
 						/>
 					</div>
 					<Button onClick={handleSearch} size="sm">
-						Search
+						{t("actions.search")}
 					</Button>
 					<Button variant="outline" size="sm" onClick={handleClearFilters}>
-						Clear
+						{t("actions.clear")}
 					</Button>
 				</div>
 
@@ -166,18 +166,18 @@ export function OrderManagementPage() {
 				<div className="flex items-center gap-4">
 					{/* Order Status Filter */}
 					<div className="flex items-center gap-2">
-						<span className="text-sm font-medium">{t("status")}:</span>
+						<span className="text-sm font-medium">Status:</span>
 						<Select
 							value={selectedStatus}
 							onValueChange={handleStatusFilterChange}>
 							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="All Statuses" />
+								<SelectValue placeholder={t("modules.orders.allStatuses")} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All Statuses</SelectItem>
+								<SelectItem value="all">{t("modules.orders.allStatuses")}</SelectItem>
 								{Object.values(OrderStatus).map((status) => (
 									<SelectItem key={status} value={status}>
-										{t(`statuses.${status}`)}
+										{status}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -187,19 +187,19 @@ export function OrderManagementPage() {
 					{/* Fulfillment Status Filter */}
 					<div className="flex items-center gap-2">
 						<span className="text-sm font-medium">
-							{t("fulfillmentStatus")}:
+							Fulfillment:
 						</span>
 						<Select
 							value={selectedFulfillmentStatus}
 							onValueChange={handleFulfillmentStatusFilterChange}>
 							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="All Fulfillment" />
+								<SelectValue placeholder={t("modules.orders.allFulfillment")} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All Fulfillment</SelectItem>
+								<SelectItem value="all">{t("modules.orders.allFulfillment")}</SelectItem>
 								{Object.values(FulfillmentStatus).map((status) => (
 									<SelectItem key={status} value={status}>
-										{t(`fulfillmentStatuses.${status}`)}
+										{status}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -208,18 +208,18 @@ export function OrderManagementPage() {
 
 					{/* Payment Status Filter */}
 					<div className="flex items-center gap-2">
-						<span className="text-sm font-medium">{t("paymentStatus")}:</span>
+						<span className="text-sm font-medium">Payment:</span>
 						<Select
 							value={selectedPaymentStatus}
 							onValueChange={handlePaymentStatusFilterChange}>
 							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="All Payment" />
+								<SelectValue placeholder={t("modules.orders.allPayment")} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All Payment</SelectItem>
+								<SelectItem value="all">{t("modules.orders.allPayment")}</SelectItem>
 								{Object.values(PaymentStatus).map((status) => (
 									<SelectItem key={status} value={status}>
-										{t(`paymentStatuses.${status}`)}
+										{status}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -229,7 +229,7 @@ export function OrderManagementPage() {
 
 				{/* Results Count */}
 				<div className="text-sm text-muted-foreground">
-					{total} order{total !== 1 ? "s" : ""} found
+					{total} {t("modules.orders.ordersFound")}
 				</div>
 			</div>
 

@@ -8,8 +8,10 @@ import { Search, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import useProductManagement from "@/hooks/product/useProductManagement";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function ProductManagementPage() {
+	const { t } = useTranslation("common");
 	const navigate = useNavigate();
 
 	const {
@@ -66,7 +68,7 @@ export function ProductManagementPage() {
 	return (
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">Product Management</h1>
+				<h1 className="text-2xl font-bold">{t("modules.products.title")}</h1>
 				<div className="flex items-center gap-2">
 					{/* Tree Controls */}
 					<Button
@@ -75,7 +77,7 @@ export function ProductManagementPage() {
 						onClick={expandAll}
 						disabled={isGetProductListPending}>
 						<ChevronDown className="h-4 w-4 mr-2" />
-						Expand All
+						{t("modules.products.expandAll")}
 					</Button>
 					<Button
 						variant="outline"
@@ -83,7 +85,7 @@ export function ProductManagementPage() {
 						onClick={collapseAll}
 						disabled={isGetProductListPending}>
 						<ChevronRight className="h-4 w-4 mr-2" />
-						Collapse All
+						{t("modules.products.collapseAll")}
 					</Button>
 
 					<Button
@@ -97,7 +99,7 @@ export function ProductManagementPage() {
 								isGetProductListPending && "animate-spin"
 							)}
 						/>
-						Refresh
+						{t("actions.refresh")}
 					</Button>
 				</div>
 			</div>
@@ -108,14 +110,14 @@ export function ProductManagementPage() {
 					<div className="relative flex-1 max-w-sm">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 						<Input
-							placeholder="Search by product name"
+							placeholder={t("modules.products.searchPlaceholder")}
 							value={localSearch}
 							onChange={(e) => setLocalSearch(e.target.value)}
 							className="pl-10"
 						/>
 					</div>
 					<Button onClick={handleSearch} size="sm">
-						Search
+						{t("actions.search")}
 					</Button>
 					<Button
 						variant="outline"
@@ -124,13 +126,13 @@ export function ProductManagementPage() {
 							clearFilters();
 							setLocalSearch("");
 						}}>
-						Clear
+						{t("actions.clear")}
 					</Button>
 				</div>
 
 				{/* Tree Status */}
 				<div className="text-sm text-muted-foreground">
-					{productList.length} products • {expandedProducts.size} expanded
+					{productList.length} {t("modules.products.productsFound")} • {expandedProducts.size} {t("modules.products.expanded")}
 				</div>
 			</div>
 

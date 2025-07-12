@@ -83,7 +83,12 @@
 	"itemCount": "{{count}} sản phẩm",
 	"itemCount_other": "{{count}} sản phẩm",
 	"pleaseSelectCustomer": "Vui lòng chọn khách hàng",
+	"pleaseSelectSalesRep": "Vui lòng chọn nhân viên bán hàng",
 	"pleaseAddProduct": "Vui lòng thêm ít nhất một sản phẩm",
+	"salesRepresentative": "Nhân Viên Bán Hàng",
+	"salesRepPlaceholder": "Chọn nhân viên bán hàng...",
+	"salesRepSearch": "Tìm kiếm nhân viên bán hàng...",
+	"salesRepNotFound": "Không tìm thấy nhân viên bán hàng",
 	"previewOrder": "Xem Trước Đơn Hàng",
 	"previewUpdate": "Xem Trước Cập Nhật",
 	"previewOrderDescription": "Kiểm tra lại thông tin đơn hàng trước khi tạo",
@@ -99,5 +104,8 @@
 	"cancel": "Hủy",
 	"processing": "Đang xử lý...",
 	"confirmCreate": "Xác Nhận Tạo",
-	"confirmUpdate": "Xác Nhận Cập Nhật"
+	"confirmUpdate": "Xác Nhận Cập Nhật",
+	"updateStatus": "Cập Nhật Trạng Thái",
+	"updating": "Đang cập nhật...",
+	"statusChangesDetected": "Phát hiện thay đổi trạng thái"
 }

@@ -11,6 +11,7 @@ import {
 	CustomerType,
 	CustomerSource,
 } from "@/enums/customer.enum";
+import { useTranslation } from "react-i18next";
 
 // Customer Group Cell Renderer
 const CustomerGroupCellRenderer = (params: any) => {
@@ -100,6 +101,7 @@ const DateCellRenderer = (params: any) => {
 };
 
 const useCustomerManagement = () => {
+	const { t } = useTranslation("common");
 	const [searchParams, setSearchParams] = useState<
 		Omit<GetCustomerListRequest, "page" | "limit" | "offset">
 	>({});
@@ -144,24 +146,24 @@ const useCustomerManagement = () => {
 			pinned: "left",
 		},
 		{
-			headerName: "Name",
+			headerName: t("modules.customers.columns.name"),
 			field: "name",
 			flex: 1,
 			minWidth: 150,
 		},
 		{
-			headerName: "Email",
+			headerName: t("modules.customers.columns.email"),
 			field: "email",
 			flex: 1,
 			minWidth: 200,
 		},
 		{
-			headerName: "Phone",
+			headerName: t("modules.customers.columns.phone"),
 			field: "phone_number",
 			width: 130,
 		},
 		{
-			headerName: "Group",
+			headerName: t("modules.customers.columns.group"),
 			field: "customer_group",
 			width: 100,
 			cellRenderer: CustomerGroupCellRenderer,
@@ -173,7 +175,7 @@ const useCustomerManagement = () => {
 			cellRenderer: CustomerTypeCellRenderer,
 		},
 		{
-			headerName: "Status",
+			headerName: t("modules.customers.columns.status"),
 			field: "status",
 			width: 100,
 			cellRenderer: CustomerStatusCellRenderer,
@@ -186,7 +188,7 @@ const useCustomerManagement = () => {
 			cellRenderer: AddressCellRenderer,
 		},
 		{
-			headerName: "Created At",
+			headerName: t("modules.customers.columns.createdAt"),
 			field: "created_at",
 			width: 120,
 			cellRenderer: DateCellRenderer,

@@ -1,30 +1,24 @@
 export enum UserRoleEnum {
-	// System Level
-	SUPER_ADMIN = "super_admin", // Quản lý toàn bộ hệ thống
+	// System Level - Quản lý toàn bộ app
+	SUPERADMIN = "superadmin",
 
-	// Company Level
-	COMPANY_ADMIN = "company_admin", // Quản lý công ty
+	// Company Level - Cấp độ công ty
+	ADMIN_COMPANY = "admin_company", // Admin tổng của công ty
+	ADMIN = "admin", // Quản lý công ty
+	MEMBER = "member", // Thành viên mới
 
-	// Sales Department
-	SALES_MANAGER = "sales_manager", // Quản lý bán hàng
-	SALES_STAFF = "sales_staff", // Nhân viên bán hàng
+	// Sales Department - Bộ phận bán hàng
+	SALE_ADMIN = "sale_admin", // Nhân viên sale admin
+	SALE_MEMBER = "sale_member", // Nhân viên sale
 
-	// Production Department
-	PRODUCTION_MANAGER = "production_manager", // Quản lý sản xuất
-	PRODUCTION_STAFF = "production_staff", // Nhân viên sản xuất
+	// Production Department - Bộ phận xưởng
+	WORKSHOP_ADMIN = "workshop_admin", // Quản lý xưởng
+	WORKSHOP_MEMBER = "workshop_member", // Nhân viên xưởng
 
-	// Warehouse Department
-	WAREHOUSE_MANAGER = "warehouse_manager", // Quản lý kho
-	WAREHOUSE_STAFF = "warehouse_staff", // Nhân viên kho
-
-	// Finance Department
-	ACCOUNTANT = "accountant", // Kế toán
-	FINANCE_MANAGER = "finance_manager", // Quản lý tài chính
-
-	// General Staff
-	STAFF = "staff", // Nhân viên chung
+	// Finance Department - Bộ phận kế toán
+	ACCOUNTING_ADMIN = "accounting_admin", // Kế toán admin
+	ACCOUNTING_MEMBER = "accounting_member", // Kế toán member
 
 	// Legacy roles (for backward compatibility)
-	ADMIN = "admin",
 	USER = "user",
 }

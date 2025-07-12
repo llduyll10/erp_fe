@@ -9,7 +9,6 @@
 	"searchCustomer": "Search customer",
 	"customerNotFound": "Customer not found",
 	"createNewCustomer": "Create New Customer",
-	"salesRepresentative": "Sales Representative",
 	"selectSalesRep": "Select sales representative",
 	"status": "Order Status",
 	"selectStatus": "Select order status",
@@ -83,7 +82,12 @@
 	"itemCount": "{{count}} item",
 	"itemCount_other": "{{count}} items",
 	"pleaseSelectCustomer": "Please select a customer",
+	"pleaseSelectSalesRep": "Please select a sales representative",
 	"pleaseAddProduct": "Please add at least one product",
+	"salesRepresentative": "Sales Representative",
+	"salesRepPlaceholder": "Select sales representative...",
+	"salesRepSearch": "Search sales representative...",
+	"salesRepNotFound": "No sales representative found",
 	"previewOrder": "Preview Order",
 	"previewUpdate": "Preview Update",
 	"previewOrderDescription": "Review order information before creating",
@@ -99,5 +103,8 @@
 	"cancel": "Cancel",
 	"processing": "Processing...",
 	"confirmCreate": "Confirm Create",
-	"confirmUpdate": "Confirm Update"
+	"confirmUpdate": "Confirm Update",
+	"updateStatus": "Update Status",
+	"updating": "Updating...",
+	"statusChangesDetected": "Status changes detected"
 }

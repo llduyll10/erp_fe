@@ -36,11 +36,18 @@ import {
 import { AddressForm } from "@/components/molecules/address-form";
 import { CustomerSearchCombobox } from "@/components/molecules/customer-search-combobox";
 import { ProductSearchCombobox } from "@/components/molecules/product-search-combobox";
+import { AutocompleteSearch } from "@/components/molecules/autocomplete-search";
 import { OrderPreviewModal } from "@/components/molecules/order-preview-modal";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ImageIcon } from "lucide-react";
 import { useFieldArray } from "react-hook-form";
 import { OrderVariant } from "@/models/order-variant.model";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { UserRoleEnum } from "@/enums/user.enums";
+import { User } from "@/models/user.model";
+import { useSalesRepresentativeQuery } from "@/services/user";
+import { useUpdateOrder } from "@/services/order";
+import { toast } from "sonner";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
 
 interface OrderFormProps extends React.ComponentProps<"div"> {
 	mode: FormMode;
@@ -50,12 +57,17 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const { t } = useTranslation("order");
 	const [showPreviewModal, setShowPreviewModal] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	// State to store selected variants for display (includes image info)
+	const [selectedVariants, setSelectedVariants] = useState<Record<number, OrderVariant>>({});
+	const { mutate: updateOrder } = useUpdateOrder();
 	const {
 		form,
 		onSubmit,
 		orderDetail,
 		selectedCustomer,
+		selectedSalesRep,
 		handleCustomerSelect,
+		handleSalesRepSelect,
 		handleCreateNewCustomer,
 	} = useOrderForm();
 
@@ -100,13 +112,45 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 			form.setValue(`order_items.${index}.unit_price`, variant.price);
 			calculateItemTotal(index);
 		}
+
+		// Store variant info for display (including image)
+		setSelectedVariants(prev => ({
+			...prev,
+			[index]: variant
+		}));
+	};
+
+	// Handle removing order item
+	const handleRemoveItem = (index: number) => {
+		remove(index);
+		// Remove variant from selectedVariants state
+		setSelectedVariants(prev => {
+			const newState = { ...prev };
+			delete newState[index];
+			// Re-index remaining items
+			const reindexed: Record<number, OrderVariant> = {};
+			Object.entries(newState).forEach(([key, value]) => {
+				const oldIndex = parseInt(key);
+				if (oldIndex > index) {
+					reindexed[oldIndex - 1] = value;
+				} else {
+					reindexed[oldIndex] = value;
+				}
+			});
+			return reindexed;
+		});
 	};
 
 	// Calculate order total
-	const orderTotal =
-		form.watch("order_items")?.reduce((total, item) => {
-			return total + (item.total_price || 0);
-		}, 0) || 0;
+	const orderTotal = (() => {
+		const orderItems = form.watch("order_items");
+		if (!orderItems || !Array.isArray(orderItems)) return 0;
+		
+		return orderItems.reduce((total, item) => {
+			const itemTotal = Number(item.total_price) || 0;
+			return total + itemTotal;
+		}, 0);
+	})();
 
 	// Get list of already selected variant IDs to exclude from search
 	const getExcludedVariantIds = (currentIndex: number): string[] => {
@@ -123,31 +167,106 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 	// Check if form is ready for submission
 	const isFormValid = () => {
 		const customerId = form.watch("customer_id");
+		const salesRepId = form.watch("sales_representative_id");
 		const orderItems = form.watch("order_items") || [];
-		
+
 		// Must have customer
 		if (!customerId || customerId.trim() === "") {
 			return false;
 		}
-		
+
+		// Must have sales representative
+		if (!salesRepId || salesRepId.trim() === "") {
+			return false;
+		}
+
 		// Must have at least one order item with variant_id
-		const validItems = orderItems.filter((item) => 
-			item.variant_id && item.variant_id.trim() !== "" && item.quantity > 0
+		const validItems = orderItems.filter(
+			(item) =>
+				item.variant_id && item.variant_id.trim() !== "" && item.quantity > 0
 		);
-		
+
 		return validItems.length > 0;
 	};
 
+	// Watch status fields for changes
+	const watchedStatus = form.watch("status");
+	const watchedFulfillmentStatus = form.watch("fulfillment_status");
+	const watchedPaymentStatus = form.watch("payment_status");
+
+	// Watch delivery notes for changes too
+	const watchedDeliveryNotes = form.watch("delivery_notes");
+
+	// Check if status fields have changed (for detail mode updates)
+	const hasStatusChanges = useMemo(() => {
+		if (!orderDetail) {
+			return false;
+		}
+		
+		// Handle undefined/null values by providing defaults
+		const currentStatus = watchedStatus || "";
+		const currentFulfillmentStatus = watchedFulfillmentStatus || "";
+		const currentPaymentStatus = watchedPaymentStatus || "";
+		const currentDeliveryNotes = watchedDeliveryNotes || "";
+		
+		const originalStatus = orderDetail.status || "";
+		const originalFulfillmentStatus = orderDetail.fulfillment_status || "";
+		const originalPaymentStatus = orderDetail.payment_status || "";
+		const originalDeliveryNotes = orderDetail.delivery_notes || "";
+		
+		const hasChanges = (
+			currentStatus !== originalStatus ||
+			currentFulfillmentStatus !== originalFulfillmentStatus ||
+			currentPaymentStatus !== originalPaymentStatus ||
+			currentDeliveryNotes !== originalDeliveryNotes
+		);
+		
+		return hasChanges;
+	}, [orderDetail, watchedStatus, watchedFulfillmentStatus, watchedPaymentStatus, watchedDeliveryNotes]);
+
+	// Handle status update (for detail mode)
+	const handleStatusUpdate = () => {
+		if (!orderDetail?.id) return;
+
+		const formData = form.getValues();
+		// Submit status fields and delivery notes
+		const statusOnlyData = {
+			status: formData.status,
+			fulfillment_status: formData.fulfillment_status,
+			payment_status: formData.payment_status,
+			delivery_notes: formData.delivery_notes,
+		};
+
+		setIsSubmitting(true);
+		updateOrder(
+			{
+				id: orderDetail.id,
+				data: statusOnlyData,
+			},
+			{
+				onSuccess: () => {
+					toast.success(t("updateSuccess"));
+					setIsSubmitting(false);
+				},
+				onError: (error) => {
+					console.error("Status update error:", error);
+					toast.error(t("updateError"));
+					setIsSubmitting(false);
+				},
+			}
+		);
+	};
+
+
+
 	// Handle form submission - show preview modal
 	const handleFormSubmit = (data: any) => {
-		console.log("Form submitted, showing modal", data);
 		setShowPreviewModal(true);
 	};
 
 	// Handle button click - bypass validation for preview
 	const handlePreviewClick = (e: React.MouseEvent) => {
 		e.preventDefault();
-		console.log("Preview button clicked");
 		setShowPreviewModal(true);
 	};
 
@@ -165,6 +284,20 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 		}
 	};
 
+	// Format date for display
+	const formatDate = (dateString?: string | Date | null) => {
+		if (!dateString) return "N/A";
+		const date = new Date(dateString);
+		return new Intl.DateTimeFormat("vi-VN", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			timeZone: "Asia/Ho_Chi_Minh",
+		}).format(date);
+	};
+
 	return (
 		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
@@ -173,10 +306,40 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 						{mode === FormMode.CREATE ? t("create") : t("update")}
 					</CardTitle>
 					<CardDescription>{t("createDescription")}</CardDescription>
+					
+					{/* Order Meta Information - Only show in detail mode */}
+					{mode === FormMode.DETAILS && orderDetail && (
+						<div className="mt-4 p-4 bg-muted/30 rounded-lg border">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+								<div>
+									<span className="font-medium text-muted-foreground">Mã đơn hàng:</span>{" "}
+									<span className="font-medium">{orderDetail.order_number}</span>
+								</div>
+								<div>
+									<span className="font-medium text-muted-foreground">Ngày tạo:</span>{" "}
+									{formatDate(orderDetail.created_at)}
+								</div>
+								<div>
+									<span className="font-medium text-muted-foreground">Người tạo:</span>{" "}
+									{orderDetail.created_by?.name || "N/A"} ({orderDetail.created_by?.email || "N/A"})
+								</div>
+								<div>
+									<span className="font-medium text-muted-foreground">Cập nhật lần cuối:</span>{" "}
+									{formatDate(orderDetail.updated_at)}
+								</div>
+								<div className="md:col-span-2">
+									<span className="font-medium text-muted-foreground">Người cập nhật:</span>{" "}
+									{orderDetail.updated_by?.name || "N/A"} ({orderDetail.updated_by?.email || "N/A"})
+								</div>
+							</div>
+						</div>
+					)}
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>
-						<form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+						<form
+							onSubmit={form.handleSubmit(handleFormSubmit)}
+							className="space-y-6">
 							{/* Customer Search */}
 							<div className="space-y-4">
 								<h3 className="text-lg font-medium">{t("customer")}</h3>
@@ -185,7 +348,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 									name="customer_id"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>{t("customer")} *</FormLabel>
+											<FormLabel required>{t("customer")}</FormLabel>
 											<FormControl>
 												<CustomerSearchCombobox
 													value={field.value}
@@ -195,6 +358,36 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 													}}
 													onCreateNew={handleCreateNewCustomer}
 													placeholder={t("customerPlaceholder")}
+													disabled={mode === FormMode.DETAILS}
+													className="w-[50%]"
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* Sales Representative */}
+								<FormField
+									control={form.control}
+									name="sales_representative_id"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel required>{t("salesRepresentative")}</FormLabel>
+											<FormControl>
+												<AutocompleteSearch<User>
+													useQuery={useSalesRepresentativeQuery}
+													fieldConfig={{
+														value: "id",
+														label: "name",
+														description: "email",
+														subtitle: "role",
+													}}
+													value={field.value}
+													onValueChange={handleSalesRepSelect}
+													placeholder={t("salesRepPlaceholder")}
+													searchPlaceholder={t("salesRepSearch")}
+													emptyMessage={t("salesRepNotFound")}
 													disabled={mode === FormMode.DETAILS}
 													className="w-[50%]"
 												/>
@@ -244,7 +437,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 												<Select
 													onValueChange={field.onChange}
 													value={field.value}
-													disabled={mode === FormMode.DETAILS}>
+													disabled={false}>
 													<FormControl>
 														<SelectTrigger>
 															<SelectValue placeholder={t("selectStatus")} />
@@ -273,7 +466,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 												<Select
 													onValueChange={field.onChange}
 													value={field.value}
-													disabled={mode === FormMode.DETAILS}>
+													disabled={false}>
 													<FormControl>
 														<SelectTrigger>
 															<SelectValue
@@ -304,7 +497,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 												<Select
 													onValueChange={field.onChange}
 													value={field.value}
-													disabled={mode === FormMode.DETAILS}>
+													disabled={false}>
 													<FormControl>
 														<SelectTrigger>
 															<SelectValue
@@ -333,6 +526,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 									control={form.control}
 									prefix="shipping"
 									titleKey="shippingAddress"
+									disabled={mode === FormMode.DETAILS}
 								/>
 
 								{/* Delivery Notes */}
@@ -345,10 +539,15 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 											<FormControl>
 												<Textarea
 													{...field}
-													placeholder={t("deliveryNotesPlaceholder")}
-													disabled={mode === FormMode.DETAILS}
+													placeholder="Ghi chú toàn bộ thông tin đơn hàng: trạng thái sản xuất, yêu cầu đặc biệt, thời gian giao hàng, điều kiện thanh toán, ghi chú từ khách hàng..."
+													disabled={false}
+													rows={4}
+													className="resize-none"
 												/>
 											</FormControl>
+											<div className="text-xs text-muted-foreground mt-1">
+												💡 Gợi ý: Ghi chú chi tiết về yêu cầu khách hàng, tình trạng sản xuất, thời gian giao hàng, phương thức thanh toán và các lưu ý đặc biệt khác
+											</div>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -389,7 +588,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 														name={`order_items.${index}.variant_id`}
 														render={({ field }) => (
 															<FormItem className="md:col-span-2">
-																<FormLabel>{t("product")} *</FormLabel>
+																<FormLabel required>{t("product")}</FormLabel>
 																<FormControl>
 																	<ProductSearchCombobox
 																		value={field.value}
@@ -402,7 +601,9 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 																		}
 																		placeholder={t("productPlaceholder")}
 																		disabled={mode === FormMode.DETAILS}
-																		excludedVariantIds={getExcludedVariantIds(index)}
+																		excludedVariantIds={getExcludedVariantIds(
+																			index
+																		)}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -410,6 +611,50 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 														)}
 													/>
 												</div>
+
+												{/* Selected Product Image & Info */}
+												{selectedVariants[index] && (
+													<div className="flex items-center gap-4 p-3 bg-muted/50 rounded-lg">
+														<OptimizedImage
+															fileKey={selectedVariants[index].file_key}
+															alt={selectedVariants[index].display_name}
+															className="w-16 h-16 rounded-md object-cover"
+															showLoading={false}
+															fallbackComponent={
+																<div className="w-16 h-16 rounded-md bg-gray-100 flex items-center justify-center">
+																	<ImageIcon className="w-8 h-8 text-gray-400" />
+																</div>
+															}
+														/>
+														<div className="flex-1">
+															<h4 className="font-medium text-sm">
+																{selectedVariants[index].display_name}
+															</h4>
+															<div className="text-xs text-muted-foreground mt-1">
+																<span>SKU: {selectedVariants[index].sku}</span>
+																<span className="mx-2">•</span>
+																<span>{selectedVariants[index].size}</span>
+																<span className="mx-2">•</span>
+																<span>{selectedVariants[index].color}</span>
+																<span className="mx-2">•</span>
+																<span>{selectedVariants[index].gender}</span>
+															</div>
+															<div className="text-xs text-muted-foreground">
+																{selectedVariants[index].product_name}
+															</div>
+														</div>
+														<div className="text-right">
+															<div className="font-medium text-green-600">
+																${selectedVariants[index].price.toFixed(2)}
+															</div>
+															{!selectedVariants[index].is_in_stock && (
+																<div className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded mt-1">
+																	Out of Stock
+																</div>
+															)}
+														</div>
+													</div>
+												)}
 
 												{/* Quantity, Price, Total */}
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -489,7 +734,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 													type="button"
 													variant="outline"
 													size="sm"
-													onClick={() => remove(index)}
+													onClick={() => handleRemoveItem(index)}
 													className="text-red-600 hover:text-red-700">
 													<Trash2 className="h-4 w-4" />
 												</Button>
@@ -503,7 +748,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 									<div className="flex justify-end">
 										<div className="text-right">
 											<div className="text-lg font-medium">
-												{t("orderTotal")}: ${orderTotal.toFixed(2)}
+												{t("orderTotal")}: ${(orderTotal || 0).toFixed(2)}
 											</div>
 											<div className="text-sm text-muted-foreground">
 												{t("itemCount", { count: fields.length })}
@@ -514,21 +759,55 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 							</div>
 
 							{/* Submit Button */}
-							{mode !== FormMode.DETAILS && (
+							{mode === FormMode.DETAILS ? (
+								<div className="flex flex-col items-end gap-2">
+									{hasStatusChanges && (
+										<div className="text-sm text-muted-foreground text-right">
+											{t("statusChangesDetected")}
+										</div>
+									)}
+									<div className="flex gap-4">
+										<Button
+											type="button"
+											onClick={handleStatusUpdate}
+											disabled={!hasStatusChanges || isSubmitting}
+											className={
+												!hasStatusChanges ? "opacity-50 cursor-not-allowed" : ""
+											}>
+											{isSubmitting ? t("updating") : t("updateStatus")}
+										</Button>
+									</div>
+								</div>
+							) : (
 								<div className="flex flex-col items-end gap-2">
 									{!isFormValid() && (
 										<div className="text-sm text-muted-foreground text-right">
 											{!form.watch("customer_id") && t("pleaseSelectCustomer")}
-											{form.watch("customer_id") && (!form.watch("order_items") || form.watch("order_items").filter(item => item.variant_id && item.variant_id.trim() !== "" && item.quantity > 0).length === 0) && t("pleaseAddProduct")}
+											{form.watch("customer_id") &&
+												!form.watch("sales_representative_id") &&
+												t("pleaseSelectSalesRep")}
+											{form.watch("customer_id") &&
+												form.watch("sales_representative_id") &&
+												(!form.watch("order_items") ||
+													form
+														.watch("order_items")
+														.filter(
+															(item) =>
+																item.variant_id &&
+																item.variant_id.trim() !== "" &&
+																item.quantity > 0
+														).length === 0) &&
+												t("pleaseAddProduct")}
 										</div>
 									)}
 									<div className="flex gap-4">
-										<Button 
+										<Button
 											type="button"
 											onClick={handlePreviewClick}
 											disabled={!isFormValid()}
-											className={!isFormValid() ? "opacity-50 cursor-not-allowed" : ""}
-										>
+											className={
+												!isFormValid() ? "opacity-50 cursor-not-allowed" : ""
+											}>
 											{mode === FormMode.CREATE ? t("create") : t("update")}
 										</Button>
 									</div>
@@ -540,12 +819,12 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 			</Card>
 
 			{/* Order Preview Modal */}
-			{console.log("Modal state:", { showPreviewModal, selectedCustomer, formData: form.getValues() })}
 			<OrderPreviewModal
 				open={showPreviewModal}
 				onOpenChange={setShowPreviewModal}
 				orderData={form.getValues()}
 				selectedCustomer={selectedCustomer}
+				selectedSalesRep={selectedSalesRep}
 				onConfirm={handleConfirmSubmit}
 				isLoading={isSubmitting}
 				mode={mode === FormMode.CREATE ? "create" : "update"}

@@ -16,6 +16,7 @@ interface AddressFormProps {
 	control: Control<any>;
 	prefix?: string;
 	titleKey?: string;
+	disabled?: boolean;
 	onProvinceChange?: (province: Level1 | null) => void;
 	onDistrictChange?: (district: Level2 | null) => void;
 }
@@ -24,6 +25,7 @@ export function AddressForm({
 	control,
 	prefix = "",
 	titleKey,
+	disabled = false,
 	onProvinceChange,
 	onDistrictChange,
 }: AddressFormProps) {
@@ -131,7 +133,7 @@ export function AddressForm({
 						<FormItem>
 							<FormLabel>{t("streetAddress")}</FormLabel>
 							<FormControl>
-								<Input {...field} placeholder={t("streetAddressPlaceholder")} />
+								<Input {...field} placeholder={t("streetAddressPlaceholder")} disabled={disabled} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -150,6 +152,7 @@ export function AddressForm({
 									{...field}
 									value="Việt Nam"
 									readOnly
+									disabled={disabled}
 									className="bg-gray-50"
 								/>
 							</FormControl>
@@ -185,6 +188,7 @@ export function AddressForm({
 									searchPlaceholder={t("searchProvince", "Search province...")}
 									emptyText={t("noProvinceFound", "No province found.")}
 									className="w-full"
+									disabled={disabled}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -216,7 +220,7 @@ export function AddressForm({
 									placeholder={t("districtPlaceholder")}
 									searchPlaceholder={t("searchDistrict", "Search district...")}
 									emptyText={t("noDistrictFound", "No district found.")}
-									disabled={!selectedProvince}
+									disabled={disabled || !selectedProvince}
 									className="w-full"
 								/>
 							</FormControl>
@@ -240,7 +244,7 @@ export function AddressForm({
 									placeholder={t("wardPlaceholder")}
 									searchPlaceholder={t("searchWard", "Search ward...")}
 									emptyText={t("noWardFound", "No ward found.")}
-									disabled={!selectedDistrict}
+									disabled={disabled || !selectedDistrict}
 									className="w-full"
 								/>
 							</FormControl>
@@ -257,7 +261,7 @@ export function AddressForm({
 						<FormItem>
 							<FormLabel>{t("postalCode")}</FormLabel>
 							<FormControl>
-								<Input {...field} placeholder={t("postalCodePlaceholder")} />
+								<Input {...field} placeholder={t("postalCodePlaceholder")} disabled={disabled} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

@@ -23,6 +23,8 @@ import {
 } from "@/services/order";
 import { useGetCustomerList } from "@/services/customer";
 import { Customer } from "@/models/customer.model";
+import { useGetUserList } from "@/services/user";
+import { User } from "@/models/user.model";
 
 // Order Item Schema
 export const OrderItemSchema = z
@@ -115,6 +117,14 @@ export const useOrderForm = () => {
 		null
 	);
 
+	// Sales representative state
+	const [selectedSalesRep, setSelectedSalesRep] = useState<User | null>(null);
+
+	// Selected variants state for display (includes image info)
+	const [selectedVariants, setSelectedVariants] = useState<
+		Record<number, OrderVariant>
+	>({});
+
 	// Fetch customers for search (debounced)
 	const { data: customerListResponse } = useGetCustomerList(
 		{
@@ -123,6 +133,12 @@ export const useOrderForm = () => {
 			page: 1,
 		},
 		customerSearchQuery.length >= 3 // Only search when query is at least 3 characters
+	);
+
+	// Fetch users for finding sales representative
+	const { data: userListResponse } = useGetUserList(
+		{ limit: 100, page: 1 },
+		!!orderDetail?.sales_representative_id // Only fetch when we have a sales rep ID
 	);
 
 	const form = useForm<z.infer<typeof OrderFormSchema>>({
@@ -184,6 +200,18 @@ export const useOrderForm = () => {
 		});
 	};
 
+	// Handle sales representative selection
+	const handleSalesRepSelect = (userId: string) => {
+		form.setValue("sales_representative_id", userId);
+		
+		// We need to get the user data from the sales representative query
+		// This will be handled by the AutocompleteSearch component's internal state
+		// For now, we'll clear the selected sales rep and let the modal fetch it
+		if (!userId) {
+			setSelectedSalesRep(null);
+		}
+	};
+
 	const onSubmit = (data: z.infer<typeof OrderFormSchema>) => {
 		const payload = {
 			...data,
@@ -216,20 +244,42 @@ export const useOrderForm = () => {
 	useEffect(() => {
 		if (!orderDetail) {
 			form.reset(getOrderFormDefault()); // TODO: Get from auth store
+			setSelectedCustomer(null);
+			setSelectedSalesRep(null);
 			return;
 		}
-		form.reset(getOrderFormDefault(orderDetail)); // TODO: Get from auth store
+		
+		// Reset form with order detail data
+		const formData = getOrderFormDefault(orderDetail);
+		form.reset(formData); // TODO: Get from auth store
+		
+		// Set selected customer
 		if (orderDetail.customer) {
 			setSelectedCustomer(orderDetail.customer);
 		}
-	}, [orderDetail]);
+		
+		// Set selected sales representative
+		if (orderDetail.sales_representative && orderDetail.sales_representative_id) {
+			setSelectedSalesRep(orderDetail.sales_representative);
+		} else if (orderDetail.sales_representative_id && userListResponse?.data) {
+			// Find sales rep from user list if not directly available
+			const foundSalesRep = userListResponse.data.find(
+				(user: User) => user.id === orderDetail.sales_representative_id
+			);
+			if (foundSalesRep) {
+				setSelectedSalesRep(foundSalesRep);
+			}
+		}
+	}, [orderDetail, userListResponse]);
 
 	return {
 		form,
 		onSubmit,
 		orderDetail,
 		selectedCustomer,
+		selectedSalesRep,
 		handleCustomerSelect,
+		handleSalesRepSelect,
 		handleCreateNewCustomer,
 		customerSearchQuery,
 		setCustomerSearchQuery,

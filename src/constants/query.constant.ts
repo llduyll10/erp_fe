@@ -1,6 +1,7 @@
 export const QUERY_KEYS = {
 	USER: {
 		LIST: "userList",
+		SALES_REPS: "salesRepresentatives",
 	},
 	PRODUCT: {
 		LIST: "productList",

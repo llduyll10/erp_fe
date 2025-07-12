@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { Customer } from "@/models/customer.model";
+import { User as UserModel } from "@/models/user.model";
 import { CreateOrderRequest } from "@/interfaces/order.interface";
 import { 
 	OrderStatus, 
@@ -20,12 +21,16 @@ import {
 	ProductionStatus 
 } from "@/enums/order.enum";
 import { Package, User, MapPin, CreditCard, Truck } from "lucide-react";
+import { useGetUserList } from "@/services/user";
+import { UserRoleEnum } from "@/enums/user.enums";
+import { useMemo } from "react";
 
 interface OrderPreviewModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	orderData: CreateOrderRequest;
 	selectedCustomer: Customer | null;
+	selectedSalesRep?: UserModel | null;
 	onConfirm: () => void;
 	isLoading?: boolean;
 	mode: "create" | "update";
@@ -36,13 +41,28 @@ export function OrderPreviewModal({
 	onOpenChange,
 	orderData,
 	selectedCustomer,
+	selectedSalesRep,
 	onConfirm,
 	isLoading = false,
 	mode,
 }: OrderPreviewModalProps) {
 	const { t } = useTranslation("order");
 	
-	console.log("OrderPreviewModal props:", { open, orderData, selectedCustomer, mode });
+	// Get sales representative data if we have sales_representative_id
+	const { data: userListData } = useGetUserList(
+		{ limit: 100, page: 1 }, // Get all users to find the selected one
+		!!orderData.sales_representative_id
+	);
+	
+	// Find the selected sales representative from user list
+	const actualSelectedSalesRep = useMemo(() => {
+		if (!orderData.sales_representative_id || !userListData?.data) return null;
+		
+		return userListData.data.find(
+			(user: UserModel) => user.id === orderData.sales_representative_id
+		) || null;
+	}, [orderData.sales_representative_id, userListData]);
+	
 
 	const getStatusDisplay = (status: string, type: "order" | "fulfillment" | "payment") => {
 		const statusKey = type === "order" ? "statuses" : 
@@ -59,7 +79,7 @@ export function OrderPreviewModal({
 
 	const calculateOrderTotal = () => {
 		return orderData.order_items?.reduce((total, item) => {
-			return total + (item.total_price || 0);
+			return total + (Number(item.total_price) || 0);
 		}, 0) || 0;
 	};
 
@@ -77,7 +97,7 @@ export function OrderPreviewModal({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto scroll-smooth">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">
 						<Package className="h-5 w-5" />
@@ -89,49 +109,90 @@ export function OrderPreviewModal({
 				</DialogHeader>
 
 				<div className="space-y-6">
-					{/* Customer Information */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 text-lg">
-								<User className="h-5 w-5" />
-								{t("customerInformation")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							{selectedCustomer ? (
-								<div className="grid grid-cols-2 gap-4 text-sm">
-									<div>
-										<span className="font-medium text-muted-foreground">
-											{t("customerName")}:
-										</span>{" "}
-										<span className="font-medium">{selectedCustomer.name}</span>
+					{/* Customer & Sales Information */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						{/* Customer Information */}
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="flex items-center gap-2 text-lg">
+									<User className="h-5 w-5" />
+									{t("customerInformation")}
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{selectedCustomer ? (
+									<div className="space-y-2 text-sm">
+										<div>
+											<span className="font-medium text-muted-foreground">
+												{t("customerName")}:
+											</span>{" "}
+											<span className="font-medium">{selectedCustomer.name}</span>
+										</div>
+										<div>
+											<span className="font-medium text-muted-foreground">
+												{t("phoneNumber")}:
+											</span>{" "}
+											{selectedCustomer.phone_number}
+										</div>
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Email:
+											</span>{" "}
+											{selectedCustomer.email || "N/A"}
+										</div>
+										<div>
+											<span className="font-medium text-muted-foreground">
+												{t("customerCode")}:
+											</span>{" "}
+											{selectedCustomer.customer_code || "N/A"}
+										</div>
 									</div>
-									<div>
-										<span className="font-medium text-muted-foreground">
-											{t("phoneNumber")}:
-										</span>{" "}
-										{selectedCustomer.phone_number}
+								) : (
+									<div className="text-muted-foreground">
+										{t("noCustomerSelected")}
 									</div>
-									<div>
-										<span className="font-medium text-muted-foreground">
-											Email:
-										</span>{" "}
-										{selectedCustomer.email || "N/A"}
+								)}
+							</CardContent>
+						</Card>
+
+						{/* Sales Representative Information */}
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="flex items-center gap-2 text-lg">
+									<User className="h-5 w-5" />
+									{t("salesRepresentative")}
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{actualSelectedSalesRep ? (
+									<div className="space-y-2 text-sm">
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Name:
+											</span>{" "}
+											<span className="font-medium">{actualSelectedSalesRep.name}</span>
+										</div>
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Email:
+											</span>{" "}
+											{actualSelectedSalesRep.email}
+										</div>
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Role:
+											</span>{" "}
+											{actualSelectedSalesRep.role === UserRoleEnum.SALE_ADMIN ? "Sales Admin" : "Sales Member"}
+										</div>
 									</div>
-									<div>
-										<span className="font-medium text-muted-foreground">
-											{t("customerCode")}:
-										</span>{" "}
-										{selectedCustomer.customer_code || "N/A"}
+								) : (
+									<div className="text-muted-foreground">
+										No sales representative selected
 									</div>
-								</div>
-							) : (
-								<div className="text-muted-foreground">
-									{t("noCustomerSelected")}
-								</div>
-							)}
-						</CardContent>
-					</Card>
+								)}
+							</CardContent>
+						</Card>
+					</div>
 
 					{/* Order Status */}
 					<Card>
@@ -220,12 +281,12 @@ export function OrderPreviewModal({
 											</div>
 											<div className="text-sm text-muted-foreground">
 												{t("quantity")}: {item.quantity} | {t("unitPrice")}: $
-												{item.unit_price?.toFixed(2)}
+												{(Number(item.unit_price) || 0).toFixed(2)}
 											</div>
 										</div>
 										<div className="text-right">
 											<div className="font-medium">
-												${item.total_price?.toFixed(2)}
+												${(Number(item.total_price) || 0).toFixed(2)}
 											</div>
 										</div>
 									</div>

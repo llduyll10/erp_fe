@@ -19,6 +19,86 @@
 		"success": "Success",
 		"required": "Required"
 	},
+	"actions": {
+		"search": "Search",
+		"clear": "Clear",
+		"refresh": "Refresh",
+		"create": "Create",
+		"edit": "Edit",
+		"delete": "Delete",
+		"save": "Save",
+		"cancel": "Cancel",
+		"submit": "Submit",
+		"filter": "Filter",
+		"reset": "Reset",
+		"export": "Export",
+		"import": "Import",
+		"view": "View",
+		"download": "Download",
+		"upload": "Upload"
+	},
+	"modules": {
+		"users": {
+			"title": "User Management",
+			"searchPlaceholder": "Search by name or email",
+			"addUser": "Add User",
+			"columns": {
+				"name": "Name",
+				"email": "Email",
+				"role": "Role",
+				"createdAt": "Created At",
+				"updatedAt": "Updated At"
+			}
+		},
+		"products": {
+			"title": "Product Management",
+			"searchPlaceholder": "Search by product name",
+			"expandAll": "Expand All",
+			"collapseAll": "Collapse All",
+			"productsFound": "products",
+			"expanded": "expanded",
+			"columns": {
+				"name": "Product Name",
+				"sku": "SKU",
+				"category": "Category",
+				"price": "Price",
+				"stock": "Stock",
+				"status": "Status"
+			}
+		},
+		"customers": {
+			"title": "Customer Management",
+			"searchPlaceholder": "Search by name, email, phone...",
+			"addCustomer": "Add Customer",
+			"customersFound": "customers found",
+			"columns": {
+				"name": "Customer Name",
+				"email": "Email",
+				"phone": "Phone",
+				"group": "Group",
+				"status": "Status",
+				"createdAt": "Created At"
+			}
+		},
+		"orders": {
+			"title": "Order Management",
+			"searchPlaceholder": "Search by order number or customer name...",
+			"addOrder": "Create Order",
+			"ordersFound": "orders found",
+			"allStatuses": "All Statuses",
+			"allFulfillment": "All Fulfillment",
+			"allPayment": "All Payment",
+			"columns": {
+				"orderNumber": "Order Number",
+				"customer": "Customer",
+				"status": "Status",
+				"fulfillmentStatus": "Fulfillment",
+				"paymentStatus": "Payment",
+				"total": "Total",
+				"createdAt": "Created At"
+			}
+		}
+	},
 	"login": {
 		"title": "Sign In",
 		"description": "Sign in to your account",

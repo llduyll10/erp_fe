@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
 	{
 		path: "/dashboard",
 		element: (
-			<ProtectedRoute allowedTypes={[UserRoleEnum.ADMIN, UserRoleEnum.USER]}>
+			<ProtectedRoute minimumRole={UserRoleEnum.USER}>
 				<DashboardLayout />
 			</ProtectedRoute>
 		),

@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function UserManagementPage() {
+	const { t } = useTranslation("common");
 	const {
 		userList,
 		total,
@@ -40,7 +42,7 @@ export function UserManagementPage() {
 	return (
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">User Management</h1>
+				<h1 className="text-2xl font-bold">{t("modules.users.title")}</h1>
 				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
@@ -53,7 +55,7 @@ export function UserManagementPage() {
 								isGetUserListPending && "animate-spin"
 							)}
 						/>
-						Refresh
+						{t("actions.refresh")}
 					</Button>
 					<AddUserModal />
 				</div>
@@ -65,14 +67,14 @@ export function UserManagementPage() {
 					<div className="relative flex-1 max-w-sm">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 						<Input
-							placeholder="Search by name or email"
+							placeholder={t("modules.users.searchPlaceholder")}
 							value={localSearch}
 							onChange={(e) => setLocalSearch(e.target.value)}
 							className="pl-10"
 						/>
 					</div>
 					<Button onClick={handleSearch} size="sm">
-						Search
+						{t("actions.search")}
 					</Button>
 					<Button
 						variant="outline"
@@ -81,7 +83,7 @@ export function UserManagementPage() {
 							clearFilters();
 							setLocalSearch("");
 						}}>
-						Clear
+						{t("actions.clear")}
 					</Button>
 				</div>
 			</div>

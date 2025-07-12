@@ -79,7 +79,7 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 										name="name"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>{t("products.name")} *</FormLabel>
+												<FormLabel required>{t("products.name")}</FormLabel>
 												<FormControl>
 													<Input
 														{...field}
@@ -128,7 +128,7 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 
 											return (
 												<FormItem>
-													<FormLabel>{t("products.category")} *</FormLabel>
+													<FormLabel required>{t("products.category")}</FormLabel>
 													<FormControl>
 														<AutocompleteSearch<Category>
 															useQuery={useQuery}
@@ -155,7 +155,7 @@ export function ProductForm({ mode, ...props }: ProductFormProps) {
 										name="item_type"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>{t("products.itemType")} *</FormLabel>
+												<FormLabel required>{t("products.itemType")}</FormLabel>
 												<Select
 													onValueChange={field.onChange}
 													defaultValue={field.value}>

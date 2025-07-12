@@ -19,6 +19,7 @@ import {
 } from "@/components/product-table-cell-renderers";
 import { OptimizedImage } from "@/components/molecules/optimized-image";
 import { ImageIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Image Cell Renderer for Products and Variants
 const ImageCellRenderer = (params: ICellRendererParams) => {
@@ -49,6 +50,7 @@ const ImageCellRenderer = (params: ICellRendererParams) => {
 };
 
 const useProductManagement = () => {
+	const { t } = useTranslation("common");
 	const [searchParams, setSearchParams] = useState<
 		Omit<GetUserListRequest, "page" | "limit" | "offset">
 	>({});
@@ -163,7 +165,7 @@ const useProductManagement = () => {
 			resizable: false,
 		},
 		{
-			headerName: "Name / SKU",
+			headerName: t("modules.products.columns.name"),
 			field: "name",
 			flex: 2,
 			cellRenderer: NameCellRenderer,
@@ -185,19 +187,19 @@ const useProductManagement = () => {
 			cellRenderer: TypePriceCellRenderer,
 		},
 		{
-			headerName: "Quantity / Status",
+			headerName: t("modules.products.columns.stock"),
 			field: "quantity",
 			width: 120,
 			cellRenderer: QuantityStatusCellRenderer,
 		},
 		{
-			headerName: "Created At",
+			headerName: t("modules.users.columns.createdAt"),
 			field: "created_at",
 			width: 120,
 			cellRenderer: DateCellRenderer,
 		},
 		{
-			headerName: "Updated At",
+			headerName: t("modules.users.columns.updatedAt"),
 			field: "updated_at",
 			width: 120,
 			cellRenderer: DateCellRenderer,

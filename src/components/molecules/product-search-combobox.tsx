@@ -13,7 +13,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Package } from "lucide-react";
+import { Check, ChevronsUpDown, Package, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrderVariant } from "@/models/order-variant.model";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,7 @@ import { useDebounced } from "@/hooks/common/useDebounced";
 import { useQuery } from "@tanstack/react-query";
 import { getAllVariants } from "@/services/product/request";
 import { QUERY_KEYS } from "@/constants/query.constant";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
 
 interface ProductSearchComboboxProps {
 	value?: string;
@@ -88,10 +89,20 @@ export function ProductSearchCombobox({
 					className={cn("w-full justify-between", className)}
 					disabled={disabled}>
 					{selectedVariant ?
-						<div className="flex items-center gap-2 text-left">
-							<Package className="h-4 w-4 text-muted-foreground" />
-							<div className="flex flex-col">
-								<span className="font-medium">
+						<div className="flex items-center gap-3 text-left">
+							<OptimizedImage
+								fileKey={selectedVariant.file_key}
+								alt={selectedVariant.display_name}
+								className="w-10 h-10 rounded-md object-cover"
+								showLoading={false}
+								fallbackComponent={
+									<div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
+										<ImageIcon className="w-6 h-6 text-gray-400" />
+									</div>
+								}
+							/>
+							<div className="flex flex-col min-w-0 flex-1">
+								<span className="font-medium truncate">
 									{selectedVariant.display_name}
 								</span>
 								<span className="text-xs text-muted-foreground">
@@ -137,17 +148,27 @@ export function ProductSearchCombobox({
 										className="flex items-center gap-3 p-3">
 										<Check
 											className={cn(
-												"h-4 w-4",
+												"h-4 w-4 shrink-0",
 												value === variant.id ? "opacity-100" : "opacity-0"
 											)}
 										/>
-										<Package className="h-4 w-4 text-muted-foreground" />
-										<div className="flex flex-col gap-1 flex-1">
+										<OptimizedImage
+											fileKey={variant.file_key}
+											alt={variant.display_name}
+											className="w-12 h-12 rounded-md object-cover shrink-0"
+											showLoading={false}
+											fallbackComponent={
+												<div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+													<ImageIcon className="w-6 h-6 text-gray-400" />
+												</div>
+											}
+										/>
+										<div className="flex flex-col gap-1 flex-1 min-w-0">
 											<div className="flex items-center justify-between">
-												<span className="font-medium">
+												<span className="font-medium truncate">
 													{variant.display_name}
 												</span>
-												<div className="flex items-center gap-2">
+												<div className="flex items-center gap-2 shrink-0">
 													<span className="text-sm font-medium text-green-600">
 														${variant.price.toFixed(2)}
 													</span>
@@ -173,7 +194,7 @@ export function ProductSearchCombobox({
 													</>
 												)}
 											</div>
-											<div className="text-xs text-muted-foreground">
+											<div className="text-xs text-muted-foreground truncate">
 												Product: {variant.product_name}
 											</div>
 										</div>

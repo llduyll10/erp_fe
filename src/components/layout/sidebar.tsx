@@ -14,9 +14,14 @@ import {
 	Plus,
 	Box,
 	CheckSquare,
+	Warehouse,
+	ArrowUp,
+	ArrowDown,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTranslation } from "react-i18next";
+import { UserRoleEnum } from "@/enums/user.enums";
+import { hasMinimumRole, isInDepartment } from "@/constants/user.constant";
 
 import {
 	Sidebar,
@@ -28,14 +33,14 @@ import {
 import { useMemo } from "react";
 
 // Helper to get role from store or localStorage
-function getCurrentRole() {
+function getCurrentRole(): UserRoleEnum {
 	const storeUser = useAuthStore.getState().user;
-	if (storeUser && storeUser.role) return storeUser.role;
+	if (storeUser && storeUser.role) return storeUser.role as UserRoleEnum;
 	try {
 		const user = JSON.parse(localStorage.getItem("auth_user") || "null");
-		return user?.role || "user";
+		return (user?.role as UserRoleEnum) || UserRoleEnum.USER;
 	} catch {
-		return "user";
+		return UserRoleEnum.USER;
 	}
 }
 
@@ -55,45 +60,66 @@ const adminMenu = (t: any) =>
 				],
 			},
 			{
-				title: t("users.title"),
+				title: "Người dùng",
 				icon: Users,
 				items: [
 					{
-						title: t("users.customers"),
-						url: "/dashboard/customers",
-						icon: User,
+						title: "Danh sách người dùng",
+						url: "/dashboard/users",
+						icon: List,
 					},
 					{
-						title: t("users.sellers"),
-						url: "/dashboard/users",
-						icon: UserCheck,
+						title: "Tạo người dùng",
+						url: "/dashboard/users/create",
+						icon: Plus,
 					},
-					{ title: t("users.users"), url: "/dashboard/users", icon: User2 },
 				],
 			},
 			{
-				title: t("orders.title"),
+				title: "Khách hàng",
+				icon: User,
+				items: [
+					{
+						title: "Danh sách khách hàng",
+						url: "/dashboard/customers",
+						icon: List,
+					},
+					{
+						title: "Tạo khách hàng",
+						url: "/dashboard/customers/create",
+						icon: Plus,
+					},
+				],
+			},
+			{
+				title: "Đơn hàng",
 				icon: CreditCard,
 				items: [
 					{
-						title: t("orders.list"),
+						title: "Danh sách đơn hàng",
 						url: "/dashboard/orders",
-						icon: CheckSquare,
+						icon: List,
 					},
 					{
-						title: t("orders.detail"),
+						title: "Tạo đơn hàng",
 						url: "/dashboard/orders/create",
-						icon: FileText,
+						icon: Plus,
+					},
+				],
+			},
+			{
+				title: "Kho hàng",
+				icon: Warehouse,
+				items: [
+					{
+						title: "Nhập kho",
+						url: "/dashboard/warehouse/import",
+						icon: ArrowDown,
 					},
 					{
-						title: t("orders.cart"),
-						url: "/dashboard/cart",
-						icon: ShoppingCart,
-					},
-					{
-						title: t("orders.checkout"),
-						url: "/dashboard/checkout",
-						icon: CreditCard,
+						title: "Xuất kho",
+						url: "/dashboard/warehouse/export",
+						icon: ArrowUp,
 					},
 				],
 			},
@@ -133,7 +159,10 @@ const userMenu = (t: any) =>
 function SidebarMenu() {
 	const role = getCurrentRole();
 	const { t } = useTranslation();
-	const menu = role === "admin" ? adminMenu(t) : userMenu(t);
+	
+	// Determine menu based on role hierarchy
+	const isAdmin = hasMinimumRole(role, UserRoleEnum.ADMIN);
+	const menu = isAdmin ? adminMenu(t) : userMenu(t);
 	return (
 		<div className="flex flex-col gap-6">
 			{menu.map((group) => (

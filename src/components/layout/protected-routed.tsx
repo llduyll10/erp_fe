@@ -3,11 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ERROR_CODES } from "@/constants/error.constant";
 import { getAuthTokens, getAuthUser } from "@/utils/auth.util";
 import { UserRoleEnum } from "@/enums/user.enums";
+import { hasMinimumRole } from "@/constants/user.constant";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
-	allowedTypes: UserRoleEnum[];
+	allowedTypes?: UserRoleEnum[];
 	allowedRoles?: UserRoleEnum[];
+	minimumRole?: UserRoleEnum;
 	redirectTo?: string;
 }
 
@@ -15,6 +17,7 @@ export function ProtectedRoute({
 	children,
 	allowedTypes,
 	allowedRoles,
+	minimumRole,
 	redirectTo = "/login",
 }: ProtectedRouteProps) {
 	const navigate = useNavigate();
@@ -43,17 +46,24 @@ export function ProtectedRoute({
 			return;
 		}
 
-		// Check user type
-		const userType = storedUser.role as UserRoleEnum;
-		if (!allowedTypes.includes(userType)) {
+		// Check user role/permissions
+		const userRole = storedUser.role as UserRoleEnum;
+		
+		// Check specific allowed types
+		if (allowedTypes && !allowedTypes.includes(userRole)) {
 			throw new Error(ERROR_CODES.FORBIDDEN);
 		}
 
-		// Check user role if specified
-		if (allowedRoles && !allowedRoles.includes(userType)) {
+		// Check specific allowed roles
+		if (allowedRoles && !allowedRoles.includes(userRole)) {
 			throw new Error(ERROR_CODES.FORBIDDEN);
 		}
-	}, [navigate, redirectTo, allowedTypes, allowedRoles, location.pathname]);
+
+		// Check minimum role requirement
+		if (minimumRole && !hasMinimumRole(userRole, minimumRole)) {
+			throw new Error(ERROR_CODES.FORBIDDEN);
+		}
+	}, [navigate, redirectTo, allowedTypes, allowedRoles, minimumRole, location.pathname]);
 
 	return <>{children}</>;
 }

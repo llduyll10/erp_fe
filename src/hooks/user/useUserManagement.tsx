@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import type { User } from "@/models/user.model";
 import type { GetUserListRequest } from "@/interfaces/auth.interface";
 import { usePagination } from "../common/usePagination";
+import { useTranslation } from "react-i18next";
 
 const useUserManagement = () => {
+	const { t } = useTranslation("common");
 	const [searchParams, setSearchParams] = useState<
 		Omit<GetUserListRequest, "page" | "limit" | "offset">
 	>({});
@@ -44,22 +46,22 @@ const useUserManagement = () => {
 
 	const colDefs: ColDef<User>[] = [
 		{
-			headerName: "Name",
+			headerName: t("modules.users.columns.name"),
 			field: "name",
 			flex: 1,
 		},
 		{
-			headerName: "Email",
+			headerName: t("modules.users.columns.email"),
 			field: "email",
 			flex: 1,
 		},
 		{
-			headerName: "Role",
+			headerName: t("modules.users.columns.role"),
 			field: "role",
 			width: 120,
 		},
 		{
-			headerName: "Created At",
+			headerName: t("modules.users.columns.createdAt"),
 			field: "created_at",
 			width: 120,
 			cellRenderer: (params: ICellRendererParams) =>
@@ -68,7 +70,7 @@ const useUserManagement = () => {
 				:	"",
 		},
 		{
-			headerName: "Updated At",
+			headerName: t("modules.users.columns.updatedAt"),
 			field: "updated_at",
 			width: 120,
 			cellRenderer: (params: ICellRendererParams) =>

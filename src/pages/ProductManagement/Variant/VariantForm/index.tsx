@@ -180,7 +180,7 @@ export function VariantForm({ mode, onSuccess, ...props }: VariantFormProps) {
 										name="price"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>{t("variant.price")} *</FormLabel>
+												<FormLabel required>{t("variant.price")}</FormLabel>
 												<FormControl>
 													<NumberInput
 														{...field}
@@ -201,7 +201,7 @@ export function VariantForm({ mode, onSuccess, ...props }: VariantFormProps) {
 										name="cost"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>{t("variant.cost")} *</FormLabel>
+												<FormLabel required>{t("variant.cost")}</FormLabel>
 												<FormControl>
 													<NumberInput
 														{...field}
