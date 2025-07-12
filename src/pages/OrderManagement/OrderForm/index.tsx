@@ -36,9 +36,11 @@ import {
 import { AddressForm } from "@/components/molecules/address-form";
 import { CustomerSearchCombobox } from "@/components/molecules/customer-search-combobox";
 import { ProductSearchCombobox } from "@/components/molecules/product-search-combobox";
+import { OrderPreviewModal } from "@/components/molecules/order-preview-modal";
 import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray } from "react-hook-form";
 import { OrderVariant } from "@/models/order-variant.model";
+import { useState } from "react";
 
 interface OrderFormProps extends React.ComponentProps<"div"> {
 	mode: FormMode;
@@ -46,6 +48,8 @@ interface OrderFormProps extends React.ComponentProps<"div"> {
 
 export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const { t } = useTranslation("order");
+	const [showPreviewModal, setShowPreviewModal] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const {
 		form,
 		onSubmit,
@@ -104,6 +108,63 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 			return total + (item.total_price || 0);
 		}, 0) || 0;
 
+	// Get list of already selected variant IDs to exclude from search
+	const getExcludedVariantIds = (currentIndex: number): string[] => {
+		const orderItems = form.watch("order_items") || [];
+		return orderItems
+			.map((item, index) => {
+				// Exclude current index to allow changing the current selection
+				if (index === currentIndex) return null;
+				return item.variant_id;
+			})
+			.filter((variantId): variantId is string => Boolean(variantId));
+	};
+
+	// Check if form is ready for submission
+	const isFormValid = () => {
+		const customerId = form.watch("customer_id");
+		const orderItems = form.watch("order_items") || [];
+		
+		// Must have customer
+		if (!customerId || customerId.trim() === "") {
+			return false;
+		}
+		
+		// Must have at least one order item with variant_id
+		const validItems = orderItems.filter((item) => 
+			item.variant_id && item.variant_id.trim() !== "" && item.quantity > 0
+		);
+		
+		return validItems.length > 0;
+	};
+
+	// Handle form submission - show preview modal
+	const handleFormSubmit = (data: any) => {
+		console.log("Form submitted, showing modal", data);
+		setShowPreviewModal(true);
+	};
+
+	// Handle button click - bypass validation for preview
+	const handlePreviewClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		console.log("Preview button clicked");
+		setShowPreviewModal(true);
+	};
+
+	// Handle final confirmation from modal
+	const handleConfirmSubmit = async () => {
+		setIsSubmitting(true);
+		try {
+			const formData = form.getValues();
+			await onSubmit(formData);
+			setShowPreviewModal(false);
+		} catch (error) {
+			console.error("Submit error:", error);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
 	return (
 		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
@@ -115,7 +176,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+						<form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
 							{/* Customer Search */}
 							<div className="space-y-4">
 								<h3 className="text-lg font-medium">{t("customer")}</h3>
@@ -341,6 +402,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 																		}
 																		placeholder={t("productPlaceholder")}
 																		disabled={mode === FormMode.DETAILS}
+																		excludedVariantIds={getExcludedVariantIds(index)}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -453,16 +515,41 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 
 							{/* Submit Button */}
 							{mode !== FormMode.DETAILS && (
-								<div className="flex justify-end gap-4">
-									<Button type="submit">
-										{mode === FormMode.CREATE ? t("create") : t("update")}
-									</Button>
+								<div className="flex flex-col items-end gap-2">
+									{!isFormValid() && (
+										<div className="text-sm text-muted-foreground text-right">
+											{!form.watch("customer_id") && t("pleaseSelectCustomer")}
+											{form.watch("customer_id") && (!form.watch("order_items") || form.watch("order_items").filter(item => item.variant_id && item.variant_id.trim() !== "" && item.quantity > 0).length === 0) && t("pleaseAddProduct")}
+										</div>
+									)}
+									<div className="flex gap-4">
+										<Button 
+											type="button"
+											onClick={handlePreviewClick}
+											disabled={!isFormValid()}
+											className={!isFormValid() ? "opacity-50 cursor-not-allowed" : ""}
+										>
+											{mode === FormMode.CREATE ? t("create") : t("update")}
+										</Button>
+									</div>
 								</div>
 							)}
 						</form>
 					</Form>
 				</CardContent>
 			</Card>
+
+			{/* Order Preview Modal */}
+			{console.log("Modal state:", { showPreviewModal, selectedCustomer, formData: form.getValues() })}
+			<OrderPreviewModal
+				open={showPreviewModal}
+				onOpenChange={setShowPreviewModal}
+				orderData={form.getValues()}
+				selectedCustomer={selectedCustomer}
+				onConfirm={handleConfirmSubmit}
+				isLoading={isSubmitting}
+				mode={mode === FormMode.CREATE ? "create" : "update"}
+			/>
 		</div>
 	);
 }

@@ -28,6 +28,7 @@ interface ProductSearchComboboxProps {
 	placeholder?: string;
 	className?: string;
 	disabled?: boolean;
+	excludedVariantIds?: string[];
 }
 
 export function ProductSearchCombobox({
@@ -36,6 +37,7 @@ export function ProductSearchCombobox({
 	placeholder = "Search product variants...",
 	className,
 	disabled = false,
+	excludedVariantIds = [],
 }: ProductSearchComboboxProps) {
 	const { t } = useTranslation("order");
 	const [open, setOpen] = useState(false);
@@ -62,7 +64,9 @@ export function ProductSearchCombobox({
 		refetchOnWindowFocus: false,
 	});
 
-	const variants = variantResponse?.data || [];
+	const variants = (variantResponse?.data || []).filter(
+		(variant) => !excludedVariantIds.includes(variant.id)
+	);
 
 	// Find selected variant
 	const selectedVariant = variants.find((variant) => variant.id === value);
