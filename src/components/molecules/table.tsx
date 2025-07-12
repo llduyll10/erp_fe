@@ -43,6 +43,7 @@ type TableProps<T> = {
 	tableId?: string;
 	noRowsOverlayClassName?: string;
 	suppressRowHoverHighlight?: boolean;
+	context?: any;
 };
 
 type PropsWithForwardRef<T> = TableProps<T> & {
@@ -73,6 +74,7 @@ function Table<T>({
 	tableId,
 	noRowsOverlayClassName,
 	suppressRowHoverHighlight = true,
+	context,
 }: PropsWithForwardRef<T>): ReactElement {
 	const { t } = useTranslation();
 	const mergedGridOptions: GridOptions = {
@@ -155,6 +157,7 @@ function Table<T>({
 				gridOptions={mergedGridOptions}
 				domLayout={domLayout}
 				popupParent={popupParent}
+				context={context}
 				noRowsOverlayComponent={() => {
 					return (
 						<div

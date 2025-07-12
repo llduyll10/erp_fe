@@ -1,20 +1,19 @@
 import Table from "@/components/molecules/table";
 import { cn } from "@/lib/utils";
-import useStockInventory from "@/hooks/warehouse/useStockInventory";
+import useStockInHistory from "@/hooks/warehouse/useStockInHistory";
 import Loading from "@/components/layout/loading";
 import { Pagination } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { 
-	Search, 
-	RefreshCw, 
-	Download, 
-	Package, 
-	AlertTriangle, 
-	CheckCircle2,
-	XCircle,
-	BarChart3
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Search,
+	RefreshCw,
+	Download,
+	ArrowDown,
+	TrendingUp,
+	Calendar,
+	Package,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,29 +24,36 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StockMovementReason } from "@/enums/warehouse.enum";
+import { STOCK_IN_REASON_OPTIONS } from "@/constants/warehouse.constant";
+import { StockMovementDetailModal } from "@/components/molecules/stock-movement-detail-modal";
+import type { StockMovement } from "@/models/warehouse.model";
 
-export function StockInventoryPage() {
+export function StockInHistoryPage() {
 	const { t } = useTranslation("common");
+	const [selectedMovement, setSelectedMovement] =
+		useState<StockMovement | null>(null);
+	const [showDetailModal, setShowDetailModal] = useState(false);
+
 	const {
-		stockInventory,
+		stockMovements,
 		total,
-		isGetStockSummaryPending,
+		todayTotal,
+		isGetStockMovementsPending,
 		colDefs,
-		searchQuery,
-		setSearchQuery,
-		stockFilter,
-		setStockFilter,
-		stats,
 		pagination,
 		setPage,
 		setLimit,
+		setSearch,
+		setReasonTypeFilter,
+		clearFilters,
 		refetch,
-	} = useStockInventory();
+	} = useStockInHistory();
 
 	const [localSearch, setLocalSearch] = useState("");
 
 	const handleSearch = () => {
-		setSearchQuery(localSearch);
+		setSearch(localSearch);
 	};
 
 	const handleRefresh = () => {
@@ -55,9 +61,8 @@ export function StockInventoryPage() {
 	};
 
 	const handleClearFilters = () => {
-		setSearchQuery("");
+		clearFilters();
 		setLocalSearch("");
-		setStockFilter("all");
 	};
 
 	const handleExport = () => {
@@ -65,7 +70,17 @@ export function StockInventoryPage() {
 		console.log("Export to Excel");
 	};
 
-	if (isGetStockSummaryPending) {
+	const handleViewDetail = (movement: StockMovement) => {
+		setSelectedMovement(movement);
+		setShowDetailModal(true);
+	};
+
+	// Add context for AG Grid to handle view detail
+	const gridContext = {
+		onViewDetail: handleViewDetail,
+	};
+
+	if (isGetStockMovementsPending && pagination.current_page === 1) {
 		return <Loading />;
 	}
 
@@ -73,11 +88,11 @@ export function StockInventoryPage() {
 		<div className="flex flex-col gap-6 p-8">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-3">
-					<BarChart3 className="h-8 w-8 text-blue-600" />
+					<ArrowDown className="h-8 w-8 text-green-600" />
 					<div>
-						<h1 className="text-2xl font-bold">Kiểm tra tồn kho</h1>
+						<h1 className="text-2xl font-bold">Lịch sử nhập kho</h1>
 						<p className="text-sm text-muted-foreground">
-							Theo dõi tình trạng tồn kho của tất cả sản phẩm
+							Theo dõi toàn bộ hoạt động nhập kho vào hệ thống
 						</p>
 					</div>
 				</div>
@@ -86,11 +101,11 @@ export function StockInventoryPage() {
 						variant="outline"
 						size="sm"
 						onClick={handleRefresh}
-						disabled={isGetStockSummaryPending}>
+						disabled={isGetStockMovementsPending}>
 						<RefreshCw
 							className={cn(
 								"h-4 w-4 mr-2",
-								isGetStockSummaryPending && "animate-spin"
+								isGetStockMovementsPending && "animate-spin"
 							)}
 						/>
 						{t("actions.refresh")}
@@ -103,66 +118,21 @@ export function StockInventoryPage() {
 			</div>
 
 			{/* Summary Cards */}
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<Card>
-					<CardContent className="p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-muted-foreground">
-									Tổng sản phẩm
-								</p>
-								<p className="text-2xl font-bold">{stats.totalProducts}</p>
-							</div>
-							<Package className="h-8 w-8 text-blue-600" />
+					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+						<CardTitle className="text-sm font-medium">
+							Tổng giao dịch nhập
+						</CardTitle>
+						<TrendingUp className="h-4 w-4 text-muted-foreground" />
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold text-green-600">
+							{total.toLocaleString()}
 						</div>
-					</CardContent>
-				</Card>
-
-				<Card>
-					<CardContent className="p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-muted-foreground">
-									Còn hàng
-								</p>
-								<p className="text-2xl font-bold text-green-600">
-									{stats.inStock}
-								</p>
-							</div>
-							<CheckCircle2 className="h-8 w-8 text-green-600" />
-						</div>
-					</CardContent>
-				</Card>
-
-				<Card>
-					<CardContent className="p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-muted-foreground">
-									Sắp hết hàng
-								</p>
-								<p className="text-2xl font-bold text-orange-600">
-									{stats.lowStock}
-								</p>
-							</div>
-							<AlertTriangle className="h-8 w-8 text-orange-600" />
-						</div>
-					</CardContent>
-				</Card>
-
-				<Card>
-					<CardContent className="p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-muted-foreground">
-									Hết hàng
-								</p>
-								<p className="text-2xl font-bold text-red-600">
-									{stats.outOfStock}
-								</p>
-							</div>
-							<XCircle className="h-8 w-8 text-red-600" />
-						</div>
+						<p className="text-xs text-muted-foreground">
+							Tất cả giao dịch nhập kho
+						</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -174,7 +144,7 @@ export function StockInventoryPage() {
 						<div className="relative flex-1 max-w-sm">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 							<Input
-								placeholder="Tìm kiếm theo tên, SKU, size, màu..."
+								placeholder="Tìm kiếm theo sản phẩm, lý do..."
 								value={localSearch}
 								onChange={(e) => setLocalSearch(e.target.value)}
 								onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -187,18 +157,20 @@ export function StockInventoryPage() {
 					</div>
 
 					<div className="flex items-center gap-2">
-						<span className="text-sm font-medium">Trạng thái:</span>
+						<span className="text-sm font-medium">Lý do:</span>
 						<Select
-							value={stockFilter}
-							onValueChange={(value: any) => setStockFilter(value)}>
+							onValueChange={(value) =>
+								setReasonTypeFilter(value as StockMovementReason)
+							}>
 							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="Chọn trạng thái" />
+								<SelectValue placeholder="Chọn lý do" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">Tất cả</SelectItem>
-								<SelectItem value="in_stock">Còn hàng</SelectItem>
-								<SelectItem value="low_stock">Sắp hết</SelectItem>
-								<SelectItem value="out_of_stock">Hết hàng</SelectItem>
+								{STOCK_IN_REASON_OPTIONS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>
@@ -209,42 +181,27 @@ export function StockInventoryPage() {
 				</div>
 			</div>
 
-			{/* Alert for low stock items */}
-			{stats.lowStock > 0 && (
-				<div className="flex items-center gap-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-					<AlertTriangle className="h-5 w-5 text-orange-600" />
-					<div className="flex-1">
-						<p className="text-sm font-medium text-orange-800">
-							Cảnh báo tồn kho
-						</p>
-						<p className="text-sm text-orange-700">
-							Có {stats.lowStock} sản phẩm đang ở mức tồn kho thấp cần được nhập
-							thêm.
-						</p>
-					</div>
-				</div>
-			)}
-
 			{/* Table */}
 			<div className="w-full">
 				<div className="flex flex-col border border-none rounded-md">
 					<Table
 						className={cn(
 							"mt-[12px] gray-highlight-table",
-							!stockInventory?.length && "h-[150px]"
+							!stockMovements?.length && "h-[150px]"
 						)}
-						rowData={stockInventory}
+						rowData={stockMovements}
 						columnDefs={colDefs}
 						pagination={false}
 						onSortChanged={() => {}}
 						onFirstDataRendered={() => {}}
-						isLoading={isGetStockSummaryPending}
+						isLoading={isGetStockMovementsPending}
 						popupParent={null}
 						suppressRowHoverHighlight={false}
 						noRowsOverlayClassName="top-[50px]"
+						context={gridContext}
 						gridOptions={{
 							headerHeight: 60,
-							rowHeight: 80,
+							rowHeight: 72,
 							suppressRowHoverHighlight: true,
 							defaultColDef: {
 								sortable: true,
@@ -277,6 +234,13 @@ export function StockInventoryPage() {
 					className="mt-4"
 				/>
 			)}
+
+			{/* Detail Modal */}
+			<StockMovementDetailModal
+				isOpen={showDetailModal}
+				onClose={() => setShowDetailModal(false)}
+				movement={selectedMovement}
+			/>
 		</div>
 	);
 }

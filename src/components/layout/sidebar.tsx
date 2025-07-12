@@ -121,6 +121,16 @@ const adminMenu = (t: any) =>
 						url: "/dashboard/warehouse/export",
 						icon: ArrowUp,
 					},
+					{
+						title: "Lịch sử nhập kho",
+						url: "/dashboard/warehouse/import/history",
+						icon: ArrowDown,
+					},
+					{
+						title: "Lịch sử xuất kho",
+						url: "/dashboard/warehouse/export/history",
+						icon: ArrowUp,
+					},
 				],
 			},
 		],

@@ -11,7 +11,8 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { OptimizedImage } from "@/components/molecules/optimized-image";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Package } from "lucide-react";
+import { usePagination } from "../common/usePagination";
 
 // Stock Level Cell Renderer
 const StockLevelCellRenderer = (params: ICellRendererParams) => {
@@ -51,22 +52,47 @@ const ProductInfoCellRenderer = (params: ICellRendererParams) => {
 
 	if (!variant) return "-";
 
+	// Priority order for image: variant.file_key > variant.product_file_key > variant.product.file_key
+	const imageKey = variant.file_key || 
+					 variant.product_file_key || 
+					 variant.product?.file_key;
+
+	// Debug log to see data structure (remove in production)
+	if (process.env.NODE_ENV === 'development') {
+		console.log('Variant data:', variant);
+		console.log('Image key:', imageKey);
+	}
+
 	return (
 		<div className="flex items-center gap-3">
-			<OptimizedImage
-				fileKey={variant.file_key || variant.product?.file_key}
-				alt={variant.variant_name}
-				className="w-10 h-10 rounded-md object-cover"
-				showLoading={false}
-				fallbackComponent={<ImageIcon className="w-6 h-6 text-gray-400" />}
-			/>
-			<div className="flex flex-col gap-1">
-				<div className="font-medium text-sm">
-					{variant.product?.name || "-"}
+			<div className="flex-shrink-0">
+				<OptimizedImage
+					fileKey={imageKey}
+					alt={variant.variant_name || variant.display_name || variant.product?.name}
+					className="w-12 h-12 rounded-md object-cover border border-gray-200"
+					showLoading={true}
+					fallbackComponent={
+						<div className="w-12 h-12 rounded-md border border-gray-200 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+							<Package className="w-6 h-6 text-gray-400" />
+						</div>
+					}
+				/>
+			</div>
+			<div className="flex flex-col gap-1 min-w-0 flex-1">
+				<div className="font-medium text-sm text-gray-900 truncate">
+					{variant.product?.name || variant.product_name || "-"}
 				</div>
 				<div className="text-xs text-muted-foreground">
-					{variant.sku} • {variant.size} • {variant.color}
+					<span className="font-mono">{variant.sku}</span>
+					{variant.size && <span> • {variant.size}</span>}
+					{variant.color && <span> • {variant.color}</span>}
+					{variant.gender && <span> • {variant.gender}</span>}
 				</div>
+				{variant.variant_name && (
+					<div className="text-xs text-blue-600 truncate">
+						{variant.variant_name}
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -126,6 +152,11 @@ const useStockInventory = () => {
 		"all" | "in_stock" | "low_stock" | "out_of_stock"
 	>("all");
 
+	const pagination = usePagination({
+		initialPage: 1,
+		initialLimit: 50,
+	});
+
 	// Fetch stock inventory
 	const {
 		data: stockSummaryResponse,
@@ -135,7 +166,7 @@ const useStockInventory = () => {
 	} = useGetStockInventory();
 
 	// Filter data based on search and stock level
-	const filteredData = (stockSummaryResponse || []).filter((item: StockSummary) => {
+	const filteredData = (stockSummaryResponse?.data || stockSummaryResponse || []).filter((item: StockSummary) => {
 		// Search filter
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
@@ -170,12 +201,27 @@ const useStockInventory = () => {
 		}
 	});
 
+	// Apply pagination to filtered data
+	const startIndex = (pagination.paginationState.current_page - 1) * pagination.paginationState.records_per_page;
+	const endIndex = startIndex + pagination.paginationState.records_per_page;
+	const paginatedData = filteredData.slice(startIndex, endIndex);
+
+	// Update pagination when filter changes
+	useEffect(() => {
+		const totalPages = Math.ceil(filteredData.length / pagination.paginationState.records_per_page);
+		pagination.updatePagination({
+			...pagination.paginationState,
+			total_pages: totalPages,
+			total_records: filteredData.length,
+		});
+	}, [filteredData.length, pagination.paginationState.records_per_page]);
+
 	const colDefs: ColDef<StockSummary>[] = [
 		{
 			headerName: "Sản phẩm",
 			field: "variant",
-			flex: 2,
-			minWidth: 300,
+			flex: 3,
+			minWidth: 350,
 			cellRenderer: ProductInfoCellRenderer,
 		},
 		{
@@ -205,26 +251,39 @@ const useStockInventory = () => {
 	];
 
 	// Summary statistics
+	const stockData = stockSummaryResponse?.data || stockSummaryResponse || [];
 	const stats = {
-		totalProducts: stockSummaryResponse?.length || 0,
-		inStock: stockSummaryResponse?.filter(
+		totalProducts: stockData.length || 0,
+		inStock: stockData.filter(
 			(item: StockSummary) => (item.current_stock || 0) > 10
 		).length || 0,
-		lowStock: stockSummaryResponse?.filter(
+		lowStock: stockData.filter(
 			(item: StockSummary) => (item.current_stock || 0) > 0 && (item.current_stock || 0) <= 10
 		).length || 0,
-		outOfStock: stockSummaryResponse?.filter(
+		outOfStock: stockData.filter(
 			(item: StockSummary) => (item.current_stock || 0) === 0
 		).length || 0,
 	};
 
 	return {
 		// Data
-		stockInventory: filteredData,
+		stockInventory: paginatedData,
+		total: filteredData.length,
 		isGetStockSummaryPending,
 		error,
 		colDefs,
 		stats,
+
+		// Pagination
+		pagination: pagination.paginationState,
+		setPage: pagination.setPage,
+		setLimit: pagination.setLimit,
+		nextPage: pagination.nextPage,
+		prevPage: pagination.prevPage,
+		goToFirstPage: pagination.goToFirstPage,
+		goToLastPage: pagination.goToLastPage,
+		canGoNext: pagination.canGoNext,
+		canGoPrev: pagination.canGoPrev,
 
 		// Search and filters
 		searchQuery,

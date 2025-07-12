@@ -22,6 +22,8 @@ import { StockInPage } from "@/pages/WarehouseManagement/StockIn";
 import { StockOutPage } from "@/pages/WarehouseManagement/StockOut";
 import { WarehouseDashboardPage } from "@/pages/WarehouseManagement/Dashboard";
 import { StockInventoryPage } from "@/pages/WarehouseManagement/StockInventory";
+import { StockInHistoryPage } from "@/pages/WarehouseManagement/StockInHistory";
+import { StockOutHistoryPage } from "@/pages/WarehouseManagement/StockOutHistory";
 
 export const router = createBrowserRouter([
 	{
@@ -113,6 +115,14 @@ export const router = createBrowserRouter([
 			{
 				path: "warehouse/inventory",
 				element: <StockInventoryPage />,
+			},
+			{
+				path: "warehouse/import/history",
+				element: <StockInHistoryPage />,
+			},
+			{
+				path: "warehouse/export/history",
+				element: <StockOutHistoryPage />,
 			},
 		],
 	},
