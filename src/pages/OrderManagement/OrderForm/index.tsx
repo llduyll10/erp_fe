@@ -39,7 +39,8 @@ import { CustomerSearchCombobox } from "@/components/molecules/customer-search-c
 import { ProductSearchCombobox } from "@/components/molecules/product-search-combobox";
 import { AutocompleteSearch } from "@/components/molecules/autocomplete-search";
 import { OrderPreviewModal } from "@/components/molecules/order-preview-modal";
-import { Plus, Trash2, ImageIcon } from "lucide-react";
+import { OrderPrintModal } from "@/components/molecules/order-print-modal";
+import { Plus, Trash2, ImageIcon, Printer } from "lucide-react";
 import { useFieldArray } from "react-hook-form";
 import { OrderVariant } from "@/models/order-variant.model";
 import { useState, useMemo } from "react";
@@ -57,6 +58,7 @@ interface OrderFormProps extends React.ComponentProps<"div"> {
 export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const { t } = useTranslation("order");
 	const [showPreviewModal, setShowPreviewModal] = useState(false);
+	const [showPrintModal, setShowPrintModal] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	// State to store selected variants for display (includes image info)
 	const [selectedVariants, setSelectedVariants] = useState<Record<number, OrderVariant>>({});
@@ -804,6 +806,14 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 									<div className="flex gap-4">
 										<Button
 											type="button"
+											variant="outline"
+											onClick={() => setShowPrintModal(true)}
+											className="gap-2">
+											<Printer className="h-4 w-4" />
+											In đơn hàng
+										</Button>
+										<Button
+											type="button"
 											onClick={handleStatusUpdate}
 											disabled={!hasStatusChanges || isSubmitting}
 											className={
@@ -864,6 +874,18 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 				isLoading={isSubmitting}
 				mode={mode === FormMode.CREATE ? "create" : "update"}
 			/>
+
+			{/* Order Print Modal */}
+			{mode === FormMode.DETAILS && orderDetail && (
+				<OrderPrintModal
+					open={showPrintModal}
+					onOpenChange={setShowPrintModal}
+					order={orderDetail}
+					customer={orderDetail.customer || selectedCustomer}
+					salesRep={orderDetail.sales_representative || selectedSalesRep}
+					orderItems={orderDetail.order_items || []}
+				/>
+			)}
 		</div>
 	);
 }

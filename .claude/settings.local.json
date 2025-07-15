@@ -6,7 +6,16 @@
       "Bash(npx tsc:*)",
       "Bash(npm run dev:*)",
       "Bash(rm:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(yarn build)",
+      "Bash(yarn dev)",
+      "Bash(node:*)",
+      "Bash(yarn type-check)",
+      "Bash(yarn tsc:*)",
+      "Bash(yarn build:*)",
+      "Bash(mkdir:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
