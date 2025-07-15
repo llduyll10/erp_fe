@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createOrder,
 	getOrderDetail,
@@ -15,10 +15,19 @@ import {
 import { QUERY_KEYS } from "@/constants/query.constant";
 
 export const useCreateOrder = () => {
+	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: async (data: CreateOrderRequest) => {
 			const response = await createOrder(data);
 			return response;
+		},
+		onSuccess: () => {
+			// Invalidate order list to show new order
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.LIST] });
+			// Invalidate related queries
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CUSTOMER.LIST] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
 		},
 	});
 };
@@ -57,6 +66,8 @@ export const useGetOrderByNumber = (orderNumber: string) => {
 };
 
 export const useUpdateOrder = () => {
+	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: async ({
 			id,
@@ -68,14 +79,37 @@ export const useUpdateOrder = () => {
 			const response = await updateOrder(id, data);
 			return response;
 		},
+		onSuccess: (data, variables) => {
+			// Invalidate order list to reflect updates
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.LIST] });
+			// Invalidate specific order detail to refresh current page
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.DETAIL, variables.id] });
+			// Invalidate order by number queries
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.BY_NUMBER] });
+			// Invalidate related queries that might be affected
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CUSTOMER.LIST] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+		},
 	});
 };
 
 export const useDeleteOrder = () => {
+	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: async (id: string) => {
 			await deleteOrder(id);
 			return id;
+		},
+		onSuccess: (deletedId) => {
+			// Invalidate order list to remove deleted order
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.LIST] });
+			// Remove specific order detail from cache
+			queryClient.removeQueries({ queryKey: [QUERY_KEYS.ORDER.DETAIL, deletedId] });
+			// Invalidate order by number queries
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.BY_NUMBER] });
+			// Invalidate related queries
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
 		},
 	});
 };

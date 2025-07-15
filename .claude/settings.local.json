@@ -15,7 +15,9 @@
       "Bash(yarn build:*)",
       "Bash(mkdir:*)",
       "Bash(curl:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run:*)"
     ],
     "deny": []
   }

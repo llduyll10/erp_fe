@@ -40,6 +40,13 @@ import { ProductSearchCombobox } from "@/components/molecules/product-search-com
 import { AutocompleteSearch } from "@/components/molecules/autocomplete-search";
 import { OrderPreviewModal } from "@/components/molecules/order-preview-modal";
 import { OrderPrintModal } from "@/components/molecules/order-print-modal";
+import { OrderStatusStepper } from "@/components/molecules/order-status-stepper";
+import { 
+	OrderStatusSelect, 
+	FulfillmentStatusSelect, 
+	PaymentStatusSelect,
+	ProductUnitSelect 
+} from "@/components/molecules/colored-select";
 import { Plus, Trash2, ImageIcon, Printer } from "lucide-react";
 import { useFieldArray } from "react-hook-form";
 import { OrderVariant } from "@/models/order-variant.model";
@@ -61,7 +68,9 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const [showPrintModal, setShowPrintModal] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	// State to store selected variants for display (includes image info)
-	const [selectedVariants, setSelectedVariants] = useState<Record<number, OrderVariant>>({});
+	const [selectedVariants, setSelectedVariants] = useState<
+		Record<number, OrderVariant>
+	>({});
 	const { mutate: updateOrder } = useUpdateOrder();
 	const {
 		form,
@@ -118,9 +127,9 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 		}
 
 		// Store variant info for display (including image)
-		setSelectedVariants(prev => ({
+		setSelectedVariants((prev) => ({
 			...prev,
-			[index]: variant
+			[index]: variant,
 		}));
 	};
 
@@ -128,7 +137,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const handleRemoveItem = (index: number) => {
 		remove(index);
 		// Remove variant from selectedVariants state
-		setSelectedVariants(prev => {
+		setSelectedVariants((prev) => {
 			const newState = { ...prev };
 			delete newState[index];
 			// Re-index remaining items
@@ -149,7 +158,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 	const orderTotal = (() => {
 		const orderItems = form.watch("order_items");
 		if (!orderItems || !Array.isArray(orderItems)) return 0;
-		
+
 		return orderItems.reduce((total, item) => {
 			const itemTotal = Number(item.total_price) || 0;
 			return total + itemTotal;
@@ -206,27 +215,32 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 		if (!orderDetail) {
 			return false;
 		}
-		
+
 		// Handle undefined/null values by providing defaults
 		const currentStatus = watchedStatus || "";
 		const currentFulfillmentStatus = watchedFulfillmentStatus || "";
 		const currentPaymentStatus = watchedPaymentStatus || "";
 		const currentDeliveryNotes = watchedDeliveryNotes || "";
-		
+
 		const originalStatus = orderDetail.status || "";
 		const originalFulfillmentStatus = orderDetail.fulfillment_status || "";
 		const originalPaymentStatus = orderDetail.payment_status || "";
 		const originalDeliveryNotes = orderDetail.delivery_notes || "";
-		
-		const hasChanges = (
+
+		const hasChanges =
 			currentStatus !== originalStatus ||
 			currentFulfillmentStatus !== originalFulfillmentStatus ||
 			currentPaymentStatus !== originalPaymentStatus ||
-			currentDeliveryNotes !== originalDeliveryNotes
-		);
-		
+			currentDeliveryNotes !== originalDeliveryNotes;
+
 		return hasChanges;
-	}, [orderDetail, watchedStatus, watchedFulfillmentStatus, watchedPaymentStatus, watchedDeliveryNotes]);
+	}, [
+		orderDetail,
+		watchedStatus,
+		watchedFulfillmentStatus,
+		watchedPaymentStatus,
+		watchedDeliveryNotes,
+	]);
 
 	// Handle status update (for detail mode)
 	const handleStatusUpdate = () => {
@@ -260,8 +274,6 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 			}
 		);
 	};
-
-
 
 	// Handle form submission - show preview modal
 	const handleFormSubmit = (data: any) => {
@@ -306,34 +318,74 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 		<div className={cn("flex flex-col gap-6")} {...props}>
 			<Card>
 				<CardHeader>
-					<CardTitle>
-						{mode === FormMode.CREATE ? t("create") : t("update")}
-					</CardTitle>
-					<CardDescription>{t("createDescription")}</CardDescription>
+					<div className="flex items-center justify-between">
+						<div>
+							<CardTitle>
+								{mode === FormMode.CREATE ? t("create") : t("update")}
+							</CardTitle>
+							<CardDescription>{t("createDescription")}</CardDescription>
+						</div>
+						
+						{/* Print Button - Moved to top right */}
+						{mode === FormMode.DETAILS && orderDetail && (
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => setShowPrintModal(true)}
+								className="gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700">
+								<Printer className="h-4 w-4" />
+								In đơn hàng
+							</Button>
+						)}
+					</div>
+					
+					{/* Order Status Stepper - Only show in detail mode */}
+					{mode === FormMode.DETAILS && orderDetail && (
+						<div className="mt-6">
+							<OrderStatusStepper 
+								currentStatus={orderDetail.status as OrderStatus} 
+								className="mb-4"
+							/>
+						</div>
+					)}
 					
 					{/* Order Meta Information - Only show in detail mode */}
 					{mode === FormMode.DETAILS && orderDetail && (
 						<div className="mt-4 p-4 bg-muted/30 rounded-lg border">
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 								<div>
-									<span className="font-medium text-muted-foreground">Mã đơn hàng:</span>{" "}
-									<span className="font-medium">{orderDetail.order_number}</span>
+									<span className="font-medium text-muted-foreground">
+										Mã đơn hàng:
+									</span>{" "}
+									<span className="font-medium">
+										{orderDetail.order_number}
+									</span>
 								</div>
 								<div>
-									<span className="font-medium text-muted-foreground">Ngày tạo:</span>{" "}
+									<span className="font-medium text-muted-foreground">
+										Ngày tạo:
+									</span>{" "}
 									{formatDate(orderDetail.created_at)}
 								</div>
 								<div>
-									<span className="font-medium text-muted-foreground">Người tạo:</span>{" "}
-									{orderDetail.created_by?.name || "N/A"} ({orderDetail.created_by?.email || "N/A"})
+									<span className="font-medium text-muted-foreground">
+										Người tạo:
+									</span>{" "}
+									{orderDetail.created_by?.name || "N/A"} (
+									{orderDetail.created_by?.email || "N/A"})
 								</div>
 								<div>
-									<span className="font-medium text-muted-foreground">Cập nhật lần cuối:</span>{" "}
+									<span className="font-medium text-muted-foreground">
+										Cập nhật lần cuối:
+									</span>{" "}
 									{formatDate(orderDetail.updated_at)}
 								</div>
 								<div className="md:col-span-2">
-									<span className="font-medium text-muted-foreground">Người cập nhật:</span>{" "}
-									{orderDetail.updated_by?.name || "N/A"} ({orderDetail.updated_by?.email || "N/A"})
+									<span className="font-medium text-muted-foreground">
+										Người cập nhật:
+									</span>{" "}
+									{orderDetail.updated_by?.name || "N/A"} (
+									{orderDetail.updated_by?.email || "N/A"})
 								</div>
 							</div>
 						</div>
@@ -550,7 +602,9 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 												/>
 											</FormControl>
 											<div className="text-xs text-muted-foreground mt-1">
-												💡 Gợi ý: Ghi chú chi tiết về yêu cầu khách hàng, tình trạng sản xuất, thời gian giao hàng, phương thức thanh toán và các lưu ý đặc biệt khác
+												💡 Gợi ý: Ghi chú chi tiết về yêu cầu khách hàng, tình
+												trạng sản xuất, thời gian giao hàng, phương thức thanh
+												toán và các lưu ý đặc biệt khác
 											</div>
 											<FormMessage />
 										</FormItem>
@@ -693,27 +747,14 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 														render={({ field }) => (
 															<FormItem>
 																<FormLabel>Đơn vị</FormLabel>
-																<Select
-																	onValueChange={field.onChange}
-																	value={field.value}
-																	disabled={mode === FormMode.DETAILS}>
-																	<FormControl>
-																		<SelectTrigger>
-																			<SelectValue placeholder="Chọn đơn vị" />
-																		</SelectTrigger>
-																	</FormControl>
-																	<SelectContent>
-																		<SelectItem value={ProductUnit.PIECE}>
-																			Cái
-																		</SelectItem>
-																		<SelectItem value={ProductUnit.SET}>
-																			Bộ
-																		</SelectItem>
-																		<SelectItem value={ProductUnit.PAIR}>
-																			Đôi
-																		</SelectItem>
-																	</SelectContent>
-																</Select>
+																<FormControl>
+																	<ProductUnitSelect
+																		value={field.value as ProductUnit}
+																		onValueChange={field.onChange}
+																		placeholder="Chọn đơn vị"
+																		disabled={mode === FormMode.DETAILS}
+																	/>
+																</FormControl>
 																<FormMessage />
 															</FormItem>
 														)}
@@ -796,7 +837,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 							</div>
 
 							{/* Submit Button */}
-							{mode === FormMode.DETAILS ? (
+							{mode === FormMode.DETAILS ?
 								<div className="flex flex-col items-end gap-2">
 									{hasStatusChanges && (
 										<div className="text-sm text-muted-foreground text-right">
@@ -806,25 +847,17 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 									<div className="flex gap-4">
 										<Button
 											type="button"
-											variant="outline"
-											onClick={() => setShowPrintModal(true)}
-											className="gap-2">
-											<Printer className="h-4 w-4" />
-											In đơn hàng
-										</Button>
-										<Button
-											type="button"
 											onClick={handleStatusUpdate}
 											disabled={!hasStatusChanges || isSubmitting}
-											className={
+											className={cn(
+												"bg-green-600 hover:bg-green-700 text-white",
 												!hasStatusChanges ? "opacity-50 cursor-not-allowed" : ""
-											}>
+											)}>
 											{isSubmitting ? t("updating") : t("updateStatus")}
 										</Button>
 									</div>
 								</div>
-							) : (
-								<div className="flex flex-col items-end gap-2">
+							:	<div className="flex flex-col items-end gap-2">
 									{!isFormValid() && (
 										<div className="text-sm text-muted-foreground text-right">
 											{!form.watch("customer_id") && t("pleaseSelectCustomer")}
@@ -857,7 +890,7 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 										</Button>
 									</div>
 								</div>
-							)}
+							}
 						</form>
 					</Form>
 				</CardContent>
