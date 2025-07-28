@@ -39,7 +39,6 @@ export function StockMovementDetailModal({
 
 	// Get image key
 	const imageKey = variant?.file_key || 
-					variant?.product_file_key || 
 					variant?.product?.file_key;
 
 	// Reason labels
@@ -152,7 +151,7 @@ export function StockMovementDetailModal({
 									<div className="flex-shrink-0">
 										<OptimizedImage
 											fileKey={imageKey}
-											alt={variant.variant_name || variant.display_name || variant.product?.name}
+											alt={variant.variant_name || variant.product?.name || "Product"}
 											className="w-20 h-20 rounded-lg object-cover border border-gray-200"
 											showLoading={false}
 											fallbackComponent={
@@ -165,7 +164,7 @@ export function StockMovementDetailModal({
 									<div className="flex-1 space-y-2">
 										<div>
 											<h3 className="font-semibold text-lg">
-												{variant.product?.name || variant.product_name || "-"}
+												{variant.product?.name || "-"}
 											</h3>
 											{variant.variant_name && (
 												<p className="text-sm text-blue-600">{variant.variant_name}</p>
@@ -252,29 +251,7 @@ export function StockMovementDetailModal({
 						</Card>
 					)}
 
-					{/* Warehouse Information (if available) */}
-					{movement.warehouse && (
-						<Card>
-							<CardHeader>
-								<CardTitle className="text-lg flex items-center gap-2">
-									<Building2 className="h-5 w-5" />
-									Thông tin kho
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-2 text-sm">
-									<div>
-										<span className="font-medium">{movement.warehouse.name}</span>
-									</div>
-									{movement.warehouse.address && (
-										<div className="text-muted-foreground">
-											{movement.warehouse.address}
-										</div>
-									)}
-								</div>
-							</CardContent>
-						</Card>
-					)}
+					{/* Warehouse Information - removed since it's not in the model */}
 				</div>
 			</DialogContent>
 		</Dialog>

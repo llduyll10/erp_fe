@@ -166,7 +166,7 @@ const useStockInventory = () => {
 	} = useGetStockInventory();
 
 	// Filter data based on search and stock level
-	const filteredData = (stockSummaryResponse?.data || stockSummaryResponse || []).filter((item: StockSummary) => {
+	const filteredData = (stockSummaryResponse || []).filter((item: StockSummary) => {
 		// Search filter
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
@@ -251,7 +251,7 @@ const useStockInventory = () => {
 	];
 
 	// Summary statistics
-	const stockData = stockSummaryResponse?.data || stockSummaryResponse || [];
+	const stockData = stockSummaryResponse || [];
 	const stats = {
 		totalProducts: stockData.length || 0,
 		inStock: stockData.filter(

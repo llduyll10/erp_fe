@@ -32,8 +32,9 @@ const STATUS_COLORS = {
 	[OrderStatus.COMPLETED]: "border-green-500 bg-green-100 text-green-900",
 	[OrderStatus.CANCELLED]: "border-red-400 bg-red-100 text-red-800",
 
-	[FulfillmentStatus.PENDING]: "border-yellow-300 bg-yellow-50 text-yellow-700",
-	[FulfillmentStatus.IN_PRODUCTION]: "border-orange-300 bg-orange-50 text-orange-700",
+	// Fulfillment statuses
+	"fulfillment_pending": "border-yellow-300 bg-yellow-50 text-yellow-700",
+	"fulfillment_in_production": "border-orange-300 bg-orange-50 text-orange-700",
 	[FulfillmentStatus.STOCK_READY]: "border-purple-300 bg-purple-50 text-purple-700",
 	[FulfillmentStatus.SHIPPED]: "border-green-400 bg-green-100 text-green-800",
 
@@ -42,7 +43,8 @@ const STATUS_COLORS = {
 	[PaymentStatus.PAID]: "border-green-400 bg-green-100 text-green-800",
 	[PaymentStatus.REFUNDED]: "border-gray-400 bg-gray-100 text-gray-800",
 
-	[ProductionStatus.PENDING]: "border-yellow-300 bg-yellow-50 text-yellow-700",
+	// Production statuses
+	"production_pending": "border-yellow-300 bg-yellow-50 text-yellow-700",
 	[ProductionStatus.IN_PROGRESS]: "border-orange-300 bg-orange-50 text-orange-700",
 	[ProductionStatus.DONE]: "border-green-400 bg-green-100 text-green-800",
 
@@ -63,8 +65,9 @@ const STATUS_BADGES = {
 	[OrderStatus.COMPLETED]: "🎉",
 	[OrderStatus.CANCELLED]: "❌",
 
-	[FulfillmentStatus.PENDING]: "⏳",
-	[FulfillmentStatus.IN_PRODUCTION]: "🏭",
+	// Fulfillment badges
+	"fulfillment_pending": "⏳",
+	"fulfillment_in_production": "🏭",
 	[FulfillmentStatus.STOCK_READY]: "📦",
 	[FulfillmentStatus.SHIPPED]: "🚚",
 
@@ -73,7 +76,8 @@ const STATUS_BADGES = {
 	[PaymentStatus.PAID]: "✅",
 	[PaymentStatus.REFUNDED]: "↩️",
 
-	[ProductionStatus.PENDING]: "⏳",
+	// Production badges
+	"production_pending": "⏳",
 	[ProductionStatus.IN_PROGRESS]: "🏭",
 	[ProductionStatus.DONE]: "✅",
 
@@ -164,6 +168,9 @@ interface OrderStatusSelectProps {
 }
 
 export const OrderStatusSelect: React.FC<OrderStatusSelectProps> = (props) => {
+	const handleChange = (value: string) => {
+		props.onValueChange?.(value as OrderStatus);
+	};
 	const options = [
 		{ value: OrderStatus.NEW, label: "Đơn hàng mới" },
 		{ value: OrderStatus.WAREHOUSE_CONFIRMED, label: "Kho xác nhận" },
@@ -178,7 +185,10 @@ export const OrderStatusSelect: React.FC<OrderStatusSelectProps> = (props) => {
 
 	return (
 		<ColoredSelect
-			{...props}
+			value={props.value}
+			onValueChange={handleChange}
+			disabled={props.disabled}
+			className={props.className}
 			options={options}
 			placeholder={props.placeholder || "Chọn trạng thái đơn hàng"}
 		/>
@@ -194,6 +204,9 @@ interface FulfillmentStatusSelectProps {
 }
 
 export const FulfillmentStatusSelect: React.FC<FulfillmentStatusSelectProps> = (props) => {
+	const handleChange = (value: string) => {
+		props.onValueChange?.(value as FulfillmentStatus);
+	};
 	const options = [
 		{ value: FulfillmentStatus.PENDING, label: "Chờ xử lý" },
 		{ value: FulfillmentStatus.IN_PRODUCTION, label: "Đang sản xuất" },
@@ -203,7 +216,10 @@ export const FulfillmentStatusSelect: React.FC<FulfillmentStatusSelectProps> = (
 
 	return (
 		<ColoredSelect
-			{...props}
+			value={props.value}
+			onValueChange={handleChange}
+			disabled={props.disabled}
+			className={props.className}
 			options={options}
 			placeholder={props.placeholder || "Chọn trạng thái thực hiện"}
 		/>
@@ -219,6 +235,9 @@ interface PaymentStatusSelectProps {
 }
 
 export const PaymentStatusSelect: React.FC<PaymentStatusSelectProps> = (props) => {
+	const handleChange = (value: string) => {
+		props.onValueChange?.(value as PaymentStatus);
+	};
 	const options = [
 		{ value: PaymentStatus.UNPAID, label: "Chưa thanh toán" },
 		{ value: PaymentStatus.PARTIAL, label: "Thanh toán một phần" },
@@ -228,7 +247,10 @@ export const PaymentStatusSelect: React.FC<PaymentStatusSelectProps> = (props) =
 
 	return (
 		<ColoredSelect
-			{...props}
+			value={props.value}
+			onValueChange={handleChange}
+			disabled={props.disabled}
+			className={props.className}
 			options={options}
 			placeholder={props.placeholder || "Chọn trạng thái thanh toán"}
 		/>
@@ -244,6 +266,9 @@ interface ProductUnitSelectProps {
 }
 
 export const ProductUnitSelect: React.FC<ProductUnitSelectProps> = (props) => {
+	const handleChange = (value: string) => {
+		props.onValueChange?.(value as ProductUnit);
+	};
 	const options = [
 		{ value: ProductUnit.PIECE, label: "Cái" },
 		{ value: ProductUnit.SET, label: "Bộ" },
@@ -252,7 +277,10 @@ export const ProductUnitSelect: React.FC<ProductUnitSelectProps> = (props) => {
 
 	return (
 		<ColoredSelect
-			{...props}
+			value={props.value}
+			onValueChange={handleChange}
+			disabled={props.disabled}
+			className={props.className}
 			options={options}
 			placeholder={props.placeholder || "Chọn đơn vị"}
 		/>

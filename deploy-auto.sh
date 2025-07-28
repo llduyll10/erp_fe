@@ -263,8 +263,8 @@ upload_project() {
     cp -r src/ "$temp_dir/"
     cp -r public/ "$temp_dir/"
     cp -r docker/ "$temp_dir/" 2>/dev/null || mkdir -p "$temp_dir/docker"
-    cp package*.json "$temp_dir/"
-    cp yarn.lock "$temp_dir/" 2>/dev/null || true
+    cp package.json "$temp_dir/"
+    cp yarn.lock "$temp_dir/"
     cp tsconfig*.json "$temp_dir/" 2>/dev/null || true
     cp vite.config.ts "$temp_dir/" 2>/dev/null || true
     cp index.html "$temp_dir/"
@@ -277,7 +277,9 @@ upload_project() {
     cp postcss.config.js "$temp_dir/" 2>/dev/null || true
     
     # Upload to VPS
-    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r $temp_dir/* "$VPS_USER@$VPS_IP:$VPS_PATH/"
+    cd "$temp_dir"
+    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r . "$VPS_USER@$VPS_IP:$VPS_PATH/"
+    cd "$LOCAL_PATH"
     
     # Cleanup
     rm -rf "$temp_dir"

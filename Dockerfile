@@ -16,17 +16,17 @@ RUN apk add --no-cache \
     git
 
 # Copy package files for dependency installation
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-# Install dependencies with clean npm cache
-RUN npm ci --only=production=false --silent && \
-    npm cache clean --force
+# Install dependencies using yarn
+RUN yarn install --frozen-lockfile --network-timeout 100000 && \
+    yarn cache clean
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN yarn build
 
 # ======================================
 # Stage 2: Production stage

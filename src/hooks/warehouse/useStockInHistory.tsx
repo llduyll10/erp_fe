@@ -227,7 +227,6 @@ const useStockInHistory = () => {
 		},
 		{
 			headerName: "Thao tác",
-			field: "actions",
 			width: 80,
 			cellRenderer: ActionsCellRenderer,
 			sortable: false,

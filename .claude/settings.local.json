@@ -20,7 +20,10 @@
       "Bash(npm run:*)",
       "Bash(chmod:*)",
       "Bash(mv:*)",
-      "Bash(ssh-keygen:*)"
+      "Bash(ssh-keygen:*)",
+      "Bash(./deploy-auto.sh)",
+      "Bash(touch:*)",
+      "Bash(docker build:*)"
     ],
     "deny": []
   }

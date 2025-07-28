@@ -135,6 +135,7 @@ upload_project() {
     cp Dockerfile "$temp_dir/"
     cp docker-compose.yml "$temp_dir/"
     cp package.json "$temp_dir/"
+    cp yarn.lock "$temp_dir/"
     cp -r src/ "$temp_dir/"
     cp -r public/ "$temp_dir/"
     
