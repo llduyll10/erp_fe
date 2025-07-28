@@ -277,7 +277,7 @@ upload_project() {
     cp postcss.config.js "$temp_dir/" 2>/dev/null || true
     
     # Upload to VPS
-    upload_to_vps "$temp_dir/*" "$VPS_PATH/"
+    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r $temp_dir/* "$VPS_USER@$VPS_IP:$VPS_PATH/"
     
     # Cleanup
     rm -rf "$temp_dir"
