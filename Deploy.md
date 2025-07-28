@@ -2,11 +2,12 @@
 
 ## 📋 THÔNG TIN CHUNG
 
-### Thông tin VPS
+### Thông tin VPS Frontend
 - **IP**: 14.225.212.17
 - **Username**: root
 - **Password**: cLFt8mx7ePeLnENkFK7E
 - **SSH Port**: 22
+- **Path**: /opt/erp-frontend
 
 ### Cấu hình Domain
 - **Frontend**: app.bravix.vn (deploy trên VPS này)

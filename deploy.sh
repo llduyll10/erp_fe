@@ -18,7 +18,7 @@ NC='\033[0m'
 # Configuration
 VPS_IP="14.225.212.17"
 VPS_USER="root"
-VPS_PATH="/opt/bravix-frontend"
+VPS_PATH="/opt/erp-frontend"
 FRONTEND_DOMAIN="app.bravix.vn"
 BACKEND_DOMAIN="api.bravix.vn"
 ADMIN_EMAIL="admin@bravix.vn"
