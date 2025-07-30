@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ====================================================
-# DEPLOY SCRIPT FOR ERP FRONTEND TO VPS
-# VPS: 14.225.212.17 | User: root | Path: /opt/erp-frontend
+# DEPLOY ERP FRONTEND TO VPS WITH NGINX AND HTTPS
+# VPS: 14.225.212.17 | Domain: app.bravix.vn
 # ====================================================
 
 set -e
@@ -16,10 +16,9 @@ NC='\033[0m'
 
 # VPS Configuration
 VPS_IP="14.225.212.17"
-VPS_USER="root"
-VPS_PASSWORD="cLFt8mx7ePeLnENkFK7E"
-VPS_PATH="/opt/erp-frontend"
-GITHUB_REPO="https://github.com/llduyll10/erp_fe.git"
+VPS_USER="ubuntu"
+DOMAIN="app.bravix.vn"
+PROJECT_DIR="/home/ubuntu/erp_fe"
 
 # Functions
 log() {
@@ -39,204 +38,85 @@ error() {
     exit 1
 }
 
-# Check dependencies
-check_deps() {
-    log "Checking dependencies..."
+# Main deployment function
+main() {
+    echo -e "${BLUE}════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}     ERP FRONTEND NGINX HTTPS DEPLOYMENT${NC}"
+    echo -e "${BLUE}════════════════════════════════════════════${NC}"
+    echo ""
+    echo "🎯 Target VPS: $VPS_IP"
+    echo "🌐 Domain: $DOMAIN"
+    echo "📁 Project Dir: $PROJECT_DIR"
+    echo ""
     
-    if ! command -v sshpass &> /dev/null; then
-        warning "Installing sshpass..."
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            brew install hudochenkov/sshpass/sshpass || error "Failed to install sshpass"
-        else
-            sudo apt-get update && sudo apt-get install -y sshpass || error "Failed to install sshpass"
-        fi
-    fi
-    success "Dependencies ready"
-}
-
-# Execute command on VPS
-run_vps() {
-    sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_IP" "$1"
-}
-
-# Upload file to VPS
-upload_vps() {
-    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r "$1" "$VPS_USER@$VPS_IP:$2"
-}
-
-# Setup VPS environment
-setup_vps() {
-    log "Setting up VPS environment..."
+    # Step 1: Push changes to git
+    log "Pushing latest changes to git..."
+    git add .
+    git commit -m "Deploy: Configure Nginx with HTTPS support" || echo "No changes to commit"
+    git push origin main
+    success "Code pushed to repository"
     
-    run_vps "
-        # Update system
-        apt update && apt upgrade -y
+    # Step 2: Deploy to VPS
+    log "Deploying to VPS..."
+    ssh ubuntu@$VPS_IP << 'ENDSSH'
+        set -e
         
-        # Install required packages
-        apt install -y curl git nodejs npm docker.io docker-compose
+        # Navigate to project directory
+        cd /home/ubuntu/erp_fe
         
-        # Start Docker
-        systemctl start docker
-        systemctl enable docker
+        echo "📥 Pulling latest changes..."
+        git pull origin main
         
-        # Create Docker network
-        docker network create erp_network 2>/dev/null || true
+        # Stop existing containers
+        echo "🛑 Stopping existing containers..."
+        docker-compose down || true
         
-        # Setup firewall
-        ufw --force enable
-        ufw allow 22/tcp
-        ufw allow 80/tcp
-        ufw allow 443/tcp
+        # Clean up old images
+        echo "🧹 Cleaning up old images..."
+        docker image prune -f || true
         
-        # Create project directory
-        mkdir -p $VPS_PATH
-        chown -R $VPS_USER:$VPS_USER $VPS_PATH
-    "
-    
-    success "VPS environment ready"
-}
-
-# Deploy application
-deploy_app() {
-    log "Deploying application..."
-    
-    run_vps "
-        cd $VPS_PATH
+        # Build and start containers
+        echo "🏗️  Building and starting containers..."
+        docker-compose up -d --build
         
-        # Clone or update repository
-        if [ -d '.git' ]; then
-            git pull origin main
-        else
-            git clone $GITHUB_REPO .
-        fi
-        
-        # Create .env.production
-        cat > .env.production << 'EOF'
-# API Configuration
-VITE_API_URL=https://api.bravix.vn
-VITE_APP_URL=https://app.bravix.vn
-
-# App Settings
-VITE_APP_NAME=ERP System - Bravix
-VITE_APP_VERSION=1.0.0
-VITE_APP_ENV=production
-VITE_ACCESS_TOKEN_THRESHOLD=120000
-VITE_USER_TYPE=staff
-
-# Features
-VITE_ENABLE_ANALYTICS=false
-VITE_ENABLE_SENTRY=false
-EOF
-
-        # Create docker-compose.yml for production
-        cat > docker-compose.yml << 'EOF'
-version: '3.8'
-
-services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: erp_frontend
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - VITE_API_URL=https://api.bravix.vn
-      - VITE_APP_URL=https://app.bravix.vn
-    ports:
-      - '80:80'
-    networks:
-      - erp_network
-    volumes:
-      - ./logs:/var/log/nginx
-
-networks:
-  erp_network:
-    external: true
-EOF
-
-        # Build and start
-        docker-compose down 2>/dev/null || true
-        docker-compose build --no-cache
-        docker-compose up -d
-        
-        # Check status
-        sleep 5
+        echo "✅ Deployment completed!"
+        echo "📊 Container status:"
         docker-compose ps
-    "
+ENDSSH
     
-    success "Application deployed"
-}
-
-# Verify deployment
-verify_deploy() {
-    log "Verifying deployment..."
+    success "Application deployed successfully!"
     
-    # Check container status
-    local status=$(run_vps "docker ps --filter 'name=erp_frontend' --format '{{.Status}}' | grep -c 'Up'")
-    
-    if [ "$status" -ge 1 ]; then
-        success "Frontend container is running"
-    else
-        warning "Frontend container may not be running"
-        run_vps "cd $VPS_PATH && docker-compose logs frontend"
-    fi
-    
-    # Test health endpoint
-    sleep 5
-    if curl -s -o /dev/null -w "%{http_code}" "http://$VPS_IP/health" | grep -q "200"; then
-        success "Health check passed"
-    else
-        warning "Health check failed"
-    fi
-    
-    success "Deployment verified"
-}
-
-# Show deployment info
-show_info() {
+    # Show next steps
     echo ""
     echo -e "${BLUE}════════════════════════════════════════════${NC}"
     echo -e "${GREEN}    🎉 DEPLOYMENT COMPLETED! 🎉${NC}"
     echo -e "${BLUE}════════════════════════════════════════════${NC}"
     echo ""
-    echo "📌 Application URLs:"
-    echo "   Frontend: http://$VPS_IP"
-    echo "   Health: http://$VPS_IP/health"
+    echo "📝 Next steps for HTTPS setup:"
     echo ""
-    echo "🔧 Management Commands:"
-    echo "   SSH: ssh $VPS_USER@$VPS_IP"
-    echo "   Logs: docker-compose logs -f frontend"
-    echo "   Restart: docker-compose restart frontend"
+    echo "1. Install Certbot on VPS:"
+    echo "   sudo apt update"
+    echo "   sudo apt install certbot -y"
     echo ""
-    echo "📂 Application Path: $VPS_PATH"
+    echo "2. Stop containers temporarily:"
+    echo "   docker-compose down"
     echo ""
-}
-
-# Main deployment function
-main() {
-    echo -e "${BLUE}════════════════════════════════════════════${NC}"
-    echo -e "${BLUE}     ERP FRONTEND VPS DEPLOYMENT${NC}"
-    echo -e "${BLUE}════════════════════════════════════════════${NC}"
+    echo "3. Get SSL certificate:"
+    echo "   sudo certbot certonly --standalone -d $DOMAIN"
     echo ""
-    echo "🎯 Target VPS: $VPS_IP"
-    echo "📁 Deploy Path: $VPS_PATH"
-    echo "🔗 Repository: $GITHUB_REPO"
+    echo "4. Start containers again:"
+    echo "   docker-compose up -d"
     echo ""
-    
-    read -p "Continue with deployment? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Deployment cancelled."
-        exit 0
-    fi
-    
-    # Execute deployment
-    check_deps
-    setup_vps
-    deploy_app
-    verify_deploy
-    show_info
+    echo "🌐 Your application will be available at:"
+    echo "   HTTP:  http://$DOMAIN"
+    echo "   HTTPS: https://$DOMAIN (after SSL setup)"
+    echo ""
+    echo "🔧 Management commands on VPS:"
+    echo "   ssh ubuntu@$VPS_IP"
+    echo "   cd $PROJECT_DIR"
+    echo "   docker-compose logs -f"
+    echo "   docker-compose restart"
+    echo ""
 }
 
 # Run main function

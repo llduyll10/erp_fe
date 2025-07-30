@@ -32,67 +32,9 @@ services:
       - "443:443"
     volumes:
       - nginx_logs:/var/log/nginx
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - frontend_network
-
-  # ======================================
-  # Reverse Proxy (Traefik)
-  # ======================================
-  traefik:
-    image: traefik:v3.0
-    container_name: bravix_traefik
-    restart: unless-stopped
-    command:
-      # API and dashboard
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      # Entry points
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # Docker provider
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      # Let's Encrypt
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      # Redirect HTTP to HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      # Security headers
-      - "--entrypoints.websecure.http.middlewares=security-headers@docker"
-      # Logging
-      - "--log.level=INFO"
-      - "--accesslog=true"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # Traefik dashboard
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_acme:/acme.json
-      - traefik_logs:/var/log/traefik
-    networks:
-      - frontend_network
-    labels:
-      - "traefik.enable=true"
-      # Traefik dashboard (optional)
-      - "traefik.http.routers.traefik.rule=Host(`traefik.bravix.vn`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=traefik-auth"
-      # Basic auth: admin/admin123
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$2y$$10$$K7h1wGlxbJ5fLf1gfnw1guOvd0zQ1N2wMq3QCvf1qw.1m3QCvf1qw"
-      # Security headers middleware
-      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
-      - "traefik.http.middlewares.security-headers.headers.sslRedirect=true"
-      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
-      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
-      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
 
 # ======================================
 # Networks
@@ -107,10 +49,4 @@ networks:
 volumes:
   # Application logs
   nginx_logs:
-    driver: local
-  
-  # Proxy and SSL
-  traefik_acme:
-    driver: local
-  traefik_logs:
     driver: local

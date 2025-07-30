@@ -25,7 +25,11 @@
       "Bash(touch:*)",
       "Bash(docker build:*)",
       "Bash(docker:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(./deploy-vps.sh)"
     ],
     "deny": []
   }
