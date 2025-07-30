@@ -23,7 +23,9 @@
       "Bash(ssh-keygen:*)",
       "Bash(./deploy-auto.sh)",
       "Bash(touch:*)",
-      "Bash(docker build:*)"
+      "Bash(docker build:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)"
     ],
     "deny": []
   }
