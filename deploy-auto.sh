@@ -18,7 +18,7 @@ VPS_IP="14.225.212.17"
 VPS_USER="root"
 VPS_PASSWORD="cLFt8mx7ePeLnENkFK7E"
 VPS_PATH="/opt/erp-frontend"
-GITHUB_REPO="git@github.com:your-username/erp-frontend.git"  # UPDATE THIS
+GITHUB_REPO="git@github.com:llduyll10/erp_fe.git"
 LOCAL_PATH="$(pwd)"
 
 # Functions
@@ -277,9 +277,7 @@ upload_project() {
     cp postcss.config.js "$temp_dir/" 2>/dev/null || true
     
     # Upload to VPS
-    cd "$temp_dir"
-    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r . "$VPS_USER@$VPS_IP:$VPS_PATH/"
-    cd "$LOCAL_PATH"
+    sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no -r "$temp_dir"/* "$VPS_USER@$VPS_IP:$VPS_PATH/"
     
     # Cleanup
     rm -rf "$temp_dir"
