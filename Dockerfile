@@ -25,6 +25,23 @@ RUN yarn install --frozen-lockfile --network-timeout 100000 && \
 # Copy source code
 COPY . .
 
+# Fix compatibility issues for production build
+RUN set -e && \
+    # Fix case sensitivity for Login folder (rename Login to login if exists) \
+    if [ -d "src/pages/Login" ] && [ ! -d "src/pages/login" ]; then \
+    mv "src/pages/Login" "src/pages/login"; \
+    fi && \
+    # Fix import path in routes.tsx \
+    if [ -f "src/router/routes.tsx" ]; then \
+    sed -i 's/@\/pages\/Login\/index/@\/pages\/login\/index/g' src/router/routes.tsx; \
+    fi && \
+    # Remove vite.config.ts if exists (keep only vite.config.js) \
+    if [ -f "vite.config.ts" ]; then \
+    rm -f vite.config.ts; \
+    fi && \
+    # Fix tsconfig.node.json to remove vite.config.ts reference \
+    echo '{"compilerOptions":{"composite":true,"module":"ESNext","moduleResolution":"bundler","allowSyntheticDefaultImports":true}}' > tsconfig.node.json
+
 # Build the application
 RUN yarn build
 
