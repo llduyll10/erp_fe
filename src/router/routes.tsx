@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { AuthLayout } from "@/layouts/auth-layout";
 import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { ProtectedRoute } from "@/components/layout/protected-routed";
-import { LoginPage } from "@/pages/Login/index";
+import { LoginPage } from "@/pages/login/index";
 import { RegisterCompanyPage } from "@/pages/Company/index";
 import { UserManagementPage } from "@/pages/UserManagement/index";
 import { UserRoleEnum } from "@/enums/user.enums";
