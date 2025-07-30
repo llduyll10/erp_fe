@@ -3,6 +3,8 @@
 		"email": "Invalid email address",
 		"password": "Password is required"
 	},
+	"page_not_found": "Page Not Found",
+	"page_not_found_description": "The page you are looking for does not exist.",
 	"server_errors": {
 		"common": {
 			"internal_server_error": "Internal server error"

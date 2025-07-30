@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import { AuthLayout } from "@/layouts/auth-layout";
 import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { ProtectedRoute } from "@/components/layout/protected-routed";
+import { AuthRedirect } from "@/components/auth-redirect";
+import { NotFound } from "@/components/not-found";
 import { LoginPage } from "@/pages/login/index";
 import { RegisterCompanyPage } from "@/pages/Company/index";
 import { UserManagementPage } from "@/pages/UserManagement/index";
@@ -31,6 +33,10 @@ export const router = createBrowserRouter([
 		element: <AuthLayout />,
 		children: [
 			{
+				index: true, // This handles the root "/" path
+				element: <AuthRedirect />,
+			},
+			{
 				path: "login",
 				element: <LoginPage />,
 			},
@@ -52,6 +58,10 @@ export const router = createBrowserRouter([
 			</ProtectedRoute>
 		),
 		children: [
+			{
+				index: true, // This handles "/dashboard" path - redirect to products
+				element: <AuthRedirect />,
+			},
 			{
 				path: "users",
 				element: <UserManagementPage />,
@@ -125,5 +135,9 @@ export const router = createBrowserRouter([
 				element: <StockOutHistoryPage />,
 			},
 		],
+	},
+	{
+		path: "*", // Catch-all route for 404 pages
+		element: <NotFound />,
 	},
 ]);

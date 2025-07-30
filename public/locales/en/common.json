@@ -17,7 +17,9 @@
 		"loading": "Loading...",
 		"error": "Error occurred",
 		"success": "Success",
-		"required": "Required"
+		"required": "Required",
+		"go_back": "Go Back",
+		"go_to_dashboard": "Go to Dashboard"
 	},
 	"actions": {
 		"search": "Search",

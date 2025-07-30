@@ -3,6 +3,8 @@
 		"email": "Email không hợp lệ",
 		"password": "Mật khẩu không được để trống"
 	},
+	"page_not_found": "Trang không tìm thấy",
+	"page_not_found_description": "Trang bạn đang tìm kiếm không tồn tại.",
 	"server_errors": {
 		"common": {
 			"internal_server_error": "Lỗi máy chủ nội bộ"

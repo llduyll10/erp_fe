@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ERROR_CODES } from "@/constants/error.constant";
-import { getAuthTokens, getAuthUser } from "@/utils/auth.util";
+import { getAuthTokens, getAuthUser, clearAuth } from "@/utils/auth.util";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { hasMinimumRole } from "@/constants/user.constant";
+import { useAuthStore } from "@/stores/auth.store";
+import Loading from "@/components/layout/loading";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
@@ -22,48 +24,101 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { login, logout } = useAuthStore();
+	const [isChecking, setIsChecking] = useState(true);
 
 	useEffect(() => {
-		// Check authentication from localStorage
-		const tokens = getAuthTokens();
-		const storedUser = getAuthUser();
+		const checkAuth = async () => {
+			setIsChecking(true);
 
-		if (!tokens || !storedUser) {
-			navigate(redirectTo);
-			return;
-		}
+			try {
+				// Check authentication from localStorage
+				const tokens = getAuthTokens();
+				const storedUser = getAuthUser();
 
-		// Check if user must change password
-		if (
-			storedUser.must_change_password &&
-			location.pathname !== "/change-password"
-		) {
-			navigate("/change-password", {
-				state: {
-					returnTo: location.pathname,
-				},
-			});
-			return;
-		}
+				if (!tokens || !storedUser) {
+					// Clear any stale data and redirect
+					clearAuth();
+					logout();
+					navigate(redirectTo, {
+						state: { from: location.pathname },
+						replace: true,
+					});
+					return;
+				}
 
-		// Check user role/permissions
-		const userRole = storedUser.role as UserRoleEnum;
-		
-		// Check specific allowed types
-		if (allowedTypes && !allowedTypes.includes(userRole)) {
-			throw new Error(ERROR_CODES.FORBIDDEN);
-		}
+				// Sync localStorage data with store
+				login(
+					{
+						access_token: tokens.access_token,
+						refresh_token: tokens.refresh_token,
+					},
+					storedUser
+				);
 
-		// Check specific allowed roles
-		if (allowedRoles && !allowedRoles.includes(userRole)) {
-			throw new Error(ERROR_CODES.FORBIDDEN);
-		}
+				// Check if user must change password
+				if (
+					storedUser.must_change_password &&
+					location.pathname !== "/change-password"
+				) {
+					navigate("/change-password", {
+						state: {
+							returnTo: location.pathname,
+						},
+						replace: true,
+					});
+					return;
+				}
 
-		// Check minimum role requirement
-		if (minimumRole && !hasMinimumRole(userRole, minimumRole)) {
-			throw new Error(ERROR_CODES.FORBIDDEN);
-		}
-	}, [navigate, redirectTo, allowedTypes, allowedRoles, minimumRole, location.pathname]);
+				// Check user role/permissions
+				const userRole = storedUser.role as UserRoleEnum;
+
+				// Check specific allowed types
+				if (allowedTypes && !allowedTypes.includes(userRole)) {
+					throw new Error(ERROR_CODES.FORBIDDEN);
+				}
+
+				// Check specific allowed roles
+				if (allowedRoles && !allowedRoles.includes(userRole)) {
+					throw new Error(ERROR_CODES.FORBIDDEN);
+				}
+
+				// Check minimum role requirement
+				if (minimumRole && !hasMinimumRole(userRole, minimumRole)) {
+					throw new Error(ERROR_CODES.FORBIDDEN);
+				}
+			} catch (error) {
+				console.error("Auth check failed:", error);
+				clearAuth();
+				logout();
+				navigate(redirectTo, {
+					state: { from: location.pathname },
+					replace: true,
+				});
+			} finally {
+				setIsChecking(false);
+			}
+		};
+
+		checkAuth();
+	}, [
+		navigate,
+		redirectTo,
+		allowedTypes,
+		allowedRoles,
+		minimumRole,
+		location.pathname,
+		login,
+		logout,
+	]);
+
+	if (isChecking) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<Loading />
+			</div>
+		);
+	}
 
 	return <>{children}</>;
 }

@@ -17,7 +17,9 @@
 		"loading": "Đang tải...",
 		"error": "Đã xảy ra lỗi",
 		"success": "Thành công",
-		"required": "Bắt buộc"
+		"required": "Bắt buộc",
+		"go_back": "Quay lại",
+		"go_to_dashboard": "Về trang chủ"
 	},
 	"actions": {
 		"search": "Tìm kiếm",
