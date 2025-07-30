@@ -29,8 +29,7 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(./deploy-vps.sh)",
-      "Bash(ssh:*)"
+      "Bash(./deploy-vps.sh)"
     ],
     "deny": []
   }

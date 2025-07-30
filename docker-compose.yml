@@ -20,7 +20,7 @@ services:
       - VITE_APP_ENV=production
       - VITE_ACCESS_TOKEN_THRESHOLD=120000
       - VITE_DOMAIN=https://app.bravix.vn
-      - VITE_API_URL=https://app.bravix.vn
+      - VITE_API_URL=https://api.bravix.vn
       - VITE_USER_TYPE=staff
       # Optional external services
       - VITE_APP_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
