@@ -266,7 +266,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
 				<div className="px-4 py-3 group-data-[collapsible=icon]:hidden">
-					<div className="text-base font-bold text-sky-700">Trường Phát Sport</div>
+					<div className="text-base font-bold text-sky-700">BRAVIX SPORT</div>
 					<div className="text-xs text-muted-foreground">Quản lý nội bộ</div>
 				</div>
 			</SidebarHeader>
