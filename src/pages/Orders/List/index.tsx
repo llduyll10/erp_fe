@@ -71,19 +71,19 @@ export function SalesOrdersListPage() {
 						value={q} onChange={(e) => setQ(e.target.value)}
 						onKeyDown={(e) => e.key === "Enter" && (setSearch(q), setPage(1))} />
 				</div>
-				<Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+				<Select value={status || "all"} onValueChange={(v) => { setStatus(v === "all" ? "" : v); setPage(1); }}>
 					<SelectTrigger className="w-36"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
 					<SelectContent>
-						<SelectItem value="">Tất cả</SelectItem>
+						<SelectItem value="all">Tất cả</SelectItem>
 						{Object.entries(STATUS_CONFIG).map(([k, v]) => (
 							<SelectItem key={k} value={k}>{v.label}</SelectItem>
 						))}
 					</SelectContent>
 				</Select>
-				<Select value={hasPrint} onValueChange={(v) => { setHasPrint(v); setPage(1); }}>
+				<Select value={hasPrint || "all"} onValueChange={(v) => { setHasPrint(v === "all" ? "" : v); setPage(1); }}>
 					<SelectTrigger className="w-36"><SelectValue placeholder="Loại đơn" /></SelectTrigger>
 					<SelectContent>
-						<SelectItem value="">Tất cả</SelectItem>
+						<SelectItem value="all">Tất cả</SelectItem>
 						<SelectItem value="true">Có in tên số</SelectItem>
 						<SelectItem value="false">Không in</SelectItem>
 					</SelectContent>

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
 	Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Package, RefreshCw, Search, AlertTriangle, Truck, ScanLine } from "lucide-react";
+import { Package, RefreshCw, Search, Truck, ScanLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
 	useGetPackingQueue, useGetPackingStats, useShipOrders,
@@ -46,8 +46,8 @@ export function PackingQueuePage() {
 		<div className="flex flex-col gap-4 p-8">
 			<div className="flex items-center justify-between">
 				<div>
-					<h1 className="text-2xl font-bold">Chờ đóng gói</h1>
-					<p className="text-sm text-muted-foreground">Xác nhận đóng gói và gửi bưu cục</p>
+					<h1 className="text-2xl font-bold">Đã đóng gói — chờ gửi bưu cục</h1>
+					<p className="text-sm text-muted-foreground">Chọn đơn và bấm "Gửi bưu cục" để hoàn tất</p>
 				</div>
 				<div className="flex gap-2">
 					<Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -70,11 +70,11 @@ export function PackingQueuePage() {
 			{stats && (
 				<div className="grid grid-cols-3 gap-3">
 					<Card><CardContent className="p-4">
-						<p className="text-xs text-muted-foreground">Chờ đóng gói</p>
+						<p className="text-xs text-muted-foreground">Chưa đóng gói</p>
 						<p className="text-2xl font-bold text-orange-600">{stats.waiting}</p>
 					</CardContent></Card>
 					<Card><CardContent className="p-4">
-						<p className="text-xs text-muted-foreground">Đã đóng gói</p>
+						<p className="text-xs text-muted-foreground">Đã đóng gói, chờ gửi</p>
 						<p className="text-2xl font-bold text-blue-600">{stats.packed}</p>
 					</CardContent></Card>
 					<Card><CardContent className="p-4">
@@ -108,14 +108,14 @@ export function PackingQueuePage() {
 							<TableHead>Sản phẩm</TableHead>
 							<TableHead className="text-center">SL</TableHead>
 							<TableHead>In tên số</TableHead>
-							<TableHead>Cảnh báo</TableHead>
+							<TableHead>Đóng gói lúc</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{isLoading ? (
 							<TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Đang tải...</TableCell></TableRow>
 						) : jobs.length === 0 ? (
-							<TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Không có đơn nào chờ đóng gói</TableCell></TableRow>
+							<TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Chưa có đơn nào đóng gói</TableCell></TableRow>
 						) : jobs.map((job) => (
 							<TableRow key={job.id} className={selected.has(job.id) ? "bg-sky-50" : ""}>
 								<TableCell>
@@ -143,12 +143,8 @@ export function PackingQueuePage() {
 										<span className="text-xs text-muted-foreground">Không in</span>
 									)}
 								</TableCell>
-								<TableCell>
-									{job.print_warning ? (
-										<Badge variant="destructive" className="gap-1 text-xs">
-											<AlertTriangle size={10} /> {job.print_warning}
-										</Badge>
-									) : null}
+								<TableCell className="text-xs text-muted-foreground">
+									{job.packed_at ? new Date(job.packed_at).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" }) : "—"}
 								</TableCell>
 							</TableRow>
 						))}

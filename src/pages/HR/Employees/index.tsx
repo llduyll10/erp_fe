@@ -65,14 +65,18 @@ const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secon
 	inactive: { label: "Nghỉ việc", variant: "secondary" },
 };
 
+const NO_DEPT = "__none__";
+
 function DepartmentSelect({ value, onChange }: { value?: string; onChange: (v: string) => void }) {
 	const { data } = useGetDepartments({ limit: 100 });
 	const depts = data?.data ?? [];
 	return (
-		<Select value={value ?? ""} onValueChange={onChange}>
+		<Select
+			value={value || NO_DEPT}
+			onValueChange={(v) => onChange(v === NO_DEPT ? "" : v)}>
 			<SelectTrigger><SelectValue placeholder="Chọn phòng ban" /></SelectTrigger>
 			<SelectContent>
-				<SelectItem value="">-- Không có --</SelectItem>
+				<SelectItem value={NO_DEPT}>-- Không có --</SelectItem>
 				{depts.map((d) => (
 					<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
 				))}
@@ -209,10 +213,10 @@ export function EmployeesPage() {
 					<Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
 					<Input className="pl-8" placeholder="Tìm theo tên, SĐT..." value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && setSearch(q)} />
 				</div>
-				<Select value={statusFilter} onValueChange={setStatusFilter}>
+				<Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
 					<SelectTrigger className="w-36"><SelectValue placeholder="Tất cả trạng thái" /></SelectTrigger>
 					<SelectContent>
-						<SelectItem value="">Tất cả</SelectItem>
+						<SelectItem value="all">Tất cả</SelectItem>
 						<SelectItem value="active">Đang làm</SelectItem>
 						<SelectItem value="inactive">Nghỉ việc</SelectItem>
 					</SelectContent>

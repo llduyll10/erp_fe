@@ -86,10 +86,10 @@ export function PrintJobsPage() {
 						onChange={(e) => setQ(e.target.value)}
 						onKeyDown={(e) => e.key === "Enter" && (setSearch(q), setPage(1))} />
 				</div>
-				<Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+				<Select value={status || "all"} onValueChange={(v) => { setStatus(v === "all" ? "" : v); setPage(1); }}>
 					<SelectTrigger className="w-36"><SelectValue placeholder="Tất cả" /></SelectTrigger>
 					<SelectContent>
-						<SelectItem value="">Tất cả</SelectItem>
+						<SelectItem value="all">Tất cả</SelectItem>
 						{Object.entries(STATUS_CONFIG).map(([k, v]) => (
 							<SelectItem key={k} value={k}>{v.label}</SelectItem>
 						))}

@@ -113,7 +113,11 @@ export const useGetStockMovementDetail = (id: string) => {
 export const useGetStockSummary = () => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY],
-		queryFn: getStockSummary,
+		queryFn: async () => {
+			const res = await getStockSummary() as any;
+			// API returns { data: [], pagination: {} } — extract array
+			return Array.isArray(res) ? res : (res?.data ?? res?.summary ?? []);
+		},
 		staleTime: 5 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
 	});
@@ -122,7 +126,10 @@ export const useGetStockSummary = () => {
 export const useGetStockInventory = () => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY],
-		queryFn: getStockSummary, // Same endpoint for now, but different query key
+		queryFn: async () => {
+			const res = await getStockSummary() as any;
+			return Array.isArray(res) ? res : (res?.data ?? res?.summary ?? []);
+		},
 		staleTime: 5 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
 	});
