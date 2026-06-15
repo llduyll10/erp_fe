@@ -163,6 +163,8 @@ export const router = createBrowserRouter([
 			{ path: "production/orders", element: <ProductionOrdersPage /> },
 			{ path: "production/orders/create", element: <CreateProductionOrderPage /> },
 			{ path: "production/orders/:id", element: <ProductionOrderDetailPage /> },
+			// stock-in is done from order detail — redirect to orders list filtered by done status
+			{ path: "production/stock-in", element: <Navigate to="/dashboard/production/orders?status=done" replace /> },
 			// Module 6 — Sales Orders (TikTok import)
 			{ path: "orders/import", element: <ImportOrdersPage /> },
 			{ path: "orders", element: <SalesOrdersListPage /> },

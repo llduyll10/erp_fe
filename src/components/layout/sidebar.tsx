@@ -108,7 +108,7 @@ const MENU_GROUPS = [
 			},
 			{
 				title: "Nhập kho từ SX",
-				url: "/dashboard/production/stock-in",
+				url: "/dashboard/production/orders?status=done",
 				icon: ArrowDown,
 			},
 		],
