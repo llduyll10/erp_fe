@@ -139,3 +139,9 @@ export const deleteWarehouse = async (id: string): Promise<void> => {
 		method: "DELETE",
 	});
 };
+
+export const adjustStock = (data: {
+	variant_id: string;
+	quantity_after: number;
+	reason?: string;
+}) => request({ url: "/warehouse/adjust", method: "POST", data });

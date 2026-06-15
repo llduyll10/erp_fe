@@ -11,6 +11,8 @@ import { ProductSettingsPage } from "@/pages/Settings/Product/index";
 import { StorageSettingsPage } from "@/pages/Settings/Storage/index";
 import { DepartmentsPage } from "@/pages/HR/Departments/index";
 import { EmployeesPage } from "@/pages/HR/Employees/index";
+import { SalesCatalogPage } from "@/pages/SalesCatalog/index";
+import { InventoryOverviewPage } from "@/pages/Inventory/Overview/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
 import { ProductManagementPage } from "@/pages/ProductManagement/index";
@@ -137,6 +139,15 @@ export const router = createBrowserRouter([
 			{
 				path: "warehouse/export/history",
 				element: <StockOutHistoryPage />,
+			},
+			// Module 3 — Sales Catalog & Inventory Overview
+			{
+				path: "sales-catalog",
+				element: <SalesCatalogPage />,
+			},
+			{
+				path: "inventory/overview",
+				element: <InventoryOverviewPage />,
 			},
 			// Module 1 — Settings
 			{

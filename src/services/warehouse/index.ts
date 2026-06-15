@@ -29,6 +29,7 @@ import {
 	getWarehouseDetail,
 	updateWarehouse,
 	deleteWarehouse,
+	adjustStock,
 } from "./request";
 
 // Stock Movement Hooks
@@ -208,6 +209,17 @@ export const useDeleteWarehouse = () => {
 		},
 		onError: (error: any) => {
 			toast.error(error?.message || "Xóa kho thất bại");
+		},
+	});
+};
+export const useAdjustStock = () => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: adjustStock,
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			toast.success("Đã điều chỉnh tồn kho");
 		},
 	});
 };

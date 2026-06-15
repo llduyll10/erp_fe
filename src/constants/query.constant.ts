@@ -7,6 +7,8 @@ export const QUERY_KEYS = {
 		LIST: "productList",
 		DETAIL: "productDetail",
 		SEARCH: "productSearch",
+		MEDIA: "productMedia",
+		SALES_CATALOG: "salesCatalog",
 	},
 	VARIANT: {
 		LIST: "variantList",
@@ -34,6 +36,7 @@ export const QUERY_KEYS = {
 		SUMMARY: "stockSummary",
 		INVENTORY: "stockInventory",
 		DASHBOARD_SUMMARY: "warehouseSummary",
+		INVENTORY_OVERVIEW: "inventoryOverview",
 	},
 	SETTINGS: {
 		DETAIL: "settingsDetail",

@@ -94,3 +94,32 @@ export const getAllVariants = async (
 		params,
 	});
 };
+
+// ── Product Media ────────────────────────────────────────────────────────
+
+export const getProductMedia = (productId: string) =>
+	request({ url: `/products/${productId}/media`, method: "GET" });
+
+export const addProductMedia = (
+	productId: string,
+	data: { file_key: string; thumbnail_key?: string; type?: string; is_primary?: boolean }
+) => request({ url: `/products/${productId}/media`, method: "POST", data });
+
+export const setPrimaryMedia = (productId: string, mediaId: string) =>
+	request({ url: `/products/${productId}/media/${mediaId}/primary`, method: "PUT" });
+
+export const deleteProductMedia = (productId: string, mediaId: string) =>
+	request({ url: `/products/${productId}/media/${mediaId}`, method: "DELETE" });
+
+export const toggleVisibleForSales = (productId: string) =>
+	request({ url: `/products/${productId}/toggle-sales`, method: "PUT" });
+
+// ── Sales Catalog ────────────────────────────────────────────────────────
+
+export const getSalesCatalog = (q?: string) =>
+	request({ url: "/products/sales-catalog", method: "GET", params: q ? { q } : undefined });
+
+// ── Inventory Overview ───────────────────────────────────────────────────
+
+export const getInventoryOverview = (q?: string) =>
+	request({ url: "/products/inventory-overview", method: "GET", params: q ? { q } : undefined });

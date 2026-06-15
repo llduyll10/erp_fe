@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createProduct,
 	createVariant,
@@ -8,6 +8,13 @@ import {
 	getVariantList,
 	updateProduct,
 	getAllVariants,
+	getProductMedia,
+	addProductMedia,
+	setPrimaryMedia,
+	deleteProductMedia,
+	toggleVisibleForSales,
+	getSalesCatalog,
+	getInventoryOverview,
 } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import {
@@ -99,3 +106,66 @@ export const useGetAllVariants = (
 		gcTime: 10 * 60 * 1000, // 10 minutes
 	});
 };
+
+// ── Product Media ─────────────────────────────────────────────────────────
+
+export const useGetProductMedia = (productId: string) =>
+	useQuery({
+		queryKey: [QUERY_KEYS.PRODUCT.MEDIA, productId],
+		queryFn: () => getProductMedia(productId),
+		enabled: !!productId,
+	});
+
+export const useAddProductMedia = (productId: string) => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (data: Parameters<typeof addProductMedia>[1]) =>
+			addProductMedia(productId, data),
+		onSuccess: () =>
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.MEDIA, productId] }),
+	});
+};
+
+export const useSetPrimaryMedia = (productId: string) => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (mediaId: string) => setPrimaryMedia(productId, mediaId),
+		onSuccess: () =>
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.MEDIA, productId] }),
+	});
+};
+
+export const useDeleteProductMedia = (productId: string) => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (mediaId: string) => deleteProductMedia(productId, mediaId),
+		onSuccess: () =>
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.MEDIA, productId] }),
+	});
+};
+
+export const useToggleVisibleForSales = () => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: toggleVisibleForSales,
+		onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.LIST] }),
+	});
+};
+
+// ── Sales Catalog ─────────────────────────────────────────────────────────
+
+export const useGetSalesCatalog = (q?: string) =>
+	useQuery({
+		queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG, q],
+		queryFn: () => getSalesCatalog(q),
+		staleTime: 2 * 60 * 1000,
+	});
+
+// ── Inventory Overview ────────────────────────────────────────────────────
+
+export const useGetInventoryOverview = (q?: string) =>
+	useQuery({
+		queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW, q],
+		queryFn: () => getInventoryOverview(q),
+		staleTime: 60 * 1000,
+	});
