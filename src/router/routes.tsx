@@ -6,6 +6,11 @@ import { AuthRedirect } from "@/components/auth-redirect";
 import { NotFound } from "@/components/not-found";
 import { LoginPage } from "@/pages/login/index";
 import { UserManagementPage } from "@/pages/UserManagement/index";
+import { CompanySettingsPage } from "@/pages/Settings/Company/index";
+import { ProductSettingsPage } from "@/pages/Settings/Product/index";
+import { StorageSettingsPage } from "@/pages/Settings/Storage/index";
+import { DepartmentsPage } from "@/pages/HR/Departments/index";
+import { EmployeesPage } from "@/pages/HR/Employees/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
 import { ProductManagementPage } from "@/pages/ProductManagement/index";
@@ -132,6 +137,28 @@ export const router = createBrowserRouter([
 			{
 				path: "warehouse/export/history",
 				element: <StockOutHistoryPage />,
+			},
+			// Module 1 — Settings
+			{
+				path: "settings/company",
+				element: <CompanySettingsPage />,
+			},
+			{
+				path: "settings/product",
+				element: <ProductSettingsPage />,
+			},
+			{
+				path: "settings/storage",
+				element: <StorageSettingsPage />,
+			},
+			// Module 2 — HR
+			{
+				path: "hr/departments",
+				element: <DepartmentsPage />,
+			},
+			{
+				path: "hr/employees",
+				element: <EmployeesPage />,
 			},
 		],
 	},

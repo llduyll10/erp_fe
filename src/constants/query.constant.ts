@@ -35,4 +35,14 @@ export const QUERY_KEYS = {
 		INVENTORY: "stockInventory",
 		DASHBOARD_SUMMARY: "warehouseSummary",
 	},
+	SETTINGS: {
+		DETAIL: "settingsDetail",
+	},
+	HR: {
+		DEPARTMENTS: "departments",
+		DEPARTMENT_DETAIL: "departmentDetail",
+		EMPLOYEES: "employees",
+		EMPLOYEE_DETAIL: "employeeDetail",
+		AUDIT_LOGS: "auditLogs",
+	},
 };

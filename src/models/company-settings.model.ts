@@ -1,0 +1,24 @@
+export type CompanySettings = {
+  id: string;
+  company_id: string;
+  phone: string | null;
+  address: string | null;
+  logo_url: string | null;
+  sizes: string[];
+  low_stock_threshold: number;
+  product_code_prefix: string;
+  product_code_pad: number;
+  production_order_code_prefix: string;
+  production_order_code_pad: number;
+  print_job_code_prefix: string;
+  print_job_code_pad: number;
+  stock_in_code_prefix: string;
+  stock_in_code_pad: number;
+  s3_bucket: string | null;
+  s3_region: string | null;
+  s3_endpoint: string | null;
+  s3_access_key: string | null;
+  has_s3_secret: boolean;
+  created_at: string;
+  updated_at: string;
+};
