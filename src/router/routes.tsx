@@ -1,11 +1,10 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout } from "@/layouts/auth-layout";
 import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { ProtectedRoute } from "@/components/layout/protected-routed";
 import { AuthRedirect } from "@/components/auth-redirect";
 import { NotFound } from "@/components/not-found";
 import { LoginPage } from "@/pages/login/index";
-import { RegisterCompanyPage } from "@/pages/Company/index";
 import { UserManagementPage } from "@/pages/UserManagement/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
@@ -42,7 +41,7 @@ export const router = createBrowserRouter([
 			},
 			{
 				path: "register-company",
-				element: <RegisterCompanyPage />,
+				element: <Navigate to="/login" replace />,
 			},
 			{
 				path: "change-password",

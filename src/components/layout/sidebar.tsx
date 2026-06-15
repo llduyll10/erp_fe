@@ -1,27 +1,33 @@
 "use client";
 
 import * as React from "react";
+import { NavLink } from "react-router-dom";
 import {
-	ShoppingCart,
-	Users,
-	List,
-	Grid,
-	FileText,
-	User,
-	UserCheck,
-	User2,
-	CreditCard,
-	Plus,
-	Box,
-	CheckSquare,
+	LayoutDashboard,
+	Shirt,
 	Warehouse,
-	ArrowUp,
+	Factory,
+	ShoppingCart,
+	Printer,
+	Package,
+	Users,
+	Settings,
+	List,
+	Plus,
 	ArrowDown,
+	ArrowUp,
+	ClipboardList,
+	ScanLine,
+	AlertTriangle,
+	Truck,
+	CheckSquare,
+	Image,
+	BarChart3,
+	History,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
-import { useTranslation } from "react-i18next";
 import { UserRoleEnum } from "@/enums/user.enums";
-import { hasMinimumRole, isInDepartment } from "@/constants/user.constant";
+import { hasMinimumRole } from "@/constants/user.constant";
 
 import {
 	Sidebar,
@@ -30,9 +36,7 @@ import {
 	SidebarHeader,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { useMemo } from "react";
 
-// Helper to get role from store or localStorage
 function getCurrentRole(): UserRoleEnum {
 	const storeUser = useAuthStore.getState().user;
 	if (storeUser && storeUser.role) return storeUser.role as UserRoleEnum;
@@ -44,156 +48,210 @@ function getCurrentRole(): UserRoleEnum {
 	}
 }
 
-const adminMenu = (t: any) =>
-	useMemo(
-		() => [
+const MENU_GROUPS = [
+	{
+		title: "Tổng quan",
+		icon: LayoutDashboard,
+		items: [
+			{ title: "Dashboard", url: "/dashboard/products", icon: BarChart3 },
+		],
+	},
+	{
+		title: "Sản phẩm",
+		icon: Shirt,
+		items: [
+			{ title: "Danh sách mẫu", url: "/dashboard/products", icon: List },
+			{ title: "Tạo mẫu mới", url: "/dashboard/products/create", icon: Plus },
+			{ title: "Catalog Sales", url: "/dashboard/sales-catalog", icon: Image },
+		],
+	},
+	{
+		title: "Kho hàng",
+		icon: Warehouse,
+		items: [
 			{
-				title: t("products.title"),
-				icon: Box,
-				items: [
-					{ title: t("products.list"), url: "/dashboard/products", icon: List },
-					{
-						title: t("products.create"),
-						url: "/dashboard/products/create",
-						icon: Plus,
-					},
-				],
+				title: "Tồn kho",
+				url: "/dashboard/warehouse/inventory",
+				icon: BarChart3,
 			},
 			{
-				title: "Người dùng",
+				title: "Nhập kho",
+				url: "/dashboard/warehouse/import",
+				icon: ArrowDown,
+			},
+			{ title: "Xuất kho", url: "/dashboard/warehouse/export", icon: ArrowUp },
+			{
+				title: "Lịch sử nhập",
+				url: "/dashboard/warehouse/import/history",
+				icon: History,
+			},
+			{
+				title: "Lịch sử xuất",
+				url: "/dashboard/warehouse/export/history",
+				icon: History,
+			},
+		],
+	},
+	{
+		title: "Sản xuất",
+		icon: Factory,
+		items: [
+			{
+				title: "Lệnh sản xuất",
+				url: "/dashboard/production/orders",
+				icon: ClipboardList,
+			},
+			{
+				title: "Tạo lệnh SX",
+				url: "/dashboard/production/orders/create",
+				icon: Plus,
+			},
+			{
+				title: "Nhập kho từ SX",
+				url: "/dashboard/production/stock-in",
+				icon: ArrowDown,
+			},
+		],
+	},
+	{
+		title: "Đơn hàng",
+		icon: ShoppingCart,
+		items: [
+			{
+				title: "Import TikTok/Sheet",
+				url: "/dashboard/orders/import",
+				icon: ArrowDown,
+			},
+			{
+				title: "Danh sách đơn",
+				url: "/dashboard/orders",
+				icon: List,
+			},
+		],
+	},
+	{
+		title: "In tên số",
+		icon: Printer,
+		items: [
+			{
+				title: "Danh sách print job",
+				url: "/dashboard/printing/jobs",
+				icon: List,
+			},
+			{
+				title: "Quét barcode",
+				url: "/dashboard/printing/scan",
+				icon: ScanLine,
+			},
+			{
+				title: "Lỗi in",
+				url: "/dashboard/printing/errors",
+				icon: AlertTriangle,
+			},
+		],
+	},
+	{
+		title: "Đóng gói",
+		icon: Package,
+		items: [
+			{
+				title: "Chờ đóng gói",
+				url: "/dashboard/packing/queue",
+				icon: ClipboardList,
+			},
+			{
+				title: "Quét đóng gói",
+				url: "/dashboard/packing/scan",
+				icon: ScanLine,
+			},
+			{
+				title: "Đã gửi bưu cục",
+				url: "/dashboard/packing/shipped",
+				icon: Truck,
+			},
+		],
+	},
+	{
+		title: "Nhân sự",
+		icon: Users,
+		items: [
+			{
+				title: "Nhân viên",
+				url: "/dashboard/hr/employees",
 				icon: Users,
-				items: [
-					{
-						title: "Danh sách người dùng",
-						url: "/dashboard/users",
-						icon: List,
-					},
-				],
 			},
 			{
-				title: "Khách hàng",
-				icon: User,
-				items: [
-					{
-						title: "Danh sách khách hàng",
-						url: "/dashboard/customers",
-						icon: List,
-					},
-					{
-						title: "Tạo khách hàng",
-						url: "/dashboard/customers/create",
-						icon: Plus,
-					},
-				],
+				title: "Phòng ban",
+				url: "/dashboard/hr/departments",
+				icon: CheckSquare,
 			},
 			{
-				title: "Đơn hàng",
-				icon: CreditCard,
-				items: [
-					{
-						title: "Danh sách đơn hàng",
-						url: "/dashboard/orders",
-						icon: List,
-					},
-					{
-						title: "Tạo đơn hàng",
-						url: "/dashboard/orders/create",
-						icon: Plus,
-					},
-				],
-			},
-			{
-				title: "Kho hàng",
-				icon: Warehouse,
-				items: [
-					{
-						title: "Kiểm tra tồn kho",
-						url: "/dashboard/warehouse/inventory",
-						icon: Box,
-					},
-					{
-						title: "Nhập kho",
-						url: "/dashboard/warehouse/import",
-						icon: ArrowDown,
-					},
-					{
-						title: "Xuất kho",
-						url: "/dashboard/warehouse/export",
-						icon: ArrowUp,
-					},
-					{
-						title: "Lịch sử nhập kho",
-						url: "/dashboard/warehouse/import/history",
-						icon: ArrowDown,
-					},
-					{
-						title: "Lịch sử xuất kho",
-						url: "/dashboard/warehouse/export/history",
-						icon: ArrowUp,
-					},
-				],
+				title: "Phân quyền",
+				url: "/dashboard/users",
+				icon: Settings,
 			},
 		],
-		[t]
-	);
-
-const userMenu = (t: any) =>
-	useMemo(
-		() => [
+	},
+	{
+		title: "Cài đặt",
+		icon: Settings,
+		items: [
 			{
-				title: t("products.title"),
-				icon: Box,
-				items: [
-					{ title: t("products.list"), url: "/dashboard/products", icon: List },
-					{
-						title: t("products.create"),
-						url: "/dashboard/products/create",
-						icon: Plus,
-					},
-				],
+				title: "Thông tin công ty",
+				url: "/dashboard/settings/company",
+				icon: Settings,
 			},
 			{
-				title: t("orders.title"),
-				icon: CreditCard,
-				items: [
-					{ title: t("orders.list"), url: "/orders", icon: CheckSquare },
-					{ title: t("orders.detail"), url: "/orders/detail", icon: FileText },
-					{ title: t("orders.cart"), url: "/cart", icon: ShoppingCart },
-					{ title: t("orders.checkout"), url: "/checkout", icon: CreditCard },
-				],
+				title: "Sản phẩm & Size",
+				url: "/dashboard/settings/product",
+				icon: Shirt,
+			},
+			{
+				title: "Lưu trữ ảnh",
+				url: "/dashboard/settings/storage",
+				icon: Image,
 			},
 		],
-		[t]
-	);
+	},
+];
 
 function SidebarMenu() {
 	const role = getCurrentRole();
-	const { t } = useTranslation();
-
-	// Determine menu based on role hierarchy
 	const isAdmin = hasMinimumRole(role, UserRoleEnum.ADMIN);
-	const menu = isAdmin ? adminMenu(t) : userMenu(t);
+
+	const groups = isAdmin
+		? MENU_GROUPS
+		: MENU_GROUPS.filter((g) =>
+				["Tổng quan", "Sản phẩm"].includes(g.title)
+			);
+
 	return (
-		<div className="flex flex-col gap-6">
-			{menu.map((group) => (
+		<div className="flex flex-col gap-4 py-2">
+			{groups.map((group) => (
 				<div key={group.title}>
-					<div className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
-						{group.icon && React.createElement(group.icon, { size: 16 })}
+					<div className="flex items-center gap-2 px-4 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+						{React.createElement(group.icon, { size: 14 })}
 						<span className="group-data-[collapsible=icon]:hidden">
 							{group.title}
 						</span>
 					</div>
-					<ul className="pl-4">
+					<ul>
 						{group.items.map((item) => (
-							<li key={item.title} className="py-1">
-								<a
-									href={item.url}
-									className="text-gray-600 hover:text-sky-500 flex items-center gap-2">
-									{item.icon && React.createElement(item.icon, { size: 16 })}
+							<li key={item.title}>
+								<NavLink
+									to={item.url}
+									className={({ isActive }) =>
+										`flex items-center gap-2 px-6 py-1.5 text-sm rounded-md mx-1 transition-colors ${
+											isActive
+												? "text-sky-600 font-medium bg-sky-50"
+												: "text-gray-600 hover:text-sky-500 hover:bg-gray-50"
+										}`
+									}>
+									{React.createElement(item.icon, { size: 14 })}
 									<span className="group-data-[collapsible=icon]:hidden">
 										{item.title}
 									</span>
-								</a>
+								</NavLink>
 							</li>
 						))}
 					</ul>
@@ -204,14 +262,18 @@ function SidebarMenu() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	const { t } = useTranslation();
 	return (
 		<Sidebar collapsible="icon" {...props}>
-			<SidebarHeader></SidebarHeader>
-			<SidebarContent>
+			<SidebarHeader>
+				<div className="px-4 py-3 group-data-[collapsible=icon]:hidden">
+					<div className="text-base font-bold text-sky-700">Trường Phát Sport</div>
+					<div className="text-xs text-muted-foreground">Quản lý nội bộ</div>
+				</div>
+			</SidebarHeader>
+			<SidebarContent className="overflow-y-auto">
 				<SidebarMenu />
 			</SidebarContent>
-			<SidebarFooter></SidebarFooter>
+			<SidebarFooter />
 			<SidebarRail />
 		</Sidebar>
 	);
