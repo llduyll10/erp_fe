@@ -18,6 +18,12 @@ import { CreateProductionOrderPage } from "@/pages/Production/Orders/Create/inde
 import { ProductionOrderDetailPage } from "@/pages/Production/Orders/Detail/index";
 import { ImportOrdersPage } from "@/pages/Orders/Import/index";
 import { SalesOrdersListPage } from "@/pages/Orders/List/index";
+import { PrintJobsPage } from "@/pages/Printing/Jobs/index";
+import { PrintingScanPage } from "@/pages/Printing/Scan/index";
+import { PrintingErrorsPage } from "@/pages/Printing/Errors/index";
+import { PackingQueuePage } from "@/pages/Packing/Queue/index";
+import { PackingScanPage } from "@/pages/Packing/Scan/index";
+import { PackingShippedPage } from "@/pages/Packing/Shipped/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
 import { ProductManagementPage } from "@/pages/ProductManagement/index";
@@ -145,6 +151,14 @@ export const router = createBrowserRouter([
 				path: "warehouse/export/history",
 				element: <StockOutHistoryPage />,
 			},
+			// Module 7 — Printing
+			{ path: "printing/jobs", element: <PrintJobsPage /> },
+			{ path: "printing/scan", element: <PrintingScanPage /> },
+			{ path: "printing/errors", element: <PrintingErrorsPage /> },
+			// Module 8 — Packing
+			{ path: "packing/queue", element: <PackingQueuePage /> },
+			{ path: "packing/scan", element: <PackingScanPage /> },
+			{ path: "packing/shipped", element: <PackingShippedPage /> },
 			// Module 5 — Production
 			{ path: "production/orders", element: <ProductionOrdersPage /> },
 			{ path: "production/orders/create", element: <CreateProductionOrderPage /> },

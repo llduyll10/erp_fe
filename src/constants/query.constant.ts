@@ -58,4 +58,16 @@ export const QUERY_KEYS = {
 		BATCHES: "importBatches",
 		BATCH_ERRORS: "importBatchErrors",
 	},
+	PRINTING: {
+		LIST: "printJobs",
+		SCAN: "printJobScan",
+		ERRORS: "printJobErrors",
+		STATS: "printJobStats",
+	},
+	PACKING: {
+		QUEUE: "packingQueue",
+		STATS: "packingStats",
+		SCAN: "packingScan",
+		SHIPPED: "packingShipped",
+	},
 };
