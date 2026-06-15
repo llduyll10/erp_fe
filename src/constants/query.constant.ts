@@ -48,4 +48,14 @@ export const QUERY_KEYS = {
 		EMPLOYEE_DETAIL: "employeeDetail",
 		AUDIT_LOGS: "auditLogs",
 	},
+	PRODUCTION: {
+		LIST: "productionOrders",
+		DETAIL: "productionOrderDetail",
+	},
+	SALES_ORDERS: {
+		LIST: "salesOrders",
+		DETAIL: "salesOrderDetail",
+		BATCHES: "importBatches",
+		BATCH_ERRORS: "importBatchErrors",
+	},
 };

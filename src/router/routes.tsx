@@ -13,6 +13,11 @@ import { DepartmentsPage } from "@/pages/HR/Departments/index";
 import { EmployeesPage } from "@/pages/HR/Employees/index";
 import { SalesCatalogPage } from "@/pages/SalesCatalog/index";
 import { InventoryOverviewPage } from "@/pages/Inventory/Overview/index";
+import { ProductionOrdersPage } from "@/pages/Production/Orders/index";
+import { CreateProductionOrderPage } from "@/pages/Production/Orders/Create/index";
+import { ProductionOrderDetailPage } from "@/pages/Production/Orders/Detail/index";
+import { ImportOrdersPage } from "@/pages/Orders/Import/index";
+import { SalesOrdersListPage } from "@/pages/Orders/List/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
 import { ProductManagementPage } from "@/pages/ProductManagement/index";
@@ -140,6 +145,13 @@ export const router = createBrowserRouter([
 				path: "warehouse/export/history",
 				element: <StockOutHistoryPage />,
 			},
+			// Module 5 — Production
+			{ path: "production/orders", element: <ProductionOrdersPage /> },
+			{ path: "production/orders/create", element: <CreateProductionOrderPage /> },
+			{ path: "production/orders/:id", element: <ProductionOrderDetailPage /> },
+			// Module 6 — Sales Orders (TikTok import)
+			{ path: "orders/import", element: <ImportOrdersPage /> },
+			{ path: "orders", element: <SalesOrdersListPage /> },
 			// Module 3 — Sales Catalog & Inventory Overview
 			{
 				path: "sales-catalog",
