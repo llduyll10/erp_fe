@@ -41,6 +41,9 @@ export const useCreateStockIn = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.MOVEMENTS] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.ALL] });
 			toast.success("Nhập kho thành công");
 		},
@@ -58,6 +61,9 @@ export const useCreateStockOut = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.MOVEMENTS] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.ALL] });
 			toast.success("Xuất kho thành công");
 		},
@@ -81,6 +87,9 @@ export const useFulfillOrder = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.MOVEMENTS] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER.LIST] });
 			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.ALL] });
 			toast.success("Thực hiện đơn hàng thành công");
@@ -226,6 +235,9 @@ export const useAdjustStock = () => {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
 			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.ALL] });
 			toast.success("Đã điều chỉnh tồn kho");
 		},
 	});

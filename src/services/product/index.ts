@@ -158,7 +158,7 @@ export const useGetSalesCatalog = (q?: string) =>
 	useQuery({
 		queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG, q],
 		queryFn: () => getSalesCatalog(q),
-		staleTime: 2 * 60 * 1000,
+		staleTime: 0, // always refetch after any stock mutation
 	});
 
 // ── Inventory Overview ────────────────────────────────────────────────────

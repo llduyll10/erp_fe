@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, RefreshCw, Download, Copy, Eye, EyeOff } from "lucide-react";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
 import {
 	useGetSalesCatalog,
 	useToggleVisibleForSales,
@@ -32,13 +33,15 @@ function ProductRow({ item }: { item: SalesCatalogItem }) {
 		return (
 			<tr className="border-b hover:bg-muted/30">
 				<td className="px-3 py-2 w-16">
-					{item.primary_image ? (
-						<img src={item.primary_image} className="w-12 h-12 object-cover rounded" />
-					) : (
-						<div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
-							No img
-						</div>
-					)}
+					<OptimizedImage
+						fileKey={item.primary_image}
+						className="w-12 h-12 object-cover rounded"
+						fallbackComponent={
+							<div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+								No img
+							</div>
+						}
+					/>
 				</td>
 				<td className="px-3 py-2 font-medium">{item.name}</td>
 				{SIZES.map((s) => (
@@ -68,13 +71,15 @@ function ProductRow({ item }: { item: SalesCatalogItem }) {
 					{ci === 0 && (
 						<>
 							<td className="px-3 py-2 w-16" rowSpan={colors.length}>
-								{item.primary_image ? (
-									<img src={item.primary_image} className="w-12 h-12 object-cover rounded" />
-								) : (
-									<div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
-										No img
-									</div>
-								)}
+								<OptimizedImage
+									fileKey={item.primary_image}
+									className="w-12 h-12 object-cover rounded"
+									fallbackComponent={
+										<div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+											No img
+										</div>
+									}
+								/>
 							</td>
 							<td className="px-3 py-2 font-medium align-top" rowSpan={colors.length}>
 								{item.name}

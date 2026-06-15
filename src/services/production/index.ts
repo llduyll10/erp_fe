@@ -53,6 +53,10 @@ export const useStockInFromProduction = () => {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCTION.DETAIL] });
 			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY_OVERVIEW] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.INVENTORY] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.WAREHOUSE.SUMMARY] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.SALES_CATALOG] });
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.ALL] });
 			toast.success("Đã nhập kho thành công");
 		},
 	});
