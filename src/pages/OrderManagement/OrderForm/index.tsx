@@ -8,6 +8,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/ui/money-input";
 import { Textarea } from "@/components/ui/textarea";
 import {
 	Select,
@@ -768,15 +769,10 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 															<FormItem>
 																<FormLabel>{t("unitPrice")}</FormLabel>
 																<FormControl>
-																	<Input
-																		{...field}
-																		type="number"
-																		min={0}
-																		step={0.01}
-																		onChange={(e) => {
-																			field.onChange(Number(e.target.value));
-																			calculateItemTotal(index);
-																		}}
+																	<MoneyInput
+																		value={field.value}
+																		onChange={(v) => { field.onChange(v); calculateItemTotal(index); }}
+																		onBlur={field.onBlur}
 																		disabled={mode === FormMode.DETAILS}
 																	/>
 																</FormControl>
@@ -793,11 +789,11 @@ export function OrderForm({ mode, ...props }: OrderFormProps) {
 															<FormItem>
 																<FormLabel>{t("totalPrice")}</FormLabel>
 																<FormControl>
-																	<Input
-																		{...field}
-																		type="number"
+																	<MoneyInput
+																		value={field.value}
+																		onChange={field.onChange}
 																		readOnly
-																		className="bg-muted"
+																		className="bg-muted cursor-not-allowed"
 																	/>
 																</FormControl>
 																<FormMessage />
