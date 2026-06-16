@@ -1,4 +1,4 @@
-import { request, axiosInstance } from "@/utils/request.util";
+import { request, axiosInstance, baseApiURL } from "@/utils/request.util";
 import type {
 	GeneratePresignedUrlRequest,
 	GeneratePresignedUrlResponse,
@@ -8,6 +8,19 @@ import type {
 } from "@/interfaces/file.interface";
 
 const API_BASE = "/presigned-upload";
+
+/**
+ * Build the backend proxy URL for a file key.
+ * The proxy endpoint (@Public) streams the file from S3/R2 through the backend,
+ * avoiding presigned URL failures caused by wrong S3 region/endpoint/CORS config.
+ */
+export const getProxyUrl = (fileKey: string | null | undefined): string | null => {
+	if (!fileKey) return null;
+	const parts = fileKey.split("/");
+	if (parts.length < 3) return null;
+	const [folder, subfolder, ...rest] = parts;
+	return `${baseApiURL}/presigned-upload/proxy/${folder}/${subfolder}/${rest.join("/")}`;
+};
 
 /**
  * Generate presigned URL for file upload
@@ -216,27 +229,7 @@ export const getViewUrl = async (
 };
 
 /**
- * Fetch image as base64 data URL via backend proxy (used for print).
- * Avoids cross-origin issues when embedding images in popup windows.
+ * @deprecated Use getProxyUrl instead — proxy is now @Public so img src works directly.
  */
-export const getImageAsBase64 = async (fileKey: string): Promise<string | null> => {
-	const parts = fileKey.split("/");
-	if (parts.length < 3) return null;
-	const folder = parts[0];
-	const subfolder = parts[1];
-	const filename = parts.slice(2).join("/");
-	try {
-		const response = await axiosInstance.get(
-			`${API_BASE}/proxy/${folder}/${subfolder}/${filename}`,
-			{ responseType: "arraybuffer" },
-		);
-		const bytes = new Uint8Array(response.data);
-		let binary = "";
-		for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-		const base64 = btoa(binary);
-		const contentType = response.headers["content-type"] ?? "image/jpeg";
-		return `data:${contentType};base64,${base64}`;
-	} catch {
-		return null;
-	}
-};
+export const getImageAsBase64 = (fileKey: string): Promise<string | null> =>
+	Promise.resolve(getProxyUrl(fileKey));

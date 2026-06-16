@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/molecules/optimized-image";
 import { ImageIcon, ArrowLeft, Printer, Pencil } from "lucide-react";
 import { useGetTeamOrder, useUpdateTeamOrder } from "@/services/team-order";
-import { getImageAsBase64 } from "@/services/file";
+import { getProxyUrl } from "@/services/file";
 import type { TeamOrderHistory, TeamOrderStatus } from "@/models/team-order.model";
 
 const STATUS_CONFIG: Record<TeamOrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -35,15 +35,13 @@ export function TeamOrderDetailPage() {
   const { mutate: update } = useUpdateTeamOrder();
   const [printing, setPrinting] = useState(false);
 
-  const handlePrint = async () => {
+  const handlePrint = () => {
     if (!order) return;
     setPrinting(true);
 
-    // Fetch images as base64 via backend proxy — avoids all cross-origin issues in print popup
-    const [mockupUrl, logoUrl] = await Promise.all([
-      order.mockup_key?.trim() ? getImageAsBase64(order.mockup_key) : Promise.resolve(null),
-      order.logo_key?.trim()   ? getImageAsBase64(order.logo_key)   : Promise.resolve(null),
-    ]);
+    // Proxy URLs are @Public — the popup window can load them as plain <img src>
+    const mockupUrl = getProxyUrl(order.mockup_key);
+    const logoUrl   = getProxyUrl(order.logo_key);
 
     const items = (order.items ?? []).sort((a, b) => a.sort_order - b.sort_order);
     const today = new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
