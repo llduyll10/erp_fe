@@ -8,9 +8,9 @@ import {
 	uploadFileToS3,
 	confirmUpload,
 	getViewUrl,
-	getProxyUrl,
 } from "./request";
-import type { GetViewUrlResponse } from "@/interfaces/file.interface";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * Complete file upload workflow
@@ -135,8 +135,6 @@ export {
 	uploadFileToS3WithFetch,
 	confirmUpload,
 	getViewUrl,
-	getImageAsBase64,
-	getProxyUrl,
 } from "./request";
 
 // Re-export utilities
@@ -155,17 +153,39 @@ export type {
 } from "@/interfaces/file.interface";
 
 /**
- * Hook to get image URL via the backend proxy.
- * Returns a plain object (no async) — proxy URL is constructed synchronously.
- * The proxy endpoint is @Public so <img src> loads without auth headers.
+ * Hook to get and cache image view URLs
  */
 export const useImageUrl = (fileKey: string | null | undefined) => {
-	const url = getProxyUrl(fileKey);
-	return {
-		data: url ? ({ url, fileKey, expiresIn: 0 } as GetViewUrlResponse & { fileKey: string }) : undefined,
-		isLoading: false,
-		error: null,
-	};
+	return useQuery({
+		queryKey: ["imageUrl", fileKey],
+		queryFn: () => getViewUrl(fileKey!),
+		enabled: !!fileKey,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+		retry: 2,
+		retryDelay: 1000,
+	});
 };
 
-export const usePrefetchImageUrls = () => ({ prefetchImageUrls: async () => {} });
+/**
+ * Prefetch image URLs for a list of fileKeys
+ */
+export const usePrefetchImageUrls = () => {
+	const queryClient = useQueryClient();
+
+	const prefetchImageUrls = async (fileKeys: (string | null | undefined)[]) => {
+		const validFileKeys = fileKeys.filter((key): key is string => !!key);
+
+		await Promise.all(
+			validFileKeys.map((fileKey) =>
+				queryClient.prefetchQuery({
+					queryKey: ["imageUrl", fileKey],
+					queryFn: () => getViewUrl(fileKey),
+					staleTime: 5 * 60 * 1000,
+				})
+			)
+		);
+	};
+
+	return { prefetchImageUrls };
+};
