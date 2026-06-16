@@ -53,7 +53,7 @@ const MENU_GROUPS = [
 		title: "Tổng quan",
 		icon: LayoutDashboard,
 		items: [
-			{ title: "Dashboard", url: "/dashboard/products", icon: BarChart3 },
+			{ title: "Dashboard", url: "/dashboard", icon: BarChart3, end: true },
 		],
 	},
 	{
@@ -62,6 +62,7 @@ const MENU_GROUPS = [
 		items: [
 			{ title: "Danh sách mẫu", url: "/dashboard/products", icon: List },
 			{ title: "Tạo mẫu mới", url: "/dashboard/products/create", icon: Plus },
+			{ title: "Danh mục", url: "/dashboard/categories", icon: List },
 			{ title: "Catalog Sales", url: "/dashboard/sales-catalog", icon: Image },
 		],
 	},
@@ -90,6 +91,14 @@ const MENU_GROUPS = [
 				url: "/dashboard/warehouse/export/history",
 				icon: History,
 			},
+		],
+	},
+	{
+		title: "Đơn đội",
+		icon: Shirt,
+		items: [
+			{ title: "Danh sách đơn", url: "/dashboard/team-orders", icon: List },
+			{ title: "Tạo đơn đội", url: "/dashboard/team-orders/create", icon: Plus },
 		],
 	},
 	{
@@ -222,7 +231,7 @@ function SidebarMenu() {
 	const groups = isAdmin
 		? MENU_GROUPS
 		: MENU_GROUPS.filter((g) =>
-				["Tổng quan", "Sản phẩm"].includes(g.title)
+				["Tổng quan", "Sản phẩm", "Đơn đội"].includes(g.title)
 			);
 
 	return (
@@ -240,6 +249,7 @@ function SidebarMenu() {
 							<li key={item.title}>
 								<NavLink
 									to={item.url}
+									end={"end" in item ? item.end : false}
 									className={({ isActive }) =>
 										`flex items-center gap-2 px-6 py-1.5 text-sm rounded-md mx-1 transition-colors ${
 											isActive

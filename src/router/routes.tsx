@@ -24,10 +24,16 @@ import { PrintingErrorsPage } from "@/pages/Printing/Errors/index";
 import { PackingQueuePage } from "@/pages/Packing/Queue/index";
 import { PackingScanPage } from "@/pages/Packing/Scan/index";
 import { PackingShippedPage } from "@/pages/Packing/Shipped/index";
+import { DashboardPage } from "@/pages/Dashboard/index";
 import { UserRoleEnum } from "@/enums/user.enums";
 import { ChangePassword } from "@/pages/ChangePassword/index";
 import { ProductManagementPage } from "@/pages/ProductManagement/index";
 import { CreateProductPage } from "@/pages/ProductManagement/CreateProduct/index";
+import { CategoriesPage } from "@/pages/Categories/index";
+import { TeamOrderListPage } from "@/pages/TeamOrder/List/index";
+import { CreateTeamOrderPage } from "@/pages/TeamOrder/Create/index";
+import { TeamOrderDetailPage } from "@/pages/TeamOrder/Detail/index";
+import { EditTeamOrderPage } from "@/pages/TeamOrder/Edit/index";
 import { ProductDetailPage } from "@/pages/ProductManagement/DetailProduct/index";
 import { CreateCustomerPage } from "@/pages/CustomerManagement/CreateCustomer/index";
 import { DetailCustomerPage } from "@/pages/CustomerManagement/DetailCustomer/index";
@@ -76,8 +82,8 @@ export const router = createBrowserRouter([
 		),
 		children: [
 			{
-				index: true, // This handles "/dashboard" path - redirect to products
-				element: <AuthRedirect />,
+				index: true,
+				element: <DashboardPage />,
 			},
 			{
 				path: "users",
@@ -91,6 +97,14 @@ export const router = createBrowserRouter([
 				path: "products/create",
 				element: <CreateProductPage />,
 			},
+			{
+				path: "categories",
+				element: <CategoriesPage />,
+			},
+			{ path: "team-orders", element: <TeamOrderListPage /> },
+			{ path: "team-orders/create", element: <CreateTeamOrderPage /> },
+			{ path: "team-orders/:id", element: <TeamOrderDetailPage /> },
+			{ path: "team-orders/:id/edit", element: <EditTeamOrderPage /> },
 			{
 				path: "products/detail/:id",
 				element: <ProductDetailPage />,

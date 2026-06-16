@@ -70,4 +70,7 @@ export const QUERY_KEYS = {
 		SCAN: "packingScan",
 		SHIPPED: "packingShipped",
 	},
+	DASHBOARD: {
+		STATS: "dashboardStats",
+	},
 };

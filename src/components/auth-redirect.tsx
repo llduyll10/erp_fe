@@ -15,12 +15,9 @@ export function AuthRedirect() {
 		const storedUser = getAuthUser();
 
 		if (tokens && storedUser) {
-			// User is authenticated
-			if (location.pathname === "/" || location.pathname === "/dashboard") {
-				// Redirect to default dashboard page
-				navigate("/dashboard/products", { replace: true });
+			if (location.pathname === "/") {
+				navigate("/dashboard", { replace: true });
 			}
-			// If user is already on a specific dashboard route, don't redirect
 		} else {
 			// User is not authenticated, redirect to login
 			navigate("/login", { replace: true });
