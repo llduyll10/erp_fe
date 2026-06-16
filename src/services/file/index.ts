@@ -135,6 +135,7 @@ export {
 	uploadFileToS3WithFetch,
 	confirmUpload,
 	getViewUrl,
+	getImageAsBase64,
 } from "./request";
 
 // Re-export utilities

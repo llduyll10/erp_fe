@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/molecules/optimized-image";
 import { ImageIcon, ArrowLeft, Printer, Pencil } from "lucide-react";
 import { useGetTeamOrder, useUpdateTeamOrder } from "@/services/team-order";
-import { getViewUrl } from "@/services/file";
+import { getImageAsBase64 } from "@/services/file";
 import type { TeamOrderHistory, TeamOrderStatus } from "@/models/team-order.model";
 
 const STATUS_CONFIG: Record<TeamOrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -39,15 +39,11 @@ export function TeamOrderDetailPage() {
     if (!order) return;
     setPrinting(true);
 
-    // Fetch presigned URLs — put directly in <img src>, no base64 needed
-    let mockupUrl = "";
-    let logoUrl = "";
-    try {
-      if (order.mockup_key?.trim()) mockupUrl = (await getViewUrl(order.mockup_key)).url;
-    } catch { /* skip */ }
-    try {
-      if (order.logo_key?.trim()) logoUrl = (await getViewUrl(order.logo_key)).url;
-    } catch { /* skip */ }
+    // Fetch images as base64 via backend proxy — avoids all cross-origin issues in print popup
+    const [mockupUrl, logoUrl] = await Promise.all([
+      order.mockup_key?.trim() ? getImageAsBase64(order.mockup_key) : Promise.resolve(null),
+      order.logo_key?.trim()   ? getImageAsBase64(order.logo_key)   : Promise.resolve(null),
+    ]);
 
     const items = (order.items ?? []).sort((a, b) => a.sort_order - b.sort_order);
     const today = new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -127,19 +123,7 @@ export function TeamOrderDetailPage() {
   <div style="margin-top:16px;text-align:right;font-size:11px;color:#666">
     Ngày ${today} · ${order.created_by_user?.name ?? ""}
   </div>
-  <script>
-    // Wait for all images to load before printing
-    window.onload = function() {
-      var imgs = document.querySelectorAll('img');
-      if (imgs.length === 0) { window.print(); return; }
-      var loaded = 0;
-      function tryPrint() { loaded++; if (loaded >= imgs.length) window.print(); }
-      imgs.forEach(function(img) {
-        if (img.complete) { tryPrint(); }
-        else { img.onload = tryPrint; img.onerror = tryPrint; }
-      });
-    };
-  </script>
+  <script>window.onload = function() { window.print(); };</script>
 </body></html>`;
 
     const w = window.open("", "_blank", "width=820,height=700");

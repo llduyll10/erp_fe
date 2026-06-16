@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useImageUrl } from "@/services/file";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "../ui/skeleton";
@@ -12,10 +12,6 @@ interface OptimizedImageProps
 	fallbackComponent?: React.ReactNode;
 }
 
-/**
- * Optimized Image component that uses React Query for caching
- * Prevents multiple API calls for the same image
- */
 export function OptimizedImage({
 	fileKey,
 	fallbackSrc,
@@ -26,42 +22,36 @@ export function OptimizedImage({
 	...props
 }: OptimizedImageProps) {
 	const { data: imageData, isLoading, error } = useImageUrl(fileKey);
+	const [imgError, setImgError] = useState(false);
 
-	// Show loading skeleton
 	if (isLoading && showLoading) {
 		return <Skeleton className={cn("w-full h-auto", className)} />;
 	}
 
-	// Show error state or fallback
-	if (error || (!imageData && !fallbackSrc)) {
-		if (fallbackComponent) {
-			return <>{fallbackComponent}</>;
-		}
-
+	const Fallback = () => {
+		if (fallbackComponent) return <>{fallbackComponent}</>;
 		return (
-			<div
-				className={cn(
-					"flex items-center justify-center bg-gray-100 rounded-md",
-					className
-				)}>
+			<div className={cn("flex items-center justify-center bg-gray-100 rounded-md", className)}>
 				<ImageIcon className="w-6 h-6 text-gray-400" />
 			</div>
 		);
+	};
+
+	if (error || (!imageData && !fallbackSrc) || imgError) {
+		return <Fallback />;
 	}
 
-	// Show image
 	const imageUrl = imageData?.url || fallbackSrc;
-	if (imageUrl) {
-		return (
-			<img
-				src={imageUrl}
-				alt={alt}
-				className={cn("w-full h-auto", className)}
-				loading="lazy" // Native lazy loading
-				{...props}
-			/>
-		);
-	}
+	if (!imageUrl) return <Fallback />;
 
-	return null;
+	return (
+		<img
+			src={imageUrl}
+			alt={alt}
+			className={cn("w-full h-auto", className)}
+			loading="lazy"
+			onError={() => setImgError(true)}
+			{...props}
+		/>
+	);
 }

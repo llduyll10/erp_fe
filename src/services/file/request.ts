@@ -1,4 +1,4 @@
-import { request } from "@/utils/request.util";
+import { request, axiosInstance } from "@/utils/request.util";
 import type {
 	GeneratePresignedUrlRequest,
 	GeneratePresignedUrlResponse,
@@ -212,5 +212,31 @@ export const getViewUrl = async (
 	} catch (error) {
 		console.error("❌ getViewUrl error:", error);
 		throw error;
+	}
+};
+
+/**
+ * Fetch image as base64 data URL via backend proxy (used for print).
+ * Avoids cross-origin issues when embedding images in popup windows.
+ */
+export const getImageAsBase64 = async (fileKey: string): Promise<string | null> => {
+	const parts = fileKey.split("/");
+	if (parts.length < 3) return null;
+	const folder = parts[0];
+	const subfolder = parts[1];
+	const filename = parts.slice(2).join("/");
+	try {
+		const response = await axiosInstance.get(
+			`${API_BASE}/proxy/${folder}/${subfolder}/${filename}`,
+			{ responseType: "arraybuffer" },
+		);
+		const bytes = new Uint8Array(response.data);
+		let binary = "";
+		for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+		const base64 = btoa(binary);
+		const contentType = response.headers["content-type"] ?? "image/jpeg";
+		return `data:${contentType};base64,${base64}`;
+	} catch {
+		return null;
 	}
 };
