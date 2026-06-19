@@ -7,6 +7,9 @@ import {
 	getVariantDetail,
 	getVariantList,
 	updateProduct,
+	updateVariant,
+	deleteVariant,
+	deleteProduct,
 	getAllVariants,
 	getProductMedia,
 	addProductMedia,
@@ -169,3 +172,30 @@ export const useGetInventoryOverview = (q?: string) =>
 		queryFn: () => getInventoryOverview(q),
 		staleTime: 60 * 1000,
 	});
+
+export const useUpdateVariant = () => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateVariant>[1] }) =>
+			updateVariant(id, data),
+		onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.LIST] }),
+	});
+};
+
+export const useDeleteVariant = () => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (id: string) => deleteVariant(id),
+		onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEYS.VARIANT.LIST] }),
+	});
+};
+
+export const useDeleteProduct = () => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (id: string) => deleteProduct(id),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCT.LIST] });
+		},
+	});
+};

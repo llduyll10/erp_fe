@@ -49,6 +49,7 @@ export function EditTeamOrderPage() {
   const [items, setItems] = useState<ItemRow[]>([]);
   const [noteLines, setNoteLines] = useState<string[]>([""]);
   const [selectedProductName, setSelectedProductName] = useState("");
+  const [itemsError, setItemsError] = useState<string | null>(null);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -92,14 +93,21 @@ export function EditTeamOrderPage() {
 
   const addRow = () => setItems((p) => [...p, { member_name: "", jersey_number: "", size: sizes[2] ?? "L", note: "" }]);
   const removeRow = (i: number) => setItems((p) => p.filter((_, idx) => idx !== i));
-  const updateRow = (i: number, key: keyof ItemRow, val: string) =>
+  const updateRow = (i: number, key: keyof ItemRow, val: string) => {
     setItems((p) => p.map((r, idx) => idx === i ? { ...r, [key]: val } : r));
+    if (key === "member_name" || key === "jersey_number") setItemsError(null);
+  };
 
   const onSubmit = (data: z.infer<typeof schema>) => {
+    const emptyRows = items.filter((r) => !r.member_name.trim() || !r.jersey_number.trim());
+    if (emptyRows.length > 0) {
+      setItemsError("Vui lòng điền đầy đủ Tên và Số áo cho tất cả thành viên");
+      return;
+    }
+    setItemsError(null);
     const notesStr = noteLines
       .map((l) => l.trim()).filter(Boolean)
       .map((l) => `- ${l}`).join("\n");
-    // Only send file keys when they have actual values — don't overwrite with empty string
     const payload: Parameters<typeof update>[0]["data"] = {
       ...data,
       mockup_key: data.mockup_key?.trim() || undefined,
@@ -318,6 +326,9 @@ export function EditTeamOrderPage() {
                 <Plus size={13} className="mr-1" /> Thêm dòng
               </Button>
             </div>
+            {itemsError && (
+              <p className="text-xs text-red-500">{itemsError}</p>
+            )}
             <div className="border rounded-lg">
               <Table>
                 <TableHeader>
@@ -334,39 +345,44 @@ export function EditTeamOrderPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((row, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="text-center text-muted-foreground text-sm">{i + 1}</TableCell>
-                      <TableCell>
-                        <Input value={row.member_name}
-                          onChange={(e) => updateRow(i, "member_name", e.target.value)}
-                          placeholder="Tên in lên áo..." className="h-8 text-sm" />
-                      </TableCell>
-                      <TableCell>
-                        <Input value={row.jersey_number}
-                          onChange={(e) => updateRow(i, "jersey_number", e.target.value)}
-                          placeholder="21" className="h-8 text-sm text-center" />
-                      </TableCell>
-                      <TableCell>
-                        <select className="border rounded px-2 py-1 text-sm w-full" value={row.size}
-                          onChange={(e) => updateRow(i, "size", e.target.value)}>
-                          {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                      </TableCell>
-                      <TableCell>
-                        <Input value={row.note}
-                          onChange={(e) => updateRow(i, "note", e.target.value)}
-                          placeholder="Ghi chú..." className="h-8 text-sm" />
-                      </TableCell>
-                      <TableCell>
-                        <Button type="button" variant="ghost" size="sm"
-                          onClick={() => removeRow(i)}
-                          className="text-red-400 hover:text-red-600 h-7 w-7 p-0">
-                          <Trash2 size={12} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {items.map((row, i) => {
+                    const rowError = !!itemsError && (!row.member_name.trim() || !row.jersey_number.trim());
+                    return (
+                      <TableRow key={i} className={rowError ? "bg-red-50" : ""}>
+                        <TableCell className="text-center text-muted-foreground text-sm">{i + 1}</TableCell>
+                        <TableCell>
+                          <Input value={row.member_name}
+                            onChange={(e) => updateRow(i, "member_name", e.target.value)}
+                            placeholder="Tên in lên áo..."
+                            className={`h-8 text-sm ${rowError && !row.member_name.trim() ? "border-red-400" : ""}`} />
+                        </TableCell>
+                        <TableCell>
+                          <Input value={row.jersey_number}
+                            onChange={(e) => updateRow(i, "jersey_number", e.target.value)}
+                            placeholder="21"
+                            className={`h-8 text-sm text-center ${rowError && !row.jersey_number.trim() ? "border-red-400" : ""}`} />
+                        </TableCell>
+                        <TableCell>
+                          <select className="border rounded px-2 py-1 text-sm w-full" value={row.size}
+                            onChange={(e) => updateRow(i, "size", e.target.value)}>
+                            {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </TableCell>
+                        <TableCell>
+                          <Input value={row.note}
+                            onChange={(e) => updateRow(i, "note", e.target.value)}
+                            placeholder="Ghi chú..." className="h-8 text-sm" />
+                        </TableCell>
+                        <TableCell>
+                          <Button type="button" variant="ghost" size="sm"
+                            onClick={() => removeRow(i)}
+                            className="text-red-400 hover:text-red-600 h-7 w-7 p-0">
+                            <Trash2 size={12} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>

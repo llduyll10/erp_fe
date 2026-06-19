@@ -35,6 +35,7 @@ import { CreateTeamOrderPage } from "@/pages/TeamOrder/Create/index";
 import { TeamOrderDetailPage } from "@/pages/TeamOrder/Detail/index";
 import { EditTeamOrderPage } from "@/pages/TeamOrder/Edit/index";
 import { ProductDetailPage } from "@/pages/ProductManagement/DetailProduct/index";
+import { CatalogImagesPage } from "@/pages/CatalogImages/index";
 import { CreateCustomerPage } from "@/pages/CustomerManagement/CreateCustomer/index";
 import { DetailCustomerPage } from "@/pages/CustomerManagement/DetailCustomer/index";
 import { CustomerManagementPage } from "@/pages/CustomerManagement/index";
@@ -173,6 +174,7 @@ export const router = createBrowserRouter([
 			{ path: "packing/queue", element: <PackingQueuePage /> },
 			{ path: "packing/scan", element: <PackingScanPage /> },
 			{ path: "packing/shipped", element: <PackingShippedPage /> },
+			{ path: "catalog-images", element: <CatalogImagesPage /> },
 			// Module 5 — Production
 			{ path: "production/orders", element: <ProductionOrdersPage /> },
 			{ path: "production/orders/create", element: <CreateProductionOrderPage /> },

@@ -20,6 +20,152 @@ const STATUS_CONFIG: Record<TeamOrderStatus, { label: string; variant: "default"
   cancelled:     { label: "Đã hủy",        variant: "destructive" },
 };
 
+const FIELD_LABELS: Record<string, string> = {
+  status:           "Trạng thái",
+  style_name:       "Tên mẫu áo",
+  contact:          "Liên hệ",
+  notes:            "Ghi chú",
+  logo_key:         "Logo đội",
+  mockup_key:       "Mockup",
+  delivery_address: "Địa chỉ giao hàng",
+  recipient_phone:  "SĐT nhận hàng",
+  deposit_amount:   "Tiền cọc",
+  cod_amount:       "Thu COD",
+  delivery_note:    "Ghi chú giao hàng",
+  items:            "Danh sách thành viên",
+};
+
+const ITEM_FIELD_LABELS: Record<string, string> = {
+  jersey_number: "số áo",
+  size:          "size",
+  note:          "ghi chú",
+};
+
+const CURRENCY_FIELDS = new Set(["deposit_amount", "cod_amount"]);
+const FILE_FIELDS = new Set(["logo_key", "mockup_key"]);
+
+type ItemSnap = { member_name: string; jersey_number: string; size: string; note?: string };
+
+function formatHistoryValue(field: string, value: unknown): string {
+  if (value === null || value === undefined || value === "") return "—";
+  if (field === "status") return STATUS_CONFIG[value as TeamOrderStatus]?.label ?? String(value);
+  if (CURRENCY_FIELDS.has(field)) return `${Number(value).toLocaleString("vi-VN")} đ`;
+  return String(value);
+}
+
+function formatFileChange(oldVal: unknown, newVal: unknown): string {
+  if (!oldVal && newVal) return "Đã thêm";
+  if (oldVal && newVal) return "Đã cập nhật";
+  if (oldVal && !newVal) return "Đã xóa";
+  return "—";
+}
+
+function ItemsDiffView({ oldItems, newItems }: { oldItems: ItemSnap[]; newItems: ItemSnap[] }) {
+  const oldMap = new Map(oldItems.map((i) => [i.member_name, i]));
+  const newMap = new Map(newItems.map((i) => [i.member_name, i]));
+
+  // Build merged row list: removed → modified/unchanged → added
+  type Row =
+    | { type: "removed"; item: ItemSnap }
+    | { type: "added"; item: ItemSnap }
+    | { type: "unchanged"; item: ItemSnap }
+    | { type: "modified"; old: ItemSnap; new: ItemSnap; diffs: string[] };
+
+  const rows: Row[] = [];
+
+  for (const old of oldItems) {
+    const nw = newMap.get(old.member_name);
+    if (!nw) {
+      rows.push({ type: "removed", item: old });
+    } else {
+      const diffs: string[] = [];
+      if (old.jersey_number !== nw.jersey_number)
+        diffs.push(`số áo: ${old.jersey_number || "—"} → ${nw.jersey_number || "—"}`);
+      if (old.size !== nw.size)
+        diffs.push(`size: ${old.size} → ${nw.size}`);
+      if ((old.note ?? "") !== (nw.note ?? ""))
+        diffs.push(`ghi chú: "${old.note || ""}" → "${nw.note || ""}"`);
+      if (diffs.length > 0) rows.push({ type: "modified", old, new: nw, diffs });
+      else rows.push({ type: "unchanged", item: old });
+    }
+  }
+  for (const nw of newItems) {
+    if (!oldMap.has(nw.member_name)) rows.push({ type: "added", item: nw });
+  }
+
+  return (
+    <ul className="ml-3 mt-0.5 space-y-0.5">
+      {rows.map((row, i) => {
+        if (row.type === "removed") {
+          return (
+            <li key={i} className="text-red-400 line-through">
+              {row.item.member_name}
+              <span className="no-underline"> (#{row.item.jersey_number || "—"}, {row.item.size})</span>
+            </li>
+          );
+        }
+        if (row.type === "added") {
+          return (
+            <li key={i} className="text-green-600">
+              + {row.item.member_name} (#{row.item.jersey_number || "—"}, {row.item.size}
+              {row.item.note ? `, ${row.item.note}` : ""})
+            </li>
+          );
+        }
+        if (row.type === "modified") {
+          return (
+            <li key={i}>
+              <span className="font-medium text-amber-700">{row.new.member_name}</span>
+              <span className="text-muted-foreground">: {row.diffs.join(", ")}</span>
+            </li>
+          );
+        }
+        // unchanged — dimmed
+        return (
+          <li key={i} className="text-muted-foreground/50">
+            {row.item.member_name} (#{row.item.jersey_number || "—"}, {row.item.size})
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function HistoryChangeRow({ field, oldVal, newVal }: { field: string; oldVal: any; newVal: any }) {
+  const label = FIELD_LABELS[field] ?? field;
+
+  if (FILE_FIELDS.has(field)) {
+    return (
+      <li className="text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">{label}:</span>{" "}
+        <span className="text-sky-600">{formatFileChange(oldVal, newVal)}</span>
+      </li>
+    );
+  }
+
+  if (field === "items") {
+    const oldItems: ItemSnap[] = oldVal ?? [];
+    const newItems: ItemSnap[] = newVal ?? [];
+    return (
+      <li className="text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">
+          {label} ({oldItems.length} → {newItems.length} người):
+        </span>
+        <ItemsDiffView oldItems={oldItems} newItems={newItems} />
+      </li>
+    );
+  }
+
+  return (
+    <li className="text-xs text-muted-foreground">
+      <span className="font-medium text-foreground">{label}:</span>{" "}
+      <span className="line-through text-red-400">{formatHistoryValue(field, oldVal)}</span>
+      {" → "}
+      <span className="text-green-600">{formatHistoryValue(field, newVal)}</span>
+    </li>
+  );
+}
+
 const NEXT_STATUS: Record<TeamOrderStatus, TeamOrderStatus[]> = {
   draft:         ["confirmed", "cancelled"],
   confirmed:     ["in_production", "cancelled"],
@@ -317,14 +463,9 @@ export function TeamOrderDetailPage() {
                   </div>
                   <p className="text-sm mt-0.5">{h.summary}</p>
                   {h.changes && Object.keys(h.changes).length > 0 && (
-                    <ul className="mt-1 space-y-0.5">
+                    <ul className="mt-1 space-y-1">
                       {Object.entries(h.changes).map(([field, { old: oldVal, new: newVal }]) => (
-                        <li key={field} className="text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground">{field}:</span>{" "}
-                          <span className="line-through text-red-400">{String(oldVal ?? "—")}</span>
-                          {" → "}
-                          <span className="text-green-600">{String(newVal ?? "—")}</span>
-                        </li>
+                        <HistoryChangeRow key={field} field={field} oldVal={oldVal} newVal={newVal} />
                       ))}
                     </ul>
                   )}

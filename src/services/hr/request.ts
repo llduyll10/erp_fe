@@ -89,3 +89,11 @@ export const getAuditLogs = (params?: {
 	action?: string;
 }) =>
 	request({ url: "/audit-logs", method: "GET", params });
+
+export const addEmployeeDocument = (
+	employeeId: string,
+	data: { type: string; name: string; file_key: string }
+) => request({ url: `/employees/${employeeId}/documents`, method: "POST", data });
+
+export const deleteEmployeeDocument = (employeeId: string, docId: string) =>
+	request({ url: `/employees/${employeeId}/documents/${docId}`, method: "DELETE" });

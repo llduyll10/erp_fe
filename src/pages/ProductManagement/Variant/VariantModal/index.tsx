@@ -20,7 +20,7 @@ export function VariantModal({ onSuccess }: VariantModalProps) {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="outline" className="w-fit">
-					Add Variant
+					+ Thêm biến thể
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">

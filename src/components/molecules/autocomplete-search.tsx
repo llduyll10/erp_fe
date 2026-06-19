@@ -44,7 +44,7 @@ export interface AutocompleteSearchProps<T = any> {
 
 	// Component props
 	value?: string;
-	onValueChange?: (value: string) => void;
+	onValueChange?: (value: string, item?: T) => void;
 	placeholder?: string;
 	searchPlaceholder?: string;
 	emptyMessage?: string;
@@ -258,7 +258,7 @@ export function AutocompleteSearch<T = any>({
 													onSelect={(currentValue) => {
 														const newValue =
 															currentValue === value ? "" : currentValue;
-														onValueChange?.(newValue);
+														onValueChange?.(newValue, newValue ? item : undefined);
 														setOpen(false);
 													}}>
 													{renderOption ?

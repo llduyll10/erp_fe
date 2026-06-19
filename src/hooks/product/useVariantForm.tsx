@@ -9,20 +9,13 @@ import {
 } from "@/utils/schema.util";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-	ProductColor,
-	ProductGender,
-	ProductSize,
-	ProductUnit,
-} from "@/enums/product.enum";
+import { ProductSize, ProductUnit } from "@/enums/product.enum";
 import { useCreateVariant, useGetProductDetail } from "@/services/product";
 import { toast } from "sonner";
 import { VariantResponse } from "@/interfaces/product.interface";
 
 export const VariantFormSchema = z.object({
-	size: createRequiredEnumSchema(ProductSize, "Size is required"),
-	color: createRequiredEnumSchema(ProductColor, "Color is required"),
-	gender: createRequiredEnumSchema(ProductGender, "Gender is required"),
+	size: createRequiredEnumSchema(ProductSize, "Vui lòng chọn size"),
 	unit: createRequiredEnumSchema(ProductUnit, "Unit is required"),
 	price: createRequiredNumberSchema("Price"),
 	cost: createRequiredNumberSchema("Cost"),
@@ -33,8 +26,6 @@ export const VariantFormSchema = z.object({
 export const getVariantFormDefault = (variant?: VariantResponse) => {
 	return {
 		size: variant?.size || ProductSize.M,
-		color: variant?.color || ProductColor.RED,
-		gender: variant?.gender || ProductGender.MALE,
 		price: Number(variant?.price) || 0,
 		cost: Number(variant?.cost) || 0,
 		unit: variant?.unit || ProductUnit.PIECE,
@@ -55,12 +46,9 @@ export const useVariantForm = (onSuccessCallback?: () => void) => {
 	});
 
 	const onSubmit = (data: z.infer<typeof VariantFormSchema>) => {
-		console.log(data);
 		const payload = {
 			product_id: productDetail?.id || "",
 			size: data.size || ProductSize.M,
-			color: data.color || ProductColor.RED,
-			gender: data.gender || ProductGender.MALE,
 			price: Number(data.price),
 			cost: Number(data.cost),
 			unit: data.unit || ProductUnit.PIECE,
@@ -69,14 +57,14 @@ export const useVariantForm = (onSuccessCallback?: () => void) => {
 		};
 
 		createVariant(payload, {
-			onSuccess: (response) => {
+			onSuccess: () => {
 				toast.success(t("products.createSuccess"));
-				form.reset();
+				form.reset(getVariantFormDefault());
 				onSuccessCallback?.();
 			},
 			onError: (error) => {
 				toast.error(t("products.createError"));
-				console.error("Create product error:", error);
+				console.error("Create variant error:", error);
 			},
 		});
 	};

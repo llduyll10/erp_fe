@@ -84,6 +84,15 @@ export const getVariantDetail = async (
 	});
 };
 
+export const updateVariant = async (id: string, data: { price?: number; cost?: number; status?: string; file_key?: string }) =>
+	request({ url: `/product-variants/${id}`, method: "PATCH", data });
+
+export const deleteVariant = async (id: string) =>
+	request({ url: `/product-variants/${id}`, method: "DELETE" });
+
+export const deleteProduct = async (id: string) =>
+	request({ url: `/products/${id}`, method: "DELETE" });
+
 // Get all variants for order creation with enhanced data
 export const getAllVariants = async (
 	params?: GetAllVariantsRequest

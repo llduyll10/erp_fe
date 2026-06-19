@@ -40,6 +40,8 @@ export function ProductSettingsPage() {
 	const { mutate: save, isPending } = useUpdateProductSettings();
 	const [sizes, setSizes] = useState<string[]>([]);
 	const [newSize, setNewSize] = useState("");
+	const [itemTypes, setItemTypes] = useState<string[]>([]);
+	const [newItemType, setNewItemType] = useState("");
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(schema),
@@ -70,10 +72,11 @@ export function ProductSettingsPage() {
 				stock_in_code_pad: settings.stock_in_code_pad,
 			});
 			setSizes(settings.sizes ?? ["S", "M", "L", "XL", "2XL", "3XL"]);
+			setItemTypes(settings.item_types ?? ["Áo cổ tròn", "Quần"]);
 		}
 	}, [settings]);
 
-	const onSubmit = (values: FormValues) => save({ ...values, sizes });
+	const onSubmit = (values: FormValues) => save({ ...values, sizes, item_types: itemTypes });
 
 	const removeSize = (s: string) => setSizes((prev) => prev.filter((x) => x !== s));
 	const addSize = () => {
@@ -82,6 +85,15 @@ export function ProductSettingsPage() {
 			setSizes((prev) => [...prev, trimmed]);
 		}
 		setNewSize("");
+	};
+
+	const removeItemType = (t: string) => setItemTypes((prev) => prev.filter((x) => x !== t));
+	const addItemType = () => {
+		const trimmed = newItemType.trim();
+		if (trimmed && !itemTypes.includes(trimmed)) {
+			setItemTypes((prev) => [...prev, trimmed]);
+		}
+		setNewItemType("");
 	};
 
 	if (isLoading) return <div className="p-8">Đang tải...</div>;
@@ -114,6 +126,36 @@ export function ProductSettingsPage() {
 							className="max-w-xs"
 						/>
 						<Button variant="outline" size="sm" onClick={addSize}>
+							<Plus size={14} className="mr-1" /> Thêm
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Loại sản phẩm</CardTitle>
+				</CardHeader>
+				<CardContent className="space-y-3">
+					<div className="flex flex-wrap gap-2">
+						{itemTypes.map((type) => (
+							<Badge key={type} variant="secondary" className="gap-1 pr-1">
+								{type}
+								<button onClick={() => removeItemType(type)} className="hover:text-red-500">
+									<X size={12} />
+								</button>
+							</Badge>
+						))}
+					</div>
+					<div className="flex gap-2">
+						<Input
+							value={newItemType}
+							onChange={(e) => setNewItemType(e.target.value)}
+							onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addItemType())}
+							placeholder="Thêm loại (VD: Áo polo, Váy...)"
+							className="max-w-xs"
+						/>
+						<Button variant="outline" size="sm" onClick={addItemType}>
 							<Plus size={14} className="mr-1" /> Thêm
 						</Button>
 					</div>

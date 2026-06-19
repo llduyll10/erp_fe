@@ -11,6 +11,8 @@ import {
 	updateEmployee,
 	deleteEmployee,
 	getAuditLogs,
+	addEmployeeDocument,
+	deleteEmployeeDocument,
 } from "./request";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import { toast } from "sonner";
@@ -139,3 +141,26 @@ export const useGetAuditLogs = (params?: {
 		queryFn: () => getAuditLogs(params),
 		staleTime: 60 * 1000,
 	});
+
+export const useAddEmployeeDocument = (employeeId: string) => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (data: { type: string; name: string; file_key: string }) =>
+			addEmployeeDocument(employeeId, data),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.HR.EMPLOYEE_DETAIL, employeeId] });
+			toast.success("Đã thêm tài liệu");
+		},
+	});
+};
+
+export const useDeleteEmployeeDocument = (employeeId: string) => {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (docId: string) => deleteEmployeeDocument(employeeId, docId),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: [QUERY_KEYS.HR.EMPLOYEE_DETAIL, employeeId] });
+			toast.success("Đã xóa tài liệu");
+		},
+	});
+};

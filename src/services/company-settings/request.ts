@@ -5,6 +5,8 @@ export const getSettings = async (): Promise<CompanySettings> =>
 	request({ url: "/settings", method: "GET" });
 
 export const updateCompanyInfo = async (data: {
+	name?: string;
+	tax_code?: string;
 	phone?: string;
 	address?: string;
 	logo_url?: string;
@@ -13,6 +15,7 @@ export const updateCompanyInfo = async (data: {
 
 export const updateProductSettings = async (data: {
 	sizes?: string[];
+	item_types?: string[];
 	low_stock_threshold?: number;
 	product_code_prefix?: string;
 	product_code_pad?: number;

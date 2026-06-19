@@ -1,202 +1,178 @@
-import Table from "@/components/molecules/table";
-import { cn } from "@/lib/utils";
-import Loading from "@/components/layout/loading";
-import { Pagination } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import useProductManagement from "@/hooks/product/useProductManagement";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useGetProductList, useDeleteProduct } from "@/services/product";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { OptimizedImage } from "@/components/molecules/optimized-image";
+import { ImageIcon, Plus, Search, Trash2, Pencil, Loader2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProductManagementPage() {
-	const { t } = useTranslation("common");
-	const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [q, setQ] = useState("");
+  const [search, setSearch] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
-	const {
-		productList,
-		tableRows,
-		total,
-		isGetProductListPending,
-		colDefs,
-		pagination,
-		setPage,
-		setLimit,
-		setSearch,
-		clearFilters,
-		refetch,
-		expandAll,
-		collapseAll,
-		expandedProducts,
-	} = useProductManagement();
+  const { data, isLoading, refetch } = useGetProductList({ q: search, page, limit: 20 });
+  const { mutate: deleteProduct, isPending: deleting } = useDeleteProduct();
 
-	const [localSearch, setLocalSearch] = useState("");
+  const products = data?.data ?? [];
+  const total = data?.pagination?.total_records ?? 0;
 
-	const handleSearch = () => {
-		setSearch(localSearch);
-	};
+  const handleDelete = (id: string) => {
+    deleteProduct(id, {
+      onSuccess: () => { toast.success("Đã xóa sản phẩm"); setDeleteConfirm(null); refetch(); },
+      onError: () => toast.error("Xóa thất bại"),
+    });
+  };
 
-	const handleRefresh = () => {
-		refetch();
-	};
+  return (
+    <div className="p-6 max-w-5xl space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Sản phẩm</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{total} sản phẩm</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isLoading}>
+            <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
+          </Button>
+          <Button size="sm" onClick={() => navigate("/dashboard/products/create")}>
+            <Plus size={14} className="mr-1.5" /> Thêm sản phẩm
+          </Button>
+        </div>
+      </div>
 
-	const handleRowClick = (event: any) => {
-		const rowData = event.data;
-		if (!rowData) return;
+      {/* Search */}
+      <div className="flex gap-2 max-w-sm">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { setSearch(q); setPage(1); } }}
+            placeholder="Tìm tên sản phẩm..."
+            className="pl-9 h-9"
+          />
+        </div>
+        <Button size="sm" onClick={() => { setSearch(q); setPage(1); }}>Tìm</Button>
+        {search && (
+          <Button size="sm" variant="ghost" onClick={() => { setQ(""); setSearch(""); setPage(1); }}>Xóa</Button>
+        )}
+      </div>
 
-		// Don't navigate if it's a product row with variants (expand/collapse functionality)
-		if (rowData.rowType === "product" && rowData.rawProduct?.variants?.length) {
-			return;
-		}
+      {/* Table */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
+          <Loader2 size={16} className="animate-spin" /> Đang tải...
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-16 text-muted-foreground text-sm border rounded-lg">
+          {search ? `Không tìm thấy "${search}"` : "Chưa có sản phẩm nào"}
+        </div>
+      ) : (
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40 border-b">
+              <tr>
+                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground w-12"></th>
+                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground">Tên sản phẩm</th>
+                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground w-32">Loại</th>
+                <th className="text-center px-4 py-2.5 font-medium text-muted-foreground w-24">Biến thể</th>
+                <th className="text-center px-4 py-2.5 font-medium text-muted-foreground w-24">Tổng tồn</th>
+                <th className="w-24"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {products.map((p) => {
+                const totalQty = (p.variants ?? []).reduce((s: number, v: any) => s + (v.quantity ?? 0), 0);
+                return (
+                  <tr key={p.id} className="hover:bg-muted/20 transition-colors group">
+                    {/* Thumbnail */}
+                    <td className="px-4 py-2.5">
+                      <div className="w-10 h-10 rounded-md overflow-hidden border bg-muted flex items-center justify-center shrink-0">
+                        {p.file_key ? (
+                          <OptimizedImage fileKey={p.file_key} alt={p.name}
+                            className="w-full h-full object-cover" showLoading={false}
+                            fallbackComponent={<ImageIcon size={16} className="text-muted-foreground" />} />
+                        ) : (
+                          <ImageIcon size={16} className="text-muted-foreground" />
+                        )}
+                      </div>
+                    </td>
 
-		// Navigate to product detail page
-		const productId =
-			rowData.rowType === "product" ?
-				rowData.rawProduct?.id
-			:	rowData.product_id;
+                    {/* Name */}
+                    <td className="px-4 py-2.5">
+                      <p className="font-medium leading-tight">{p.name}</p>
+                      {p.description && (
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{p.description}</p>
+                      )}
+                    </td>
 
-		if (productId) {
-			navigate(`/dashboard/products/detail/${productId}`);
-		}
-	};
+                    {/* Type */}
+                    <td className="px-4 py-2.5">
+                      {p.item_type && (
+                        <Badge variant="outline" className="text-xs font-normal">{p.item_type}</Badge>
+                      )}
+                    </td>
 
-	if (isGetProductListPending && pagination.current_page === 1) {
-		return <Loading />;
-	}
+                    {/* Variants count */}
+                    <td className="px-4 py-2.5 text-center">
+                      <span className="text-sm font-medium">{(p.variants ?? []).length}</span>
+                    </td>
 
-	return (
-		<div className="flex flex-col gap-6 p-8">
-			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold">{t("modules.products.title")}</h1>
-				<div className="flex items-center gap-2">
-					{/* Tree Controls */}
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={expandAll}
-						disabled={isGetProductListPending}>
-						<ChevronDown className="h-4 w-4 mr-2" />
-						{t("modules.products.expandAll")}
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={collapseAll}
-						disabled={isGetProductListPending}>
-						<ChevronRight className="h-4 w-4 mr-2" />
-						{t("modules.products.collapseAll")}
-					</Button>
+                    {/* Total stock */}
+                    <td className="px-4 py-2.5 text-center">
+                      <span className={totalQty === 0 ? "text-muted-foreground/50" : "font-medium"}>
+                        {totalQty}
+                      </span>
+                    </td>
 
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={handleRefresh}
-						disabled={isGetProductListPending}>
-						<RefreshCw
-							className={cn(
-								"h-4 w-4 mr-2",
-								isGetProductListPending && "animate-spin"
-							)}
-						/>
-						{t("actions.refresh")}
-					</Button>
-				</div>
-			</div>
+                    {/* Actions */}
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button size="icon" variant="ghost" className="h-7 w-7"
+                          onClick={() => navigate(`/dashboard/products/detail/${p.id}`)}>
+                          <Pencil size={13} />
+                        </Button>
+                        {deleteConfirm === p.id ? (
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => handleDelete(p.id)} disabled={deleting}
+                              className="text-xs text-red-600 font-medium hover:text-red-700 px-1">
+                              {deleting ? <Loader2 size={12} className="animate-spin" /> : "Xóa"}
+                            </button>
+                            <button onClick={() => setDeleteConfirm(null)}
+                              className="text-xs text-muted-foreground px-1">Hủy</button>
+                          </div>
+                        ) : (
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-red-500"
+                            onClick={() => setDeleteConfirm(p.id)}>
+                            <Trash2 size={13} />
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-			{/* Search and Filters */}
-			<div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-				<div className="flex items-center gap-2 flex-1">
-					<div className="relative flex-1 max-w-sm">
-						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-						<Input
-							placeholder={t("modules.products.searchPlaceholder")}
-							value={localSearch}
-							onChange={(e) => setLocalSearch(e.target.value)}
-							className="pl-10"
-						/>
-					</div>
-					<Button onClick={handleSearch} size="sm">
-						{t("actions.search")}
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => {
-							clearFilters();
-							setLocalSearch("");
-						}}>
-						{t("actions.clear")}
-					</Button>
-				</div>
-
-				{/* Tree Status */}
-				<div className="text-sm text-muted-foreground">
-					{productList.length} {t("modules.products.productsFound")} • {expandedProducts.size} {t("modules.products.expanded")}
-				</div>
-			</div>
-
-			{/* Table */}
-			<div className="w-full">
-				<div className="flex flex-col border border-none rounded-md">
-					<Table
-						className={cn(
-							"mt-[12px] gray-highlight-table",
-							!tableRows?.length && "h-[150px]"
-						)}
-						rowData={tableRows}
-						columnDefs={colDefs}
-						pagination={false} // Disable AG Grid pagination, use custom
-						onSortChanged={() => {}}
-						onFirstDataRendered={() => {}}
-						isLoading={isGetProductListPending}
-						popupParent={null}
-						suppressRowHoverHighlight={false}
-						noRowsOverlayClassName="top-[50px]"
-						gridOptions={{
-							headerHeight: 60,
-							rowHeight: 72,
-							suppressRowHoverHighlight: true,
-							getRowId: (params) => params.data.id,
-							onRowClicked: handleRowClick,
-							defaultColDef: {
-								sortable: false, // Disable sorting for tree structure
-								editable: false,
-								resizable: true,
-								headerClass: [
-									"!text-lg",
-									"text-text-default",
-									"bg-background-grayDark",
-									"text-left",
-									"[&_.ag-header-cell-label]:justify-start",
-									"[&_.ag-header-cell-label]:pl-[16px]",
-								],
-							},
-							// Add row styling based on type
-							getRowClass: (params) => {
-								if (params.data.rowType === "variant") {
-									return "bg-gray-50";
-								}
-								return "";
-							},
-						}}
-						domLayout="autoHeight"
-					/>
-				</div>
-			</div>
-
-			{/* Custom Pagination */}
-			{total > 0 && (
-				<Pagination
-					currentPage={pagination.current_page}
-					totalPages={pagination.total_pages}
-					totalItems={total}
-					pageSize={pagination.records_per_page}
-					onPageChange={setPage}
-					onPageSizeChange={setLimit}
-					className="mt-4"
-				/>
-			)}
-		</div>
-	);
+      {/* Pagination */}
+      {total > 20 && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>Trang {page} · {total} sản phẩm</span>
+          <div className="flex gap-1">
+            <Button size="sm" variant="outline" disabled={page === 1} onClick={() => setPage(p => p - 1)}>←</Button>
+            <Button size="sm" variant="outline" disabled={page * 20 >= total} onClick={() => setPage(p => p + 1)}>→</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

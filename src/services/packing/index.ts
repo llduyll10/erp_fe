@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QUERY_KEYS } from "@/constants/query.constant";
 import {
-	getPackingQueue, getPackingStats, scanForPacking,
-	packOrder, shipOrders, getShippedOrders,
+	getPackingQueue, getPackingStats, scanAndPack,
+	shipOrders, getShippedOrders,
 } from "./request";
 
 export const useGetPackingQueue = (params?: { q?: string; page?: number; limit?: number }) =>
@@ -22,24 +22,16 @@ export const useGetPackingStats = () =>
 		refetchInterval: 60 * 1000,
 	});
 
-export const useScanForPacking = (externalOrderId: string, enabled = false) =>
-	useQuery({
-		queryKey: [QUERY_KEYS.PACKING.SCAN, externalOrderId],
-		queryFn: () => scanForPacking(externalOrderId),
-		enabled: enabled && !!externalOrderId,
-		retry: false,
-	});
-
-export const usePackOrder = () => {
+export const useScanAndPack = () => {
 	const qc = useQueryClient();
 	return useMutation({
-		mutationFn: (external_order_id: string) => packOrder(external_order_id),
-		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PACKING.QUEUE] });
-			qc.invalidateQueries({ queryKey: [QUERY_KEYS.PACKING.STATS] });
-			toast.success("Đã xác nhận đóng gói");
+		mutationFn: (external_order_id: string) => scanAndPack(external_order_id),
+		onSuccess: (res) => {
+			if (res.status === "packed") {
+				qc.invalidateQueries({ queryKey: [QUERY_KEYS.PACKING.QUEUE] });
+				qc.invalidateQueries({ queryKey: [QUERY_KEYS.PACKING.STATS] });
+			}
 		},
-		onError: (err: any) => toast.error(err?.response?.data?.message ?? "Lỗi đóng gói"),
 	});
 };
 

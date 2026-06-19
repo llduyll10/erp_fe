@@ -27,8 +27,8 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { ProductItemType } from "@/enums/product.enum";
 import { FileUploadPurpose } from "@/enums/file.enum";
+import { useGetSettings } from "@/services/company-settings";
 import { AutocompleteSearch } from "@/components/molecules/autocomplete-search";
 import { useGetListCategory } from "@/services/category";
 import { Category } from "@/models/category.model";
@@ -47,16 +47,11 @@ interface ProductFormProps extends React.ComponentProps<"div"> {
 export function ProductForm({ mode, ...props }: ProductFormProps) {
 	const { t } = useTranslation();
 	const { form, onSubmit, isPending, productDetail } = useProductForm();
+	const { data: settings } = useGetSettings();
 
-	const itemTypeOptions = [
-		{ value: ProductItemType.CLOTHING, label: "Clothing" },
-		{ value: ProductItemType.PANTS, label: "Pants" },
-		{ value: ProductItemType.SET, label: "Set" },
-		{ value: ProductItemType.SHOES, label: "Shoes" },
-		{ value: ProductItemType.ACCESSORIES, label: "Accessories" },
-		{ value: ProductItemType.OFFICE_SUPPLIES, label: "Office Supplies" },
-		{ value: ProductItemType.OTHER, label: "Other" },
-	];
+	const itemTypeOptions = (settings?.item_types ?? ["Áo cổ tròn", "Quần"]).map(
+		(type) => ({ value: type, label: type })
+	);
 
 	return (
 		<div className={cn("flex flex-col gap-6")} {...props}>

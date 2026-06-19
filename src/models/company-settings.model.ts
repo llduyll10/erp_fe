@@ -1,10 +1,13 @@
 export type CompanySettings = {
   id: string;
   company_id: string;
+  name: string | null;
+  tax_code: string | null;
   phone: string | null;
   address: string | null;
   logo_url: string | null;
   sizes: string[];
+  item_types: string[];
   low_stock_threshold: number;
   product_code_prefix: string;
   product_code_pad: number;

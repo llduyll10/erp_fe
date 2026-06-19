@@ -9,8 +9,8 @@ export function ProductDetailPage() {
 		<div className="w-full flex flex-col gap-4 p-8">
 			<Tabs defaultValue="product" className="w-full">
 				<TabsList>
-					<TabsTrigger value="product">Product</TabsTrigger>
-					<TabsTrigger value="variant">Variant</TabsTrigger>
+					<TabsTrigger value="product">Thông tin</TabsTrigger>
+					<TabsTrigger value="variant">Biến thể</TabsTrigger>
 				</TabsList>
 				<TabsContent value="product">
 					<ProductForm mode={FormMode.DETAILS} />

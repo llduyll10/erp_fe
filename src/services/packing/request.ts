@@ -9,11 +9,14 @@ export const getPackingQueue = (params?: { q?: string; page?: number; limit?: nu
 export const getPackingStats = (): Promise<PackingStats> =>
 	request({ url: "/packing/stats", method: "GET" });
 
-export const scanForPacking = (externalOrderId: string) =>
-	request({ url: `/packing/scan/${encodeURIComponent(externalOrderId)}`, method: "GET" });
-
-export const packOrder = (external_order_id: string) =>
-	request({ url: "/packing/pack", method: "POST", data: { external_order_id } });
+export const scanAndPack = (external_order_id: string): Promise<{
+  status: "packed" | "duplicate";
+  external_order_id: string;
+  packed_at: string;
+  packed_by_name: string | null;
+  packing_job_id: string;
+}> =>
+	request({ url: "/packing/scan", method: "POST", data: { external_order_id } });
 
 export const shipOrders = (packing_job_ids: string[], notes?: string) =>
 	request({ url: "/packing/ship", method: "POST", data: { packing_job_ids, notes } });

@@ -17,7 +17,7 @@ export const getProductionOrder = (id: string): Promise<ProductionOrder> =>
 export const createProductionOrder = (data: {
 	product_id?: string;
 	notes?: string;
-	items: { variant_id?: string; size: string; color?: string; qty_planned: number }[];
+	items: { product_id?: string; variant_id?: string; size: string; color?: string; qty_planned: number }[];
 }): Promise<ProductionOrder> =>
 	request({ url: "/production-orders", method: "POST", data });
 

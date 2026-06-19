@@ -4,12 +4,14 @@ export type ProductionOrderStatus =
 export type ProductionOrderItem = {
   id: string;
   production_order_id: string;
+  product_id: string | null;
   variant_id: string | null;
   size: string;
   color: string | null;
   qty_planned: number;
   qty_stocked: number;
-  variant?: { id: string; sku: string; product?: { name: string } } | null;
+  product?: { id: string; name: string; file_key?: string | null } | null;
+  variant?: { id: string; sku: string } | null;
 };
 
 export type ProductionOrder = {

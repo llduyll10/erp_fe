@@ -64,6 +64,7 @@ const MENU_GROUPS = [
 			{ title: "Tạo mẫu mới", url: "/dashboard/products/create", icon: Plus },
 			{ title: "Danh mục", url: "/dashboard/categories", icon: List },
 			{ title: "Catalog Sales", url: "/dashboard/sales-catalog", icon: Image },
+			{ title: "Ảnh sản phẩm sàn", url: "/dashboard/catalog-images", icon: Image },
 		],
 	},
 	{
